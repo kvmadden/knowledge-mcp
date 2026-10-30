@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "description": "Generic example deny-list. Each pattern is a JavaScript regular expression source. A write that matches any pattern in any string field (including object keys) is rejected. Replace or extend this list for your own data; the server refuses to start if the list is missing, empty, or invalid.",
+  "patterns": [
+    {
+      "id": "email-address",
+      "description": "Email addresses",
+      "pattern": "[A-Z0-9._%+-]+@[A-Z0-9-]+(?:\\.[A-Z0-9-]+)*\\.[A-Z]{2,}",
+      "flags": "i"
+    },
+    {
+      "id": "us-phone-number",
+      "description": "US-style phone numbers written with separators, e.g. 555-010-0199 or (555) 010-0199",
+      "pattern": "(?<!\\d)(?:\\+?1[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]\\d{3}[-.\\s]\\d{4}(?!\\d)"
+    },
+    {
+      "id": "us-ssn-format",
+      "description": "Numbers in the 3-2-4 social security number format",
+      "pattern": "(?<!\\d)\\d{3}-\\d{2}-\\d{4}(?!\\d)"
+    },
+    {
+      "id": "date-of-birth-label",
+      "description": "A date-of-birth label followed by a digit",
+      "pattern": "\\b(?:DOB|D\\.O\\.B\\.?|date\\s+of\\s+birth)\\s*[:#-]?\\s*\\d",
+      "flags": "i"
+    },
+    {
+      "id": "record-number-label",
+      "description": "A record-number label (MRN, medical record number) followed by four or more digits",
+      "pattern": "\\b(?:MRN|medical\\s+record\\s+(?:number|no\\.?|#))\\s*[:#-]?\\s*\\d{4,}",
+      "flags": "i"
+    },
+    {
+      "id": "payment-card-number",
+      "description": "Sixteen-digit card numbers, optionally grouped by four",
+      "pattern": "(?<!\\d)\\d{4}(?:[ -]?\\d{4}){3}(?!\\d)"
+    }
+  ]
+}

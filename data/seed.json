@@ -1,0 +1,16 @@
+{
+  "description": "Synthetic demo data. All names, projects and content are fictional.",
+  "records": [
+    { "kind": "note", "text": "Draft outline for the onboarding guide: setup, first task, where to ask questions.", "type": "note", "bucket": "projects", "tags": ["onboarding"] },
+    { "kind": "note", "text": "Benchmark run on the sample corpus: retrieval took longer when the index was cold. Re-run after warm-up.", "type": "note", "bucket": "projects-research", "title": "Cold-index retrieval note", "summary": "First query after restart is slow; measure again warm.", "tags": ["benchmark"] },
+    { "kind": "decision", "title": "Store captures as plain text first", "summary": "Structured fields come later, once real usage shows which ones matter.", "context": "Alternatives: a fixed schema up front, or free-form JSON. Plain text keeps capture fast.", "bucket": "decisions" },
+    { "kind": "decision", "title": "Reject on deny-list match instead of masking", "summary": "One outcome for every write path keeps the behavior predictable and testable.", "bucket": "decisions" },
+    { "kind": "capture", "text": "Idea: weekly digest of new records grouped by bucket.", "suggested_bucket": "ideas", "tags": ["digest"] },
+    { "kind": "capture", "text": "Read: an article on evaluation sets for retrieval systems. Takeaway: hold out a fixed query set.", "suggested_bucket": "reading", "link_url": "https://example.org/articles/retrieval-evaluation" },
+    { "kind": "note", "text": "Runbook: if the store file fails to load, check that it still passes the current deny-list.", "type": "rule", "bucket": "operations", "tags": ["runbook"] }
+  ],
+  "files": [
+    { "path": "/memories/preferences/writing-style.md", "content": "# Writing style\n- Short sentences.\n- Lead with the answer.\n- Plain words over jargon.\n" },
+    { "path": "/memories/projects/demo-project.md", "content": "# Demo project\nStatus: planning\nNext step: pick three sample queries for the evaluation set.\n" }
+  ]
+}

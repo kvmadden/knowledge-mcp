@@ -1,0 +1,44 @@
+{
+  "name": "knowledge-mcp",
+  "version": "1.0.0",
+  "description": "MCP server that gives AI agents read and write access to a shared knowledge store, with every write screened by one fail-closed deny-list gate. Includes a browser write client that uses the same gate.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/server.js",
+    "./web": "./web/client.js",
+    "./screening": "./src/screening/screen.js"
+  },
+  "bin": {
+    "knowledge-mcp": "src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "check": "node src/index.js --check",
+    "demo": "node scripts/demo.mjs",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "zod": "^4.4.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "knowledge-store",
+    "deny-list"
+  ],
+  "files": [
+    "src/",
+    "web/",
+    "config/",
+    "data/",
+    "README.md",
+    "LICENSE"
+  ]
+}

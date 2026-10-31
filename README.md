@@ -108,6 +108,10 @@ const { data, error, blocked } = await kb.captureToInbox({ text: "Queue felt slo
 if (blocked) console.warn("refused:", blocked.violations); // [{ field, patternId }]
 ```
 
+## Development history
+
+Built May to October 2026 over 71 commits in a private repository. The full history includes personal notes and private configuration, so this repository is a cleaned public snapshot. The single screening gate, the registry test and the bypass fix described above were added for this release in October 2026.
+
 ## License
 
 MIT, Copyright (c) 2026 Kevin Madden. See `LICENSE`. All data in this repo is fictional or synthetic.

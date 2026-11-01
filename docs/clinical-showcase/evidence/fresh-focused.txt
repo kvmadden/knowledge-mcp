@@ -1,0 +1,19 @@
+✔ clinical case keeps identifiers and fax instructions out of shared memory (5.361958ms)
+✔ console gives a reviewer an accountable action and visible product boundaries (0.274167ms)
+✔ script runs real screening and approval commits only once (5.358875ms)
+✔ HTTP console isolates local actions and reports stale approval errors (49.099042ms)
+✔ red-team cases can be replayed after the scripted session completes (1.41725ms)
+✔ development attacks are refused across record and memory writes (5.842875ms)
+✔ explicitly untrusted document content is refused rather than promoted to a fact (0.875542ms)
+✔ provenance survives MCP creation, reading, pinning and disk reload (15.17025ms)
+✔ dry-run screens all tools and never changes records or files (2.896375ms)
+✔ invalid write mode cannot silently enable writes (0.260458ms)
+✔ dry-run startup skips seed writes and leaves reads available (1.397167ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 215.663167

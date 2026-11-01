@@ -1,0 +1,65 @@
+✖ clinical case keeps identifiers and fax instructions out of shared memory (5.065375ms)
+✖ console gives a reviewer an accountable action and visible product boundaries (0.910917ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 227.089166
+
+✖ failing tests:
+
+test at test/clinical-showcase.test.js:6:1
+✖ clinical case keeps identifiers and fax instructions out of shared memory (5.065375ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /care.coordination/i. Input:
+  
+  'The fictional Atlas team ships a reviewed draft every Friday.'
+  
+      at TestContext.<anonymous> (file:///private/tmp/knowledge-clinical-control/test/clinical-showcase.test.js:10:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'The fictional Atlas team ships a reviewed draft every Friday.',
+    expected: /care.coordination/i,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at test/clinical-showcase.test.js:31:1
+✖ console gives a reviewer an accountable action and visible product boundaries (0.910917ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /care coordinator/i. Input:
+  
+  '<!doctype html>\n' +
+    '<html lang="en">\n' +
+    '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Write gate console · knowledge-mcp</title><link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script></head>\n' +
+    '<body>\n' +
+    '<header><a class="brand" href="/" aria-label="Knowledge MCP home"><span class="mark">k<span>↗</span></span>knowledge<span class="muted">/ mcp</span></a><div class="header-right"><span class="local"><i></i> Local session</span><button id="theme" aria-label="Switch color theme">◐ <span>Theme</span></button></div></header>\n' +
+    '<main>\n' +
+    '<div class="eyebrow">OBSERVABILITY / WRITE PROTECTION</div>\n' +
+    '<section class="intro"><div><h1>Trust, before memory.</h1><p>See what your assistant tries to remember.<br>Every write meets the same gate.</p></div><div class="session-label"><span class="pulse"></span><div><b>ATLAS / SCRIPTED SESSION</b><small>Synthetic inputs · Real gate code</small></div></div></section>\n' +
+    '<section class="stats" aria-label="Session totals"><div><span>ATTEMPTED WRITES</span><strong id="attempted">00</strong></div><div><span><i class="dot allowed"></i> ALLOWED</span><strong id="allowed">00</strong></div><div><span><i class="dot blocked"></i> BLOCKED</span><strong id="blocked">00</strong></div><div><span><i class="dot held"></i> AWAITING REVIEW</span><strong id="held">00</strong></div></section>\n' +
+    '<div class="workspace"><section class="panel feed-panel"><div class="panel-head"><div><span class="eyebrow">01 / LIVE REPLAY</span><h2>Attempted writes</h2></div><span id="progress" class="chip">0 / 6</span></div><div class="toolbar"><button class="primary" id="replay">▶ Run session</button><button id="next">Next write ↗</button><button id="reset" class="reset">Reset</button></div><div id="error" role="alert" hidden></div><div id="loading" role="status" hidden>Running the gate…</div><div id="feed" aria-live="polite"></div></section>\n' +
+    '<aside><section class="panel approval"><div class="panel-head"><div><span class="eyebrow">02 / HUMAN CHECKPOINT</span><h2>Approval queue</h2></div><span class="queue-icon">⌁</span></div><p class="explain">Held writes passed screening in dry-run mode. Approval resubmits through the gate.</p><div id="queue" aria-live="polite"></div></section><section class="engine-note"><span class="eyebrow">ONE GATE. EVERY WRITE.</span><p>Content screening, instruction checks and source trust run in the actual knowledge-mcp library.</p><div><i></i> In memory · No model · No network</div></section></aside></div>\n' +
+    '<section class="panel lower"><div class="tabs" role="tablist" aria-label="Evidence view"><button id="audit-tab" role="tab" aria-selected="true" aria-controls="audit">Audit log</button><button id="red-tab" role="tab" aria-selected="false" aria-controls="red">Red-team lab</button><span>TRACEABLE BY DESIGN</span></div><div id="audit" role="tabpanel" aria-labelledby="audit-tab"></div><div id="red" role="tabpanel" aria-labelledby="red-tab" hidden></div></section>\n' +
+    '<footer><span>knowledge-mcp <b>/</b> write gate console</span><span>Fictional Atlas project · Session resets on server restart</span></footer>\n' +
+    '</main></body></html>\n'
+  
+      at TestContext.<anonymous> (file:///private/tmp/knowledge-clinical-control/test/clinical-showcase.test.js:34:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<!doctype html>\n<html lang="en">\n<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Write gate console · knowledge-mcp</title><link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script></head>\n<body>\n<header><a class="brand" href="/" aria-label="Knowledge MCP home"><span class="mark">k<span>↗</span></span>knowledge<span class="muted">/ mcp</span></a><div class="header-right"><span class="local"><i></i> Local session</span><button id="theme" aria-label="Switch color theme">◐ <span>Theme</span></button></div></header>\n<main>\n<div class="eyebrow">OBSERVABILITY / WRITE PROTECTION</div>\n<section class="intro"><div><h1>Trust, before memory.</h1><p>See what your assistant tries to remember.<br>Every write meets the same gate.</p></div><div class="session-label"><span class="pulse"></span><div><b>ATLAS / SCRIPTED SESSION</b><small>Synthetic inputs · Real gate code</small></div></div></section>\n<section class="stats" aria-label="Session totals"><div><span>ATTEMPTED WRITES</span><strong id="attempted">00</strong></div><div><span><i class="dot allowed"></i> ALLOWED</span><strong id="allowed">00</strong></div><div><span><i class="dot blocked"></i> BLOCKED</span><strong id="blocked">00</strong></div><div><span><i class="dot held"></i> AWAITING REVIEW</span><strong id="held">00</strong></div></section>\n<div class="workspace"><section class="panel feed-panel"><div class="panel-head"><div><span class="eyebrow">01 / LIVE REPLAY</span><h2>Attempted writes</h2></div><span id="progress" class="chip">0 / 6</span></div><div class="toolbar"><button class="primary" id="replay">▶ Run session</button><button id="next">Next write ↗</button><button id="reset" class="reset">Reset</button></div><div id="error" role="alert" hidden></div><div id="loading" role="status" hidden>Running the gate…</div><div id="feed" aria-live="polite"></div></section>\n<aside><section class="panel approval"><div class="panel-head"><div><span class="eyebrow">02 / HUMAN CHECKPOINT</span><h2>Approval queue</h2></div><span class="queue-icon">⌁</span></div><p class="explain">Held writes passed screening in dry-run mode. Approval resubmits through the gate.</p><div id="queue" aria-live="polite"></div></section><section class="engine-note"><span class="eyebrow">ONE GATE. EVERY WRITE.</span><p>Content screening, instruction checks and source trust run in the actual knowledge-mcp library.</p><div><i></i> In memory · No model · No network</div></section></aside></div>\n<section class="panel lower"><div class="tabs" role="tablist" aria-label="Evidence view"><button id="audit-tab" role="tab" aria-selected="true" aria-controls="audit">Audit log</button><button id="red-tab" role="tab" aria-selected="false" aria-controls="red">Red-team lab</button><span>TRACEABLE BY DESIGN</span></div><div id="audit" role="tabpanel" aria-labelledby="audit-tab"></div><div id="red" role="tabpanel" aria-labelledby="red-tab" hidden></div></section>\n<footer><span>knowledge-mcp <b>/</b> write gate console</span><span>Fictional Atlas project · Session resets on server restart</span></footer>\n</main></body></html>\n',
+    expected: /care coordinator/i,
+    operator: 'match',
+    diff: 'simple'
+  }

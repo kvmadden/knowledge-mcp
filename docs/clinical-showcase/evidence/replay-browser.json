@@ -1,0 +1,41 @@
+[
+  {
+    "width": 1440,
+    "height": 900,
+    "focused": true,
+    "target": {
+      "x": 1140.53125,
+      "y": 304,
+      "width": 151.46875,
+      "height": 48
+    },
+    "checkedSteps": 4,
+    "horizontalOverflow": false
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "focused": true,
+    "target": {
+      "x": 18,
+      "y": 358.15625,
+      "width": 151.46875,
+      "height": 48
+    },
+    "checkedSteps": 4,
+    "horizontalOverflow": false
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "focused": true,
+    "target": {
+      "x": 18,
+      "y": 358.15625,
+      "width": 151.46875,
+      "height": 48
+    },
+    "checkedSteps": 4,
+    "horizontalOverflow": false
+  }
+]

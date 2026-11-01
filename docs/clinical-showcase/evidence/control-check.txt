@@ -1,0 +1,102 @@
+
+> knowledge-mcp@1.0.0 check
+> node src/index.js --check
+
+{
+  "server": {
+    "name": "knowledge-mcp",
+    "version": "1.0.0"
+  },
+  "store": "in-memory",
+  "seeded": true,
+  "denyListPatterns": [
+    "email-address",
+    "us-phone-number",
+    "us-ssn-format",
+    "date-of-birth-label",
+    "record-number-label",
+    "payment-card-number"
+  ],
+  "policyChecks": [
+    "instruction-override",
+    "role-spoof",
+    "memory-export",
+    "untrusted-source"
+  ],
+  "writeMode": "commit",
+  "records": 7,
+  "memoryFiles": 2,
+  "tools": [
+    {
+      "name": "records.list",
+      "access": "read"
+    },
+    {
+      "name": "records.get",
+      "access": "read"
+    },
+    {
+      "name": "records.create",
+      "access": "write"
+    },
+    {
+      "name": "records.pin",
+      "access": "write"
+    },
+    {
+      "name": "decisions.log",
+      "access": "write"
+    },
+    {
+      "name": "inbox.recent",
+      "access": "read"
+    },
+    {
+      "name": "inbox.search",
+      "access": "read"
+    },
+    {
+      "name": "inbox.capture",
+      "access": "write"
+    },
+    {
+      "name": "inbox.capture_quick",
+      "access": "write"
+    },
+    {
+      "name": "inbox.buckets",
+      "access": "read"
+    },
+    {
+      "name": "inbox.route_suggest",
+      "access": "read"
+    },
+    {
+      "name": "memory.view",
+      "access": "read"
+    },
+    {
+      "name": "memory.create",
+      "access": "write"
+    },
+    {
+      "name": "memory.str_replace",
+      "access": "write"
+    },
+    {
+      "name": "memory.insert",
+      "access": "write"
+    },
+    {
+      "name": "memory.delete",
+      "access": "write"
+    },
+    {
+      "name": "memory.rename",
+      "access": "write"
+    }
+  ],
+  "resources": [
+    "knowledge://records/recent-decisions"
+  ]
+}

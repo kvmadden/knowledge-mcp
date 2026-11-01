@@ -19,7 +19,7 @@ This project puts one gate between the agent and the store. It makes the write d
 
 ![Recorded synthetic MCP write flow with gate decision and audit entry](docs/media/safety-demo.gif)
 
-The [recorded replay](docs/media/safety-demo.html), [static screenshot](docs/media/safety-demo.png) and [raw transcript](docs/media/safety-demo.json) use real in-process MCP client calls with fictional inputs. The [demo script](scripts/safety-demo.mjs) shows private content blocked, a document instruction blocked, a safe request deferred and a reviewed request resubmitted. The four attempts use independent runtimes. No model, network call or paid API is required.
+The [recorded replay](docs/media/safety-demo.html), [static screenshot](docs/media/safety-demo.png) and [raw transcript](docs/media/safety-demo.json) use real in-process MCP client calls with fictional inputs. The [demo script](scripts/safety-demo.mjs) shows a synthetic care-coordination note saved, phone and MRN blocked, a refill-outreach draft held for pharmacist review and a fax instruction blocked. The four attempts use independent runtimes. No model, network call or paid API is required.
 
 ## How it was tested
 
@@ -81,9 +81,9 @@ Example additive provenance input for `records.create`, `decisions.log` or `inbo
 
 ```json
 {
-  "text": "Fictional team reviews every draft.",
+  "text": "Synthetic care-coordination note: verify outreach readiness before contacting a member.",
   "provenance": {
-    "source": "synthetic-handbook-v2",
+    "source": "synthetic-coordination-note",
     "observedAt": "2026-10-30",
     "trust": "asserted"
   }
@@ -157,7 +157,7 @@ Run the local console with Node 20 or newer:
 npm ci && npm run console
 ```
 
-Open **http://127.0.0.1:4317**. Run the scripted Atlas session or advance one write at a time. All content is synthetic. The console calls the actual record library and guarded store with the bundled deny list. Outcomes and rule IDs come from gate audit receipts.
+Open **http://127.0.0.1:4317**. Run the scripted care-team session or advance one write at a time. A care coordinator checks proposed shared memory before outreach. A pharmacist can approve or reject protocol drafts. All content is synthetic. The console calls the actual record library and guarded store with the bundled deny list. Outcomes and rule IDs come from gate audit receipts. Source and date appear beside each attempt and in the review card. This is an administrative prototype with synthetic text, no patient data, document ingestion or clinical decisions. Reviewer credentials are not authenticated. See the [15-point showcase assessment](docs/clinical-showcase/ASSESSMENT.md) for evidence and unresolved product limits.
 
 - **Attempted writes** shows the tool, input, outcome and rule.
 - **Approval queue** holds screening-passed writes in dry-run mode. Approve resubmits through the real commit gate. Reject leaves the record unwritten.

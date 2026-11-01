@@ -22,7 +22,7 @@ try {
       await page.screenshot({ path: path.join(evidence, `${width}-step-${i}.png`), fullPage: true })
       await page.keyboard.press('Enter')
     }
-    if (!(await page.locator('#label').textContent()).includes('Private')) throw new Error('Keyboard replay did not cycle')
+    if (!(await page.locator('#label').textContent()).includes('care-coordination')) throw new Error('Keyboard replay did not cycle')
     checks.push({ width, height, focused, target, checkedSteps: 4, horizontalOverflow: false })
     await page.close()
   }

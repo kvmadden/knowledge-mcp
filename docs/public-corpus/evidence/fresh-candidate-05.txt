@@ -1,0 +1,12 @@
+✔ public manifest contains only allowed sources and matching committed sha256 (2.560333ms)
+✔ each public answer citation resolves to an exact committed passage (313.104708ms)
+✔ public eval runs offline on committed files with separate retrieval and citation metrics (628.3005ms)
+✔ public retrieval is available over MCP and HTTP without mutating the store (158.156875ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1178.588584

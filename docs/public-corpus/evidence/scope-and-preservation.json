@@ -1,0 +1,65 @@
+[
+  {
+    "command": [
+      "git",
+      "ls-tree",
+      "-r",
+      "--name-only",
+      "origin/main"
+    ],
+    "exit": 0,
+    "output": ".env.example\n.gitignore\nLICENSE\nREADME.md\nconfig/deny-list.example.json\ndata/seed.json\ndocs/console/VERIFICATION.md\ndocs/console/evidence/browser.json\ndocs/console/evidence/check-candidate.txt\ndocs/console/evidence/commands.json\ndocs/console/evidence/control-check.txt\ndocs/console/evidence/control-full.txt\ndocs/console/evidence/focused-control.txt\ndocs/console/evidence/fresh-candidate-check.txt\ndocs/console/evidence/fresh-candidate-focused.txt\ndocs/console/evidence/fresh-candidate-full.txt\ndocs/console/evidence/fresh-candidate-heldout.txt\ndocs/console/evidence/fresh-candidate-install.txt\ndocs/console/evidence/full-candidate.txt\ndocs/console/evidence/green.txt\ndocs/console/evidence/main-search.txt\ndocs/console/evidence/main-tree.txt\ndocs/console/evidence/red-replay.txt\ndocs/console/evidence/red.txt\ndocs/evaluation/README.md\ndocs/evaluation/VERIFICATION.md\ndocs/evaluation/evidence/control-focused.txt\ndocs/evaluation/evidence/focused-green.txt\ndocs/evaluation/evidence/fresh-candidate.txt\ndocs/evaluation/evidence/full-candidate.txt\ndocs/evaluation/evidence/full-control.txt\ndocs/evaluation/evidence/red-first.txt\ndocs/evaluation/evidence/visual-checks.json\ndocs/evaluation/heldout-after.json\ndocs/evaluation/heldout-before.json\ndocs/evaluation/legacy-after.json\ndocs/evaluation/legacy-before.json\ndocs/media/README.md\ndocs/media/safety-demo.gif\ndocs/media/safety-demo.html\ndocs/media/safety-demo.json\ndocs/media/safety-demo.png\ndocs/media/theme.json\ndocs/media/write-gate-dark-1440x900.png\ndocs/media/write-gate-dark-390x844.png\ndocs/media/write-gate-dark-430x932.png\ndocs/media/write-gate-flow.gif\ndocs/media/write-gate-light-1440x900.png\ndocs/media/write-gate-light-390x844.png\ndocs/media/write-gate-light-430x932.png\neval/generate-heldout.mjs\neval/heldout.json\neval/heldout.sha256\neval/legacy.mjs\neval/run.mjs\npackage-lock.json\npackage.json\nscripts/console-gif.py\nscripts/demo-gif.py\nscripts/demo.mjs\nscripts/record-console.mjs\nscripts/record-safety-demo.mjs\nscripts/render-safety-demo.mjs\nscripts/safety-demo.mjs\nsrc/index.js\nsrc/lib/buckets.js\nsrc/lib/memory-files.js\nsrc/lib/memory-path.js\nsrc/lib/provenance.js\nsrc/lib/records.js\nsrc/lib/route-suggest.js\nsrc/lib/search.js\nsrc/resources/recent-decisions.js\nsrc/screening/load-deny-list.js\nsrc/screening/screen.js\nsrc/server.js\nsrc/store/guarded-store.js\nsrc/store/memory-store.js\nsrc/tools/decisions.log.js\nsrc/tools/inbox.buckets.js\nsrc/tools/inbox.capture.js\nsrc/tools/inbox.capture_quick.js\nsrc/tools/inbox.recent.js\nsrc/tools/inbox.route_suggest.js\nsrc/tools/inbox.search.js\nsrc/tools/memory.create.js\nsrc/tools/memory.delete.js\nsrc/tools/memory.insert.js\nsrc/tools/memory.rename.js\nsrc/tools/memory.str_replace.js\nsrc/tools/memory.view.js\nsrc/tools/records.create.js\nsrc/tools/records.get.js\nsrc/tools/records.list.js\nsrc/tools/records.pin.js\ntest/_helpers.js\ntest/boundaries.test.js\ntest/console.test.js\ntest/guarded-store.test.js\ntest/memory-files.test.js\ntest/records.test.js\ntest/safety-flow.test.js\ntest/screening.test.js\ntest/startup.test.js\ntest/stdio.test.js\ntest/web-client.test.js\ntest/write-paths.test.js\nweb/client.js\nweb/console/app.js\nweb/console/index.html\nweb/console/server.js\nweb/console/session.js\nweb/console/style.css\n"
+  },
+  {
+    "command": [
+      "git",
+      "grep",
+      "-n",
+      "-i",
+      "-E",
+      "public.corpus|dailymed|openfda|immunization|coverage determination",
+      "origin/main"
+    ],
+    "exit": 1,
+    "output": ""
+  },
+  {
+    "command": [
+      "gh",
+      "pr",
+      "list",
+      "--state",
+      "open",
+      "--json",
+      "number,title,headRefName,url"
+    ],
+    "exit": 0,
+    "output": "[{\"headRefName\":\"grok/knowledge-mcp-clinical-scenario\",\"number\":3,\"title\":\"Show clinical coordination and pharmacist review in write-gate demos\",\"url\":\"https://github.com/kvmadden/knowledge-mcp/pull/3\"}]\n"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "origin/main",
+      "--exit-code",
+      "--",
+      "data/seed.json",
+      "eval/heldout.json",
+      "eval/heldout.sha256",
+      "eval/legacy.mjs",
+      "eval/run.mjs",
+      "docs/evaluation"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0,
+    "output": ""
+  }
+]

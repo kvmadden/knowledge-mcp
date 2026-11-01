@@ -29,3 +29,5 @@ These assets capture `npm run console`, using real gate receipts and synthetic c
 The console imports the light palette documented in `theme.json`, with system fonts and a corresponding dark palette. To reproduce browser checks and captures, install Playwright in your development environment and run `node scripts/record-console.mjs` while the console server is running. `PLAYWRIGHT_MODULE` can point to an existing Playwright ES module. The recorder does not ship as an application dependency.
 
 After recording, `python3 scripts/console-gif.py` assembles the flow GIF from the five generated frame PNGs. This optional step requires Pillow. Individual frame PNGs are scratch capture output and need not be committed.
+
+Public corpus screenshots use the existing console palette in `theme.json`. Run the console and then `PLAYWRIGHT_MODULE=<installed Playwright ES module> node scripts/record-public-corpus.mjs` to reproduce light and dark captures at 1440x900, 430x932 and 390x844. The recorder verifies keyboard submission, 44-point controls, collection switching, no horizontal overflow, empty results and recovery from a failed search.

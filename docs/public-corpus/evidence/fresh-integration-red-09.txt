@@ -1,0 +1,5 @@
+
+> knowledge-mcp@1.0.0 eval:heldout
+> node eval/run.mjs
+
+{"runtime":"candidate","seed":20261031,"total":60,"blocked":35,"allowed":25,"falseBlocks":5,"misses":10}

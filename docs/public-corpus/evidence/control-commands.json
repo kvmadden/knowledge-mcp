@@ -1,0 +1,87 @@
+[
+  {
+    "command": [
+      "git",
+      "clone",
+      "--quiet",
+      "--no-local",
+      "/Users/kevin/dev/repos/knowledge-mcp",
+      "/private/tmp/knowledge-corpus-control-phy_2zl8"
+    ],
+    "exit": 0,
+    "log": "control-00.txt"
+  },
+  {
+    "command": [
+      "git",
+      "checkout",
+      "--quiet",
+      "9c19d0ba1d86eedffe090b9086389400e4405dbf"
+    ],
+    "exit": 0,
+    "log": "control-01.txt"
+  },
+  {
+    "command": [
+      "node",
+      "--version"
+    ],
+    "exit": 0,
+    "log": "control-02.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "ci"
+    ],
+    "exit": 0,
+    "log": "control-03.txt"
+  },
+  {
+    "command": [
+      "node",
+      "--test",
+      "test/console.test.js",
+      "test/startup.test.js",
+      "test/stdio.test.js",
+      "test/write-paths.test.js"
+    ],
+    "exit": 0,
+    "log": "control-04.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "exit": 0,
+    "log": "control-05.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "check"
+    ],
+    "exit": 0,
+    "log": "control-06.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "eval:legacy"
+    ],
+    "exit": 0,
+    "log": "control-07.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "eval:heldout"
+    ],
+    "exit": 0,
+    "log": "control-08.txt"
+  }
+]

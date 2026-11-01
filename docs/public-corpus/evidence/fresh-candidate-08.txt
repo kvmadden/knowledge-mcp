@@ -1,0 +1,5 @@
+
+> knowledge-mcp@1.0.0 eval:legacy
+> node eval/legacy.mjs
+
+{"runtime":"candidate","cases":324,"rejected":312,"noOp":12,"allowed":0,"screenBlocked":192,"benignAllowed":10,"falseBlocks":0,"failures":[]}

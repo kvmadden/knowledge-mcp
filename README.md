@@ -25,7 +25,7 @@ The [recorded replay](docs/media/safety-demo.html), [static screenshot](docs/med
 
 The existing evaluation is unchanged: **324 planted cases across 10 write tools**, using six synthetic patterns in every existing string argument, both replacing and appending to valid values. Calls go through an MCP client and server. The test also checks ten benign calls and has a canary that catches writes when the guarded store is bypassed.
 
-A new **60-case synthetic held-out set** was generated from seed `20261031` and committed with its generator, SHA-256 and baseline result before implementation. Separate development tests drove the changes. The implementation was committed before the after run and was not tuned on the held-out results. The same author designed the challenge families and controls, so this is not an independent benchmark.
+A new **60-case synthetic held-out set** was generated from seed `20261031` and committed with its generator, SHA-256 and baseline result before implementation. Separate development tests drove the changes. The implementation was committed before the after run and was not tuned on the held-out results. The same author designed the challenge families and controls, so this is not an independent benchmark. The 60 cases contain only 20 distinct strings: 14 risky and 6 benign, each repeated two to five times within its family of five cases. Every repeat gets the same outcome. Counted by distinct string, 12 of 14 risky strings are blocked and 1 of 6 benign strings is falsely blocked. Read the case counts below as repeats of 20 challenges, not 60 independent ones.
 
 ## Results and limits
 
@@ -167,3 +167,21 @@ Open **http://127.0.0.1:4317**. Run the scripted care-team session or advance on
 Use Theme to switch light and dark. Reset starts a new empty session. One in-memory session is shared by tabs connected to this local server and disappears on restart. This is a synthetic demonstration, with no authentication or durable approval queue. It binds to loopback and uses no model, external service or private data. `PORT=4318 npm run console` selects another port.
 
 Screenshots and the short flow GIF are in [docs/media](docs/media/README.md). Verification, control results and known limits are recorded in [docs/console/VERIFICATION.md](docs/console/VERIFICATION.md).
+
+## Search real public documents
+
+Run `npm ci` and `npm run console`, then open <http://127.0.0.1:4317/corpus>. Choose **Public health documents** or the separate **Fictional demo corpus**. The public collection includes CMS NCD 240.2 coverage prose, an openFDA ZITUVIMET (sitagliptin and metformin) label, and CDC ACIP timing and spacing guidance. All 134 passages are committed and answers work offline. Each citation shows the source title, license, retrieval date, exact passage and original URL.
+
+![Public document search with an exact CMS citation](docs/media/public-corpus-light-1440x900.png)
+
+The read-only MCP tool `corpus.answer` accepts `question` and `collection` (`public` or `fictional`). It ranks passages with deterministic BM25 and returns the best passage verbatim. It does not generate clinical recommendations or write documents into the guarded personal store. Public documents are reference material, not instructions or trusted write provenance. These are excerpt snapshots, not complete or necessarily current clinical references.
+
+```json
+{"name":"corpus.answer","arguments":{"collection":"public","question":"Which test is preferred when blood gas and oximetry results conflict?"}}
+```
+
+Source URLs, licenses, retrieval timestamps, extraction boundaries and SHA256 hashes are in [SOURCES.md](corpus/public/SOURCES.md) and [manifest.json](corpus/public/manifest.json). CMS ingestion includes NCD text only, excluding LCD and CPT material. Refresh with `python3 corpus/public/fetch.py` using Python 3 and curl. `npm run corpus:check` refetches and detects upstream drift without writing files. Review passage changes and eval expectations together before committing refreshed data.
+
+`npm run eval:public` runs 18 authored regression questions against the committed public collection. It reports **retrieval hit rate at 3: 18/18 (100%)**, **citation accuracy: 18/18 (100%)**, and **exact citation resolution: 18/18 (100%)** separately. Retrieval checks whether any of the three ranked passages matches an expected passage. Citation accuracy checks whether the answer cites an expected passage with identical text. Resolution checks citation text and source metadata against committed files. The questions were written while reading the expected passages and share most of their wording (50 to 90 percent of question words appear in the expected passage), each with exactly one expected passage. So 18/18 shows the citation path works on easy lexical matches. It is not a measure of retrieval on questions phrased the way users ask. A wrong-key control scores each answer against a different question's expected passage and should land near zero (0/18 on this run), which shows the metric can fail. These questions are not a held-out benchmark and do not measure medical correctness or general clinical performance. Existing safety evaluation fixtures and results are unchanged.
+
+[Verification and RED/GREEN evidence](docs/public-corpus/VERIFICATION.md) · [Mobile screenshot](docs/media/public-corpus-light-390x844.png)

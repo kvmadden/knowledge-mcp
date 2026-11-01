@@ -23,6 +23,7 @@ const seedRecord = (ctx) => ctx.records.create({ text: "a record to pin", bucket
 // Valid arguments for every registered tool. `setup` runs through the guarded
 // context before the call so the baseline call has something to act on.
 const FIXTURES = {
+  "corpus.answer": { args: { question: "oxygen", collection: "public" } },
   "records.list": { args: { type: "note", bucket: "projects", buckets: ["projects"], since: "2000-01-01T00:00:00.000Z", titledOnly: false, limit: 5 } },
   "records.get": { setup: seedRecord, args: { id: "rec_0001" } },
   "records.create": {

@@ -25,7 +25,9 @@
     "eval:legacy": "node eval/legacy.mjs",
     "eval:heldout": "node eval/run.mjs",
     "test": "node --test test/*.test.js",
-    "console": "node web/console/server.js"
+    "console": "node web/console/server.js",
+    "eval:public": "node eval/public.mjs",
+    "corpus:check": "python3 corpus/public/fetch.py --check"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.32.2",
@@ -43,6 +45,7 @@
     "config/",
     "data/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "corpus/public/"
   ]
 }

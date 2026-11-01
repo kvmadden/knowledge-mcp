@@ -1,0 +1,213 @@
+
+> knowledge-mcp@1.0.0 test
+> node --test test/*.test.js
+
+✔ only src/server.js and src/store/ import the raw memory store (14.517625ms)
+✔ tools import nothing that can write to a store (1.343292ms)
+✔ no source file references service-role or secret keys (2.54475ms)
+✔ lib modules never construct their own store (0.579667ms)
+✔ script runs real screening and approval commits only once (17.569708ms)
+✔ HTTP console isolates local actions and reports stale approval errors (105.297083ms)
+✔ red-team cases can be replayed after the scripted session completes (2.460917ms)
+✔ every raw store method is classified exactly once (0.89075ms)
+✔ an unclassified method stops the guarded store from being built (0.405042ms)
+✔ a method classified as both read and write is refused (0.088208ms)
+✔ no gate, no store (0.075375ms)
+✔ the guarded store is frozen and exposes only classified methods (0.1345ms)
+✔ WRITE_CALLS covers every write method (0.069166ms)
+✔ insertRecord: a deny-listed argument throws ScreeningError and writes nothing (14.838834ms)
+✔ updateRecordMeta: a deny-listed argument throws ScreeningError and writes nothing (0.961375ms)
+✔ putFile: a deny-listed argument throws ScreeningError and writes nothing (0.676125ms)
+✔ deleteFiles: a deny-listed argument throws ScreeningError and writes nothing (0.58275ms)
+✔ moveFiles: a deny-listed argument throws ScreeningError and writes nothing (4.206625ms)
+✔ appendAudit: a deny-listed argument throws ScreeningError and writes nothing (1.085458ms)
+✔ benign writes go through (0.143042ms)
+✔ path validation accepts canonical paths (1.217916ms)
+✔ path validation rejects traversal, control characters and non-canonical forms (0.547917ms)
+✔ create, view, str_replace, insert (7.813292ms)
+✔ str_replace refuses missing or ambiguous old_str (0.441958ms)
+✔ str_replace treats $ in new_str literally (0.336917ms)
+✔ insert rejects out-of-range lines (0.452792ms)
+✔ directory listing, delete and rename (1.549666ms)
+✔ a deny-listed edit leaves the file exactly as it was (0.466708ms)
+✔ blocked writes leave a value-free audit entry (0.312917ms)
+✔ public manifest contains only allowed sources and matching committed sha256 (10.127709ms)
+✔ each public answer citation resolves to an exact committed passage (617.104083ms)
+✔ public eval runs offline on committed files with separate retrieval and citation metrics (642.206709ms)
+✔ create, get, list and pin (10.540167ms)
+✔ unknown bucket ids are rejected (0.530125ms)
+✔ decisions and captures (0.560833ms)
+✔ search syntax: words, phrases, exclusions (0.233042ms)
+✔ search runs over seeded synthetic data through the MCP client (39.006208ms)
+✔ route suggestion is labeled as a heuristic and capped (0.346542ms)
+✔ development attacks are refused across record and memory writes (21.654959ms)
+✔ explicitly untrusted document content is refused rather than promoted to a fact (0.984375ms)
+✔ provenance survives MCP creation, reading, pinning and disk reload (24.457209ms)
+✔ dry-run screens all tools and never changes records or files (2.272541ms)
+✔ invalid write mode cannot silently enable writes (0.191125ms)
+✔ dry-run startup skips seed writes and leaves reads available (1.376166ms)
+✔ the example list compiles and covers every sample pattern (1.136125ms)
+✔ pattern email-address matches its synthetic sample, alone and inside prose (1.306667ms)
+✔ pattern us-phone-number matches its synthetic sample, alone and inside prose (0.090333ms)
+✔ pattern us-ssn-format matches its synthetic sample, alone and inside prose (0.090375ms)
+✔ pattern date-of-birth-label matches its synthetic sample, alone and inside prose (0.2545ms)
+✔ pattern record-number-label matches its synthetic sample, alone and inside prose (0.477333ms)
+✔ pattern payment-card-number matches its synthetic sample, alone and inside prose (0.073ms)
+✔ benign text passes (0.151792ms)
+✔ verdicts carry field paths and pattern ids, never the matched text (0.179375ms)
+✔ object keys are screened, not just values (0.189959ms)
+✔ numbers are screened as text (0.085375ms)
+✔ invisible characters and full-width digits do not slip past (1.318875ms)
+✔ fails closed on values it cannot read (0.246666ms)
+✔ fails closed on oversized or over-deep input (26.058292ms)
+✔ the same array may appear twice without being called circular (1.015667ms)
+✔ a deny-list that is missing, empty or invalid cannot produce a gate (0.415375ms)
+✔ a custom list replaces the example list entirely (0.315625ms)
+✔ the gate object is frozen (0.095167ms)
+✖ --check with defaults reports the in-memory store, seed and example list (185.2795ms)
+✔ missing, empty, malformed or invalid deny-list files stop startup (636.623ms)
+✔ a store file containing matching content is refused at load (144.984084ms)
+✔ a tightened deny-list refuses previously accepted data (2.296833ms)
+✔ a seed entry with matching content aborts startup (1.666583ms)
+✔ JSON-file store persists across runtimes (2.972166ms)
+✖ stdio server: list, capture, refuse, search (307.104416ms)
+✔ every write method returned by createWebClient has a fixture and is listed (1.640959ms)
+✔ web captureToInbox: valid payload inserts once (1.289666ms)
+✔ web captureToInbox: a deny-listed value in any field never reaches insert (6.721084ms)
+✔ web writeDecision: valid payload inserts once (0.235ms)
+✔ web writeDecision: a deny-listed value in any field never reaches insert (1.915792ms)
+✔ web writeAnonymousSignal: valid payload inserts once (0.195708ms)
+✔ web writeAnonymousSignal: a deny-listed value in any field never reaches insert (0.58775ms)
+✔ keyRole classifies keys without network access (0.202459ms)
+✔ refuses service-role, secret and unreadable keys (0.388291ms)
+✔ refuses to build without a usable deny-list (0.197375ms)
+✔ signed-out callers get an error and no insert (0.147375ms)
+✔ web client imports only the shared screening module (0.365458ms)
+✖ every registered tool declares access and has a fixture (2.047542ms)
+✔ the MCP server exposes exactly the registry, with readOnlyHint matching access (19.386875ms)
+✔ write tools are the expected set (0.16125ms)
+✔ write tool records.create: no deny-listed value in any argument reaches the store (175.975375ms)
+✔ write tool records.pin: no deny-listed value in any argument reaches the store (10.105625ms)
+✔ write tool decisions.log: no deny-listed value in any argument reaches the store (28.796541ms)
+✔ write tool inbox.capture: no deny-listed value in any argument reaches the store (31.628417ms)
+✔ write tool inbox.capture_quick: no deny-listed value in any argument reaches the store (5.343417ms)
+✔ write tool memory.create: no deny-listed value in any argument reaches the store (12.469834ms)
+✔ write tool memory.str_replace: no deny-listed value in any argument reaches the store (20.053375ms)
+✔ write tool memory.insert: no deny-listed value in any argument reaches the store (12.975083ms)
+✔ write tool memory.delete: no deny-listed value in any argument reaches the store (5.059833ms)
+✔ write tool memory.rename: no deny-listed value in any argument reaches the store (10.347041ms)
+✖ read tool corpus.answer: never changes the store (0.28725ms)
+✔ read tool records.list: never changes the store (27.217833ms)
+✔ read tool records.get: never changes the store (5.775917ms)
+✔ read tool inbox.recent: never changes the store (8.875125ms)
+✔ read tool inbox.search: never changes the store (26.843792ms)
+✔ read tool inbox.buckets: never changes the store (0.382ms)
+✔ read tool inbox.route_suggest: never changes the store (5.830541ms)
+✔ read tool memory.view: never changes the store (7.772833ms)
+✔ resources are read-only and do not change the store (1.378583ms)
+✔ canary: the same harness flags every write tool when tools are wired to the raw store (94.478333ms)
+ℹ tests 104
+ℹ suites 0
+ℹ pass 100
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1349.360958
+
+✖ failing tests:
+
+test at test/startup.test.js:25:1
+✖ --check with defaults reports the in-memory store, seed and example list (185.2795ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  18 !== 17
+
+      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/startup.test.js:32:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 18,
+    expected: 17,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/stdio.test.js:14:1
+✖ stdio server: list, capture, refuse, search (307.104416ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  18 !== 17
+
+      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/stdio.test.js:25:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 18,
+    expected: 17,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/write-paths.test.js:137:1
+✖ every registered tool declares access and has a fixture (2.047542ms)
+  AssertionError [ERR_ASSERTION]: FIXTURES must cover exactly the registered tools; add a fixture when you add a tool
+  + actual - expected
+
+    [
+  -   'corpus.answer',
+      'decisions.log',
+      'inbox.buckets',
+      'inbox.capture',
+      'inbox.capture_quick',
+      'inbox.recent',
+
+      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/write-paths.test.js:144:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [
+      'decisions.log', 'inbox.buckets',
+      'inbox.capture', 'inbox.capture_quick',
+      'inbox.recent',  'inbox.route_suggest',
+      'inbox.search',  'memory.create',
+      'memory.delete', 'memory.insert',
+      'memory.rename', 'memory.str_replace',
+      'memory.view',   'records.create',
+      'records.get',   'records.list',
+      'records.pin'
+    ],
+    expected: [
+      'corpus.answer',       'decisions.log',
+      'inbox.buckets',       'inbox.capture',
+      'inbox.capture_quick', 'inbox.recent',
+      'inbox.route_suggest', 'inbox.search',
+      'memory.create',       'memory.delete',
+      'memory.insert',       'memory.rename',
+      'memory.str_replace',  'memory.view',
+      'records.create',      'records.get',
+      'records.list',        'records.pin'
+    ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/write-paths.test.js:193:3
+✖ read tool corpus.answer: never changes the store (0.28725ms)
+  TypeError: Cannot read properties of undefined (reading 'setup')
+      at auditTool (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/write-paths.test.js:98:13)
+      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/write-paths.test.js:194:32)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)

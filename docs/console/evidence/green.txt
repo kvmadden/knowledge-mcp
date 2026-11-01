@@ -1,0 +1,11 @@
+✔ script runs real screening and approval commits only once (5.343708ms)
+✔ HTTP console isolates local actions and reports stale approval errors (41.632708ms)
+✔ red-team cases can be replayed after the scripted session completes (1.632834ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 205.595458

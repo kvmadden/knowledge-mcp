@@ -1,0 +1,75 @@
+{
+  "node": "v24.14.1",
+  "npm": "11.11.0",
+  "rootsUnset": true,
+  "runs": [
+    {
+      "arm": "control",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "exitCode": 0
+    },
+    {
+      "arm": "control",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0
+    },
+    {
+      "arm": "control",
+      "command": [
+        "npm",
+        "run",
+        "check"
+      ],
+      "exitCode": 0
+    },
+    {
+      "arm": "fresh-candidate",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "exitCode": 0
+    },
+    {
+      "arm": "fresh-candidate",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0
+    },
+    {
+      "arm": "fresh-candidate",
+      "command": [
+        "npm",
+        "run",
+        "check"
+      ],
+      "exitCode": 0
+    },
+    {
+      "arm": "fresh-candidate",
+      "command": [
+        "node",
+        "--test",
+        "test/console.test.js"
+      ],
+      "exitCode": 0
+    },
+    {
+      "arm": "fresh-candidate",
+      "command": [
+        "npm",
+        "run",
+        "eval:heldout"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

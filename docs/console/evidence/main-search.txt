@@ -1,0 +1,17 @@
+origin/main:src/lib/memory-files.js:64:  const audit = (op, path, details = null) => store.appendAudit({ op, path, details });
+origin/main:src/lib/memory-files.js:84:      audit("create", valid.subPath, { size: file_text.length });
+origin/main:src/lib/memory-files.js:103:      audit("str_replace", valid.subPath, { size: next.length });
+origin/main:src/lib/memory-files.js:123:      audit("insert", valid.subPath, { lines_inserted: added.length });
+origin/main:src/lib/memory-files.js:136:      audit("delete", valid.subPath, { files: targets.length });
+origin/main:src/lib/memory-files.js:162:      audit("rename", src, { new_path: dst, files: moves.length });
+origin/main:src/store/guarded-store.js:6://     violation they record a value-free audit entry and throw ScreeningError
+origin/main:src/store/guarded-store.js:53:  const auditBlocked = (op, verdict) => {
+origin/main:src/store/guarded-store.js:63:    if (gate.screen(entry).ok) rawStore.appendAudit(entry);
+origin/main:src/store/guarded-store.js:86:        auditBlocked(name, verdict);
+origin/main:src/store/memory-store.js:23:  "listAudit",
+origin/main:src/store/memory-store.js:33:  "appendAudit",
+origin/main:src/store/memory-store.js:49:  return { nextRecord: 1, records: [], files: [], audit: [] };
+origin/main:src/store/memory-store.js:101:  listAudit() {
+origin/main:src/store/memory-store.js:102:    return clone(this.#state.audit);
+origin/main:src/store/memory-store.js:196:  appendAudit(entry) {
+origin/main:src/store/memory-store.js:197:    this.#state.audit.push({ ...clone(entry), at: this.#now() });

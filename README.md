@@ -148,3 +148,22 @@ Built May to October 2026 over 71 commits in a private repository. This is a cle
 See [verification evidence](docs/evaluation/VERIFICATION.md) for RED-first failures, control and candidate commands, exit codes, visual checks and remaining limits. See [media reproduction](docs/media/README.md) for the recording process.
 
 MIT, Copyright (c) 2026 Kevin Madden. All committed data is fictional or synthetic.
+
+## Write gate console
+
+Run the local console with Node 20 or newer:
+
+```sh
+npm ci && npm run console
+```
+
+Open **http://127.0.0.1:4317**. Run the scripted Atlas session or advance one write at a time. All content is synthetic. The console calls the actual record library and guarded store with the bundled deny list. Outcomes and rule IDs come from gate audit receipts.
+
+- **Attempted writes** shows the tool, input, outcome and rule.
+- **Approval queue** holds screening-passed writes in dry-run mode. Approve resubmits through the real commit gate. Reject leaves the record unwritten.
+- **Audit log** joins gate receipts to synthetic source and observed-date assertions. Execution timestamps are real. Human rejection entries are console events.
+- **Red-team lab** independently replays injection and untrusted-document cases, including after the main session ends.
+
+Use Theme to switch light and dark. Reset starts a new empty session. One in-memory session is shared by tabs connected to this local server and disappears on restart. This is a synthetic demonstration, with no authentication or durable approval queue. It binds to loopback and uses no model, external service or private data. `PORT=4318 npm run console` selects another port.
+
+Screenshots and the short flow GIF are in [docs/media](docs/media/README.md). Verification, control results and known limits are recorded in [docs/console/VERIFICATION.md](docs/console/VERIFICATION.md).

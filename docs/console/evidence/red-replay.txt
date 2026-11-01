@@ -1,0 +1,37 @@
+✔ script runs real screening and approval commits only once (6.198166ms)
+✔ HTTP console isolates local actions and reports stale approval errors (43.009459ms)
+✖ red-team cases can be replayed after the scripted session completes (1.52775ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 204.779625
+
+✖ failing tests:
+
+test at test/console.test.js:42:1
+✖ red-team cases can be replayed after the scripted session completes (1.52775ms)
+  AssertionError [ERR_ASSERTION]: red-team replay must run independently of the completed script
+  + actual - expected
+
+  + 'undefined'
+  - 'function'
+
+      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-showcase-ui/test/console.test.js:45:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

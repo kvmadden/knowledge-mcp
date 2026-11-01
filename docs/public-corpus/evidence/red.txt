@@ -68,7 +68,7 @@ test at test/public-corpus.test.js:42:1
   node:internal/modules/cjs/loader:1459
     throw err;
     ^
-  
+
   Error: Cannot find module '/Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/eval/public.mjs'
       at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)
       at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)
@@ -80,9 +80,9 @@ test at test/public-corpus.test.js:42:1
     code: 'MODULE_NOT_FOUND',
     requireStack: []
   }
-  
+
   Node.js v24.14.1
-  
+
       at genericNodeError (node:internal/errors:985:15)
       at wrappedFn (node:internal/errors:539:14)
       at checkExecSyncError (node:child_process:925:11)

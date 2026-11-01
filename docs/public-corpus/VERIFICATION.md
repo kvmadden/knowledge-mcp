@@ -20,7 +20,7 @@ The first fresh clone passed all 105 tests but failed the two new npm commands b
 
 Both arms used Node v24.14.1, the same locked dependencies installed with `npm ci`, and the repository's synthetic fixtures. Both ran in fresh clones under `/private/tmp`, with `MFW_UMBRELLA_ROOT` and `OPERATOR_ECOSYSTEM_ROOT` unset. Temporary clones were removed by Python `TemporaryDirectory` after preserving logs. The final tested code is `6fe1924f9fd08ca1b849d62b5fdc215f42477964`. Later evidence commits change documentation only.
 
-Exact argument arrays, exit codes and log paths are recorded in [control-commands.json](evidence/control-commands.json) and [fresh-candidate-commands.json](evidence/fresh-candidate-commands.json).
+Text logs have trailing whitespace removed without changing test outcomes. Exact argument arrays, exit codes and log paths are recorded in [control-commands.json](evidence/control-commands.json) and [fresh-candidate-commands.json](evidence/fresh-candidate-commands.json).
 
 | Check | Untouched main | Fresh candidate |
 | --- | --- | --- |

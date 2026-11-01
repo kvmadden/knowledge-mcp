@@ -120,9 +120,9 @@
 test at test/startup.test.js:25:1
 ✖ --check with defaults reports the in-memory store, seed and example list (185.2795ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-  
+
   18 !== 17
-  
+
       at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/startup.test.js:32:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
@@ -139,9 +139,9 @@ test at test/startup.test.js:25:1
 test at test/stdio.test.js:14:1
 ✖ stdio server: list, capture, refuse, search (307.104416ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-  
+
   18 !== 17
-  
+
       at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/stdio.test.js:25:12)
       at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
       at async Test.run (node:internal/test_runner/test:1125:7)
@@ -158,7 +158,7 @@ test at test/write-paths.test.js:137:1
 ✖ every registered tool declares access and has a fixture (2.047542ms)
   AssertionError [ERR_ASSERTION]: FIXTURES must cover exactly the registered tools; add a fixture when you add a tool
   + actual - expected
-  
+
     [
   -   'corpus.answer',
       'decisions.log',
@@ -166,7 +166,7 @@ test at test/write-paths.test.js:137:1
       'inbox.capture',
       'inbox.capture_quick',
       'inbox.recent',
-  
+
       at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/write-paths.test.js:144:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)

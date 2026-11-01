@@ -31,6 +31,7 @@ export function toSummary(row) {
     pinned: Boolean(meta.pinned),
     tags: row.tags ?? [],
     sourceApp: row.source_app ?? null,
+    provenance: row.provenance ?? null,
     status: row.status ?? null,
     createdAt: row.created_at ?? null,
     updatedAt: row.updated_at ?? null,
@@ -65,12 +66,13 @@ export function createRecords({ store, ownerId }) {
       return store.listRecords(ownerId, { type: "decision", limit }).map(toSummary);
     },
 
-    create({ text, type = "note", bucket, title, summary, tags = [] }) {
+    create({ text, type = "note", bucket, title, summary, tags = [], provenance }) {
       if (typeof text !== "string" || !text.trim()) throw new Error("records.create: text is required");
       if (!RECORD_TYPES.includes(type)) throw new Error(`records.create: type must be one of ${RECORD_TYPES.join(", ")}`);
       const titled = typeof title === "string" && title.trim().length > 0;
       const row = store.insertRecord({
         owner_id: ownerId,
+        provenance,
         text,
         bucket: requireBucket(bucket, "records.create"),
         source_app: SERVER_SOURCE_APP,
@@ -92,12 +94,13 @@ export function createRecords({ store, ownerId }) {
       return { id: row.id, pinned: Boolean(row.meta.pinned), pinnedAt: row.meta.pinnedAt ?? null };
     },
 
-    logDecision({ title, summary, context, bucket }) {
+    logDecision({ title, summary, context, bucket, provenance }) {
       if (typeof title !== "string" || !title.trim()) throw new Error("decisions.log: title is required");
       const t = title.trim();
       const body = context ? `${t}\n\n${String(context).trim()}` : t;
       const row = store.insertRecord({
         owner_id: ownerId,
+        provenance,
         text: body,
         bucket: requireBucket(bucket, "decisions.log"),
         source_app: SERVER_SOURCE_APP,
@@ -113,11 +116,12 @@ export function createRecords({ store, ownerId }) {
       return toSummary(row);
     },
 
-    capture({ text, source_app, suggested_bucket, tags = [], link_url }) {
+    capture({ text, source_app, suggested_bucket, tags = [], link_url, provenance }) {
       if (typeof text !== "string" || !text.trim()) throw new Error("inbox.capture: text is required");
       const bucket = requireBucket(suggested_bucket, "inbox.capture");
       const row = store.insertRecord({
         owner_id: ownerId,
+        provenance,
         text,
         bucket,
         source_app: source_app || SERVER_SOURCE_APP,

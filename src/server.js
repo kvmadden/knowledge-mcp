@@ -81,6 +81,7 @@ export function buildRuntime({
   seedPath = null,
   ownerId = "local-owner",
   now,
+  writeMode = 'commit',
 } = {}) {
   const gate = denyList ? createGate(denyList) : loadGate(denyListPath);
   const raw = new MemoryStore({ persistPath: storePath, now });
@@ -94,7 +95,7 @@ export function buildRuntime({
     throw new ScreeningError(onDisk, "store load");
   }
 
-  const store = createGuardedStore(raw, gate, { reads: READ_METHODS, writes: WRITE_METHODS });
+  const store = createGuardedStore(raw, gate, { reads: READ_METHODS, writes: WRITE_METHODS, writeMode });
   const ctx = Object.freeze({
     records: createRecords({ store, ownerId }),
     memory: createMemoryFiles({ store, ownerId }),
@@ -102,7 +103,7 @@ export function buildRuntime({
     defaultBucket: DEFAULT_BUCKET,
   });
 
-  if (seedPath && loaded.records.length === 0 && loaded.files.length === 0) {
+  if (writeMode === 'commit' && seedPath && loaded.records.length === 0 && loaded.files.length === 0) {
     seedStore(ctx, JSON.parse(readFileSync(seedPath, "utf8")));
   }
 

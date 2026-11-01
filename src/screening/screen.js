@@ -85,6 +85,13 @@ export function compileDenyList(list) {
 export function createGate(list) {
   const compiled = compileDenyList(list);
   const patternIds = Object.freeze(compiled.map((p) => p.id));
+  // Deliberately small heuristics, not a semantic injection classifier.
+  const instructionRules = [
+    ['instruction-override', /\b(?:ignore|disregard)\s+(?:all\s+)?(?:previous|prior)\s+instructions\b/i],
+    ['role-spoof', /<\/?(?:system|developer)>|\[(?:system|developer)\]/i],
+    ['memory-export', /\b(?:send|export|upload)\s+all\s+(?:stored\s+)?(?:facts|memory|records)\s+to\b/i],
+  ]
+  const policyIds = Object.freeze([...instructionRules.map(([id]) => id), 'untrusted-source'])
 
   function screen(value) {
     try {
@@ -92,6 +99,12 @@ export function createGate(list) {
       const budget = { strings: 0, chars: 0 };
       walk(value, "", 0, new WeakSet(), budget, (field, text) => {
         const variants = matchVariants(text);
+        for (const [patternId, re] of instructionRules) {
+          if (variants.some(v => re.test(v))) violations.push({ field: field || '(value)', patternId })
+        }
+        if (/(?:^|\.)provenance\.trust$/.test(field) && text === 'untrusted') {
+          violations.push({ field, patternId: 'untrusted-source' })
+        }
         for (const { id, re } of compiled) {
           if (variants.some((v) => re.test(v))) violations.push({ field: field || "(value)", patternId: id });
         }
@@ -106,7 +119,7 @@ export function createGate(list) {
     }
   }
 
-  return Object.freeze({ screen, patternIds });
+  return Object.freeze({ screen, patternIds, policyIds });
 }
 
 function matchVariants(text) {

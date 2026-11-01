@@ -18,8 +18,12 @@ const results = suite.cases.map(item => {
     correctCitations: result.citations.filter(relevant).length, resolvedCitations: result.citations.filter(resolves).length,
     retrieved: retrieved.map(p => p.passageId), cited: result.citations.map(p => p.passageId) }
 })
+// Wrong-key control: score each answer against the next question's expected passages. It should be near zero.
+const wrongKeyHits = results.filter((r, i) => { const other = suite.cases[(i + 1) % suite.cases.length]; return r.cited.some(id => other.expected.some(p => p.passageId === id)) }).length
 const sum = field => results.reduce((n, r) => n + r[field], 0)
 console.log(JSON.stringify({ collection: 'public', total: results.length, retrievalK: 3,
   retrievalHitRate: results.filter(r => r.hit).length / results.length,
   citationAccuracy: sum('correctCitations') / sum('citations'),
-  resolutionAccuracy: sum('resolvedCitations') / sum('citations'), results }, null, 2))
+  resolutionAccuracy: sum('resolvedCitations') / sum('citations'),
+  counts: { retrievalHits: results.filter(r => r.hit).length, correctCitations: sum('correctCitations'), resolvedCitations: sum('resolvedCitations'), citations: sum('citations') },
+  controls: { wrongKeyCitationHits: wrongKeyHits, total: results.length }, results }, null, 2))

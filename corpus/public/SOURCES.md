@@ -6,7 +6,7 @@ Refresh with `python3 corpus/public/fetch.py`. Verify live extraction with `pyth
 
 Source: CDC. CDC materials are available free at the linked CDC page. Use of these materials does not imply endorsement by CDC, HHS or the United States Government. No substantive changes are made to source wording.
 
-CMS extraction includes only NCD item description and coverage prose. Billing code paragraphs, LCDs and CPT content are excluded. CDC extraction includes prose paragraphs only, excluding tables, references and figures. Drug label sections retain their original wording. Whitespace is normalized and HTML markup removed.
+CMS extraction includes only NCD item description and coverage prose. Billing code paragraphs, LCDs and CPT content are excluded. CDC extraction includes prose paragraphs only, excluding tables, references and figures, with one known exception: passage cdc-timing-096 is a table footnote that carries its own source citations. Drug label sections retain their original wording. Whitespace is normalized and HTML markup removed.
 
 ## CMS NCD 240.2: Home Use of Oxygen (version 2)
 

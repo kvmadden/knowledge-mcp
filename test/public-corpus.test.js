@@ -55,6 +55,7 @@ syncBuiltinESMExports()`
   assert.equal(report.retrievalHitRate, 1)
   assert.equal(report.citationAccuracy, 1)
   assert.equal(report.resolutionAccuracy, 1)
+  assert.ok(report.controls.wrongKeyCitationHits <= 1, 'wrong-key control must stay near zero')
 })
 
 test('public retrieval is available over MCP and HTTP without mutating the store', async () => {

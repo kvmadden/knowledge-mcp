@@ -1,0 +1,132 @@
+✖ development attacks are refused across record and memory writes (10.780958ms)
+✖ explicitly untrusted document content is refused rather than promoted to a fact (0.676416ms)
+✖ provenance survives MCP creation, reading, pinning and disk reload (189.8095ms)
+✖ dry-run screens all tools and never changes records or files (9.240416ms)
+✖ invalid write mode cannot silently enable writes (0.397083ms)
+✖ dry-run startup skips seed writes and leaves reads available (3.77275ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 0
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2356.644916
+
+✖ failing tests:
+
+test at ../../../../../private/tmp/knowledge-mcp-focused-control.test.mjs:8:1
+✖ development attacks are refused across record and memory writes (10.780958ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception: instruction injection must be refused
+      at TestContext.<anonymous> (file:///private/tmp/knowledge-mcp-focused-control.test.mjs:11:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /screening/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at ../../../../../private/tmp/knowledge-mcp-focused-control.test.mjs:19:1
+✖ explicitly untrusted document content is refused rather than promoted to a fact (0.676416ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///private/tmp/knowledge-mcp-focused-control.test.mjs:21:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /screening/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at ../../../../../private/tmp/knowledge-mcp-focused-control.test.mjs:26:1
+✖ provenance survives MCP creation, reading, pinning and disk reload (189.8095ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + undefined
+  - {
+  -   observedAt: '2026-10-30',
+  -   recordedAt: '2026-10-31T12:00:00.000Z',
+  -   source: 'synthetic-handbook-v2',
+  -   trust: 'asserted'
+  - }
+
+      at TestContext.<anonymous> (file:///private/tmp/knowledge-mcp-focused-control.test.mjs:36:14)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { source: 'synthetic-handbook-v2', observedAt: '2026-10-30', trust: 'asserted', recordedAt: '2026-10-31T12:00:00.000Z' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../../private/tmp/knowledge-mcp-focused-control.test.mjs:46:1
+✖ dry-run screens all tools and never changes records or files (9.240416ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + undefined
+  - true
+
+      at TestContext.<anonymous> (file:///private/tmp/knowledge-mcp-focused-control.test.mjs:57:14)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../../private/tmp/knowledge-mcp-focused-control.test.mjs:67:1
+✖ invalid write mode cannot silently enable writes (0.397083ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///private/tmp/knowledge-mcp-focused-control.test.mjs:68:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /write mode/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at ../../../../../private/tmp/knowledge-mcp-focused-control.test.mjs:71:1
+✖ dry-run startup skips seed writes and leaves reads available (3.77275ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  7 !== 0
+
+      at TestContext.<anonymous> (file:///private/tmp/knowledge-mcp-focused-control.test.mjs:73:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 7,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

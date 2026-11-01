@@ -21,7 +21,11 @@
     "start": "node src/index.js",
     "check": "node src/index.js --check",
     "demo": "node scripts/demo.mjs",
-    "test": "node --test test/*.test.js"
+    "demo:safety": "node scripts/safety-demo.mjs",
+    "eval:legacy": "node eval/legacy.mjs",
+    "eval:heldout": "node eval/run.mjs",
+    "test": "node --test test/*.test.js",
+    "console": "node web/console/server.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.32.2",

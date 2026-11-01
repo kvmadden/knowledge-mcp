@@ -32,10 +32,11 @@ function ownMethodNames(obj) {
  * @param {{screen: Function}} gate  from createGate()
  * @param {{reads: string[], writes: string[]}} classification
  */
-export function createGuardedStore(rawStore, gate, { reads, writes }) {
+export function createGuardedStore(rawStore, gate, { reads, writes, writeMode = 'commit' }) {
   if (!gate || typeof gate.screen !== "function") {
     throw new Error("guarded store needs a screening gate");
   }
+  if (!['commit', 'dry-run'].includes(writeMode)) throw new Error('write mode must be commit or dry-run')
   const readSet = new Set(reads);
   const writeSet = new Set(writes);
   for (const name of readSet) {
@@ -86,7 +87,13 @@ export function createGuardedStore(rawStore, gate, { reads, writes }) {
         auditBlocked(name, verdict);
         throw new ScreeningError(readable(verdict), name);
       }
-      return rawStore[name](...args);
+      if (writeMode === 'dry-run') {
+        rawStore.appendAudit({ op: 'write_deferred', target: name, pattern_ids: [], violation_count: 0 })
+        throw new Error(`${name} deferred by dry-run: screening passed, no data written. Human review is required before resubmitting in commit mode.`)
+      }
+      const result = rawStore[name](...args)
+      if (name !== 'appendAudit') rawStore.appendAudit({ op: 'write_allowed', target: name, pattern_ids: [], violation_count: 0 })
+      return result
     };
   }
   // Lets tests and startup checks confirm what they were handed.

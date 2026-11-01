@@ -118,6 +118,12 @@ export class MemoryStore {
       text: row.text,
       bucket: row.bucket ?? null,
       source_app: row.source_app,
+      provenance: {
+        source: row.provenance?.source ?? row.source_app ?? 'unknown',
+        observedAt: row.provenance?.observedAt ?? null,
+        trust: row.provenance?.trust ?? 'unspecified',
+        recordedAt: at,
+      },
       status: row.status ?? "inbox",
       tags: [...(row.tags ?? [])],
       meta: clone(row.meta ?? {}),
@@ -151,11 +157,13 @@ export class MemoryStore {
       existing.version = version;
       existing.size_bytes = byteLength(content);
       existing.updated_at = at;
+      existing.provenance = { ...existing.provenance, lastWrittenAt: at }
     } else {
       this.#state.files.push({
         owner_id: ownerId,
         path: filePath,
         content,
+        provenance: { source: 'knowledge-mcp-memory', observedAt: null, recordedAt: at, lastWrittenAt: at, trust: 'unspecified' },
         version,
         size_bytes: byteLength(content),
         created_at: at,

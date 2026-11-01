@@ -15,6 +15,7 @@ function configFromEnv(env = process.env) {
   return {
     denyListPath: env.DENY_LIST_PATH ? path.resolve(env.DENY_LIST_PATH) : EXAMPLE_DENY_LIST_PATH,
     storePath,
+    writeMode: env.KNOWLEDGE_WRITE_MODE || 'commit',
     seedPath,
     ownerId: env.OWNER_ID || "local-owner",
   };
@@ -34,8 +35,10 @@ async function main() {
         {
           server: SERVER_INFO,
           store: cfg.storePath ? "json-file" : "in-memory",
-          seeded: Boolean(cfg.seedPath),
+          seeded: cfg.writeMode === 'commit' && Boolean(cfg.seedPath),
           denyListPatterns: runtime.gate.patternIds,
+          policyChecks: runtime.gate.policyIds,
+          writeMode: cfg.writeMode,
           records: snap.records.length,
           memoryFiles: snap.files.length,
           tools: TOOLS.map((t) => ({ name: t.name, access: t.access })),

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { provenanceSchema } from "../lib/provenance.js"
 import { RECORD_TYPES } from "../lib/records.js";
 
 export const name = "records.create";
@@ -7,6 +8,7 @@ export const config = {
   title: "Create record",
   description: "Create a record. A title marks it as filed (curated) rather than an inbox item. Every field is screened before the write; a deny-list match rejects the whole write.",
   inputSchema: {
+    provenance: provenanceSchema.optional(),
     text: z.string().min(1).max(20000).describe("Body text."),
     type: z.enum(RECORD_TYPES).optional().describe("meta.type; defaults to note."),
     bucket: z.string().optional().describe("Bucket id (see inbox.buckets)."),

@@ -1,0 +1,14 @@
+✔ development attacks are refused across record and memory writes (155.169833ms)
+✔ explicitly untrusted document content is refused rather than promoted to a fact (37.615791ms)
+✔ provenance survives MCP creation, reading, pinning and disk reload (133.959625ms)
+✔ dry-run screens all tools and never changes records or files (5.512792ms)
+✔ invalid write mode cannot silently enable writes (0.251208ms)
+✔ dry-run startup skips seed writes and leaves reads available (1.392625ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1779.081916

@@ -1,0 +1,110 @@
+✖ development attacks are refused across record and memory writes (3.797458ms)
+✖ explicitly untrusted document content is refused rather than promoted to a fact (0.423917ms)
+✖ provenance survives MCP creation, reading, pinning and disk reload (13.049958ms)
+✖ dry-run screens all tools and never changes records or files (2.580709ms)
+✖ invalid write mode cannot silently enable writes (0.254667ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 0
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 278.309375
+
+✖ failing tests:
+
+test at test/safety-flow.test.js:8:1
+✖ development attacks are refused across record and memory writes (3.797458ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception: instruction injection must be refused
+      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-upgrade/test/safety-flow.test.js:11:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /screening/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at test/safety-flow.test.js:19:1
+✖ explicitly untrusted document content is refused rather than promoted to a fact (0.423917ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-upgrade/test/safety-flow.test.js:21:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /screening/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at test/safety-flow.test.js:26:1
+✖ provenance survives MCP creation, reading, pinning and disk reload (13.049958ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + undefined
+  - {
+  -   observedAt: '2026-10-30',
+  -   recordedAt: '2026-10-31T12:00:00.000Z',
+  -   source: 'synthetic-handbook-v2',
+  -   trust: 'asserted'
+  - }
+
+      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-upgrade/test/safety-flow.test.js:36:14)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { source: 'synthetic-handbook-v2', observedAt: '2026-10-30', trust: 'asserted', recordedAt: '2026-10-31T12:00:00.000Z' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/safety-flow.test.js:46:1
+✖ dry-run screens all tools and never changes records or files (2.580709ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + undefined
+  - true
+
+      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-upgrade/test/safety-flow.test.js:57:14)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/safety-flow.test.js:67:1
+✖ invalid write mode cannot silently enable writes (0.254667ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-upgrade/test/safety-flow.test.js:68:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /write mode/,
+    operator: 'throws',
+    diff: 'simple'
+  }

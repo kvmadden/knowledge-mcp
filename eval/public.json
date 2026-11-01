@@ -1,0 +1,186 @@
+{
+  "collection": "public",
+  "description": "Authored regression questions over committed source excerpts. Not a held-out clinical benchmark.",
+  "cases": [
+    {
+      "id": "public-01",
+      "question": "Which test is preferred when arterial blood gas and oximetry results conflict?",
+      "expected": [
+        {
+          "passageId": "cms-oxygen-005",
+          "text": "When the arterial blood gas and the oximetry studies are both used to document the need for home oxygen therapy and the results are conflicting, the arterial blood gas study is the preferred source of documenting medical need."
+        }
+      ]
+    },
+    {
+      "id": "public-02",
+      "question": "When must qualifying oxygen studies be performed for an inpatient being discharged?",
+      "expected": [
+        {
+          "passageId": "cms-oxygen-006",
+          "text": "Required qualifying arterial blood gas or oximetry studies must be performed at the time of need. The time of need is defined as during the patient’s illness when the presumption is that the provision of oxygen in the home setting will improve the patient’s condition. For an inpatient hospital patient the time of need is within 2 days of discharge. For those patients whose initial oxygen prescription does not originate during an inpatient hospital stay, the time of need is during the period when the treating practitioner notes signs and symptoms of illness that can be relieved by oxygen in the patient who is to be treated at home."
+        }
+      ]
+    },
+    {
+      "id": "public-03",
+      "question": "What arterial oxygen saturation qualifies at rest breathing room air?",
+      "expected": [
+        {
+          "passageId": "cms-oxygen-008",
+          "text": "An arterial PO2 at or below 55 mm Hg, or an arterial oxygen saturation at or below 88%, taken at rest, breathing room air;or"
+        }
+      ]
+    },
+    {
+      "id": "public-04",
+      "question": "Is angina pectoris without hypoxemia covered for home oxygen?",
+      "expected": [
+        {
+          "passageId": "cms-oxygen-018",
+          "text": "Angina pectoris in the absence of hypoxemia. This condition is generally not the result of a low oxygen level in the blood, and there are other preferred treatments; or,"
+        }
+      ]
+    },
+    {
+      "id": "public-05",
+      "question": "What does the NCD say about breathlessness without cor pulmonale or hypoxemia?",
+      "expected": [
+        {
+          "passageId": "cms-oxygen-019",
+          "text": "Breathlessness without cor pulmonale or evidence of hypoxemia. Although intermittent oxygen use is sometimes prescribed to relieve this condition, it is potentially harmful and psychologically addicting; or,"
+        }
+      ]
+    },
+    {
+      "id": "public-06",
+      "question": "How long may initial MAC oxygen coverage for other conditions be limited?",
+      "expected": [
+        {
+          "passageId": "cms-oxygen-022",
+          "text": "The MAC may determine reasonable and necessary coverage of oxygen therapy and oxygen equipment in the home for patients who are not described in subsection B or precluded by subsection C of this NCD. Initial coverage for patients with other conditions may be limited to the shorter of 90 days or the number of days included in the practitioner prescription at MAC discretion. Oxygen coverage may be renewed if deemed medically necessary by the MAC."
+        }
+      ]
+    },
+    {
+      "id": "public-07",
+      "question": "What is the boxed warning for ZITUVIMET?",
+      "expected": [
+        {
+          "passageId": "metformin-001",
+          "text": "WARNING: LACTIC ACIDOSIS WARNING: LACTIC ACIDOSIS See full prescribing information for complete boxed warning . Postmarketing cases of metformin-associated lactic acidosis have resulted in death, hypothermia, hypotension, and resistant bradyarrhythmias. Symptoms included malaise, myalgias, respiratory distress, somnolence, and abdominal pain. Laboratory abnormalities included elevated blood lactate levels, anion gap acidosis, increased lactate/pyruvate ratio, and metformin plasma levels generally >5 mcg/mL. ( 5.1 ) Risk factors include renal impairment, concomitant use of certain drugs, age ≥65 years old, radiological studies with contrast, surgery and other procedures, hypoxic states, excessive alcohol intake, hepatic impairment, mitochondrial diseases. Steps to reduce the risk of and manage metformin-associated lactic acidosis in these high-risk groups are provided in the Full Prescribing Information. ( 5.1 ) If lactic acidosis is suspected, discontinue ZITUVIMET and institute general supportive measures in a hospital setting. Prompt hemodialysis is recommended. ( 5.1 ) Postmarketing cases of metformin-associated lactic acidosis have resulted in death, hypothermia, hypotension, and resistant bradyarrhythmias. The onset of metformin-associated lactic acidosis is often subtle, accompanied only by nonspecific symptoms such as malaise, myalgias, respiratory distress, somnolence, and abdominal pain. Metformin-associated lactic acidosis was characterized by elevated blood lactate levels (>5 mmol/Liter), anion gap acidosis (without evidence of ketonuria or ketonemia), an increased lactate/pyruvate ratio, and metformin plasma levels generally >5 mcg/mL [see Warnings and Precautions ( 5.1 )] . Risk factors for metformin-associated lactic acidosis include renal impairment, concomitant use of certain drugs (e.g., carbonic anhydrase inhibitors such as topiramate), age 65 years old or greater, having a radiological study with contrast, surgery and other procedures, hypoxic states (e.g., acute congestive heart failure), excessive alcohol intake, hepatic impairment and mitochondrial diseases [see Warnings and Precautions (5.1)] . Steps to reduce the risk of and manage metformin-associated lactic acidosis in these high risk groups are provided in the full prescribing information [see Dosage and Administration ( 2.2 )>, Contraindications ( 4 ), Warnings and Precautions ( 5.1 ), Drug Interactions ( 7 ), and Use in Specific Populations ( 8.6 , 8.7 )] . If metformin-associated lactic acidosis is suspected, immediately discontinue ZITUVIMET and institute general supportive measures in a hospital setting. Prompt hemodialysis is recommended [see Warnings and Precautions ( 5.1 )] ."
+        }
+      ]
+    },
+    {
+      "id": "public-08",
+      "question": "What are the indications and usage of ZITUVIMET?",
+      "expected": [
+        {
+          "passageId": "metformin-002",
+          "text": "1 INDICATIONS AND USAGE ZITUVIMET is a combination of sitagliptin, a dipeptidyl peptidase-4 (DPP-4) inhibitor, and metformin hydrochloride (HCl), a biguanide, indicated as an adjunct to diet and exercise to improve glycemic control in adults with type 2 diabetes mellitus. ( 1 ) Limitations of Use: ZITUVIMET is not recommended in patients with type 1 diabetes mellitus. ( 1 ) ZITUVIMET has not been studied in patients with a history of pancreatitis. ( 1 ) ZITUVIMET is indicated as an adjunct to diet and exercise to improve glycemic control in adults with type 2 diabetes mellitus. Limitations of Use ZITUVIMET is not recommended in patients with type 1 diabetes mellitus. ZITUVIMET has not been studied in patients with a history of pancreatitis. It is unknown whether patients with a history of pancreatitis are at increased risk for the development of pancreatitis while using ZITUVIMET. [see Warnings and Precautions ( 5.2 )]."
+        }
+      ]
+    },
+    {
+      "id": "public-09",
+      "question": "What renal impairment is a contraindication for ZITUVIMET?",
+      "expected": [
+        {
+          "passageId": "metformin-004",
+          "text": "4 CONTRAINDICATIONS Severe renal impairment: (eGFR below 30 mL/min/1.73 m 2 ) ( 4) Metabolic acidosis, including diabetic ketoacidosis. ( 4 ) History of a serious hypersensitivity reaction to ZITUVIMET, sitagliptin, or metformin, such as anaphylaxis or angioedema. (4) ZITUVIMET is contraindicated in patients with: Severe renal impairment (eGFR below 30 mL/min/1.73 m 2 ) [see Warnings and Precautions ( 5.1 )]. Acute or chronic metabolic acidosis, including diabetic ketoacidosis. History of a serious hypersensitivity reaction to sitagliptin, metformin, or any of the excipients in ZITUVIMET. Serious hypersensitivity reactions including anaphylaxis or angioedema have been reported. [see Warnings and Precautions ( 5.7 ) and Adverse Reactions ( 6.2 )]."
+        }
+      ]
+    },
+    {
+      "id": "public-10",
+      "question": "Has ZITUVIMET safety and effectiveness been established in pediatric patients?",
+      "expected": [
+        {
+          "passageId": "metformin-007",
+          "text": "8.4 Pediatric Use The safety and effectiveness of ZITUVIMET have not been established in pediatric patients. Pediatric information describing clinical studies in which efficacy was not demonstrated is approved for Merck Sharp and Dohme's JANUMET (sitagliptin and metformin hydrochloride) tablets. However, due to Merck Sharp and Dohme's marketing exclusivity rights, this drug product is not labeled with that information."
+        }
+      ]
+    },
+    {
+      "id": "public-11",
+      "question": "What does the ZITUVIMET label say about geriatric dose selection?",
+      "expected": [
+        {
+          "passageId": "metformin-008",
+          "text": "8.5 Geriatric Use ZITUVIMET In general, dose selection for an elderly patient should be cautious, usually starting at the low end of the dosing range, reflecting the greater frequency of decreased hepatic, renal, or cardiac function, and of concomitant disease or other drug therapy and the higher risk of lactic acidosis. Renal function should be assessed more frequently in elderly patients. [See Contraindications ( 4 ); Warnings and Precautions ( 5.1 , 5.4 ) and Clinical Pharmacology ( 12.3 ).] Sitagliptin Of the total number of subjects (N=3,884) in clinical studies of sitagliptin, 725 patients were 65 years and over, while 61 patients were 75 years and over. No overall differences in safety or effectiveness of sitagliptin have been observed between subjects 65 years and over and younger patients. Metformin Controlled clinical studies of metformin did not include sufficient numbers of elderly patients to determine whether they respond differently from younger patients, although other reported clinical experience has not identified differences in responses between the elderly and young patients."
+        }
+      ]
+    },
+    {
+      "id": "public-12",
+      "question": "What does the ZITUVIMET label recommend in the event of overdose?",
+      "expected": [
+        {
+          "passageId": "metformin-009",
+          "text": "10 OVERDOSAGE In the event of overdose with ZITUVIMET, consider contacting the Poison Help Line (1-800-222-1222) or a medical toxicologist for additional overdosage management recommendations. Employ the usual supportive measures dictated by the patient's clinical status. Per clinical judgement, consider removal of unabsorbed material from the gastrointestinal tract, and clinical monitoring (including obtaining an ECG). Sitagliptin is modestly dialyzable. In clinical studies, approximately 13.5% of the dose was removed over a 3- to 4-hour hemodialysis session. Prolonged hemodialysis may be considered if clinically appropriate. It is not known if sitagliptin is dialyzable by peritoneal dialysis. Overdose of metformin has occurred, including ingestion of amounts greater than 50 grams. Hypoglycemia was reported in approximately 10% of cases, but no causal association with metformin has been established. Lactic acidosis has been reported in approximately 32% of metformin overdose cases [see Warnings and Precautions ( 5.1 )]. Metformin is dialyzable with a clearance of up to 170 mL/min under good hemodynamic conditions. Therefore, hemodialysis may be useful for removal of accumulated drug from patients in whom metformin overdosage is suspected."
+        }
+      ]
+    },
+    {
+      "id": "public-13",
+      "question": "What is the four day grace period for vaccine minimum ages and intervals?",
+      "expected": [
+        {
+          "passageId": "cdc-timing-010",
+          "text": "Before administering a vaccine dose, providers might need to verify that all previous doses were administered after the minimum age and in accordance with minimum intervals (Table 3-2). In clinical practice, vaccine doses occasionally are administered at intervals less than the minimum interval or at ages younger than the minimum age. Doses administered too close together or at too young an age can lead to a suboptimal immune response. However, administering a dose a few days earlier than the minimum interval or age is unlikely to have a substantially negative effect on the immune response to that dose. Known as the “grace period”, vaccine doses administered ≤4 days before the minimum interval or age are considered valid; however, local or state mandates might supersede this 4-day guideline7. (Day 1 is the day before the day that marks the minimum age or minimum interval for a vaccine.)"
+        }
+      ]
+    },
+    {
+      "id": "public-14",
+      "question": "How is simultaneous administration of vaccines defined?",
+      "expected": [
+        {
+          "passageId": "cdc-timing-014",
+          "text": "Simultaneous administration of vaccines is defined as administering more than one vaccine on the same clinic day, at different anatomic sites, and not combined in the same syringe. Experimental evidence and extensive clinical experience provide the scientific basis for administering vaccines simultaneously12. Simultaneously administering all vaccines for which a person is eligible at the time of a visit increases the probability that a child, adolescent, or adult will be vaccinated fully by the appropriate age13. A study conducted during a measles outbreak demonstrated that approximately one-third of measles cases among unvaccinated but vaccine-eligible preschool children might have been prevented if MMR had been administered at the same visit when another vaccine was administered14. Simultaneous administration also is critical when preparing for foreign travel in the near future and when a health-care provider is uncertain that a patient will return for additional doses of vaccine."
+        }
+      ]
+    },
+    {
+      "id": "public-15",
+      "question": "Can vaccination providers combine separate vaccines into the same syringe?",
+      "expected": [
+        {
+          "passageId": "cdc-timing-025",
+          "text": "Only combination vaccines licensed by FDA should be used56. Vaccination providers should not combine separate vaccines into the same syringe to administer together unless mixing is indicated for the patient’s age and is explicitly specified on the FDA-approved product label inserts. Only 2 combination vaccines, (DTaP-IPV/Hib vaccine, marketed as Pentacel, and Hib-MenCY, marketed as MenHibrix) contain separate antigen components for which FDA approves mixing by the user. The safety, immunogenicity, and effectiveness of unlicensed combinations are unknown."
+        }
+      ]
+    },
+    {
+      "id": "public-16",
+      "question": "How far apart should injectable live vaccines be when not given on the same day?",
+      "expected": [
+        {
+          "passageId": "cdc-timing-036",
+          "text": "Two or more injectable or nasally administered live vaccines not administered on the same day should be separated by at least 4 weeks (Table 3-4), to minimize the potential risk for interference. If 2 such vaccines are separated by <4 weeks, the second vaccine administered should not be counted and the dose should be repeated at least 4 weeks later. On the day a live injectable or intranasal vaccine will be administered, providers should ensure that no live injectable or intranasal vaccine was given in the previous 28 days."
+        }
+      ]
+    },
+    {
+      "id": "public-17",
+      "question": "Does a lapsed vaccination schedule require restarting a vaccine series?",
+      "expected": [
+        {
+          "passageId": "cdc-timing-048",
+          "text": "Vaccination providers should administer vaccines as close to the recommended intervals as possible. However, intervals between doses that are longer than recommended typically do not reduce final antibody concentrations, although protection might not be attained until the recommended number of doses has been administered. With some exceptions (e.g. oral typhoid vaccine) an interruption in the vaccination schedule does not require restarting the entire series of a vaccine or toxoid or addition of extra doses7."
+        }
+      ]
+    },
+    {
+      "id": "public-18",
+      "question": "What should providers do about missing vaccination records and undocumented vaccinations?",
+      "expected": [
+        {
+          "passageId": "cdc-timing-049",
+          "text": "Vaccination providers frequently encounter persons who do not have adequate documentation of vaccinations. With the exception of influenza vaccine and PPSV23, providers should only accept written, dated records as evidence of vaccination; self-reported doses of influenza vaccine and PPSV23 are acceptable6179. The rationale for acceptance for influenza vaccine is that the time period of recall is one year or less, making it very likely that correct recall will occur. The rationale for acceptance for PPSV23 is high frequency of vaccination leads to an increased rate of local reactions due to the reactogenicity of this vaccine. Although vaccinations should not be postponed if records cannot be found, an attempt to locate missing records should be made by contacting previous health care providers, reviewing state or local IISs, and searching for a personally held record. If records cannot be located within a reasonable time, these persons should be considered susceptible and started on the age-appropriate vaccination schedule. While serology should generally NOT be performed to ascertain evidence of immunity, serologic testing for immunity is an alternative to vaccination for certain antigens (e.g., measles, rubella, hepatitis A, and tetanus). However, commercial serologic testing might not always be sufficiently sensitive or standardized for detection of vaccine-induced immunity (with the exception of hepatitis B vaccination at 1–2 months after the final dose), and research laboratory testing might not be readily available. An exception to the prohibition on serologic testing is dengue. Laboratory testing to ascertain immunity to dengue (of which serology is one option) must be performed prior to vaccination, and only those individuals who are positive should be vaccinated."
+        }
+      ]
+    }
+  ]
+}

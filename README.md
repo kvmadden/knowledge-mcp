@@ -167,3 +167,21 @@ Open **http://127.0.0.1:4317**. Run the scripted Atlas session or advance one wr
 Use Theme to switch light and dark. Reset starts a new empty session. One in-memory session is shared by tabs connected to this local server and disappears on restart. This is a synthetic demonstration, with no authentication or durable approval queue. It binds to loopback and uses no model, external service or private data. `PORT=4318 npm run console` selects another port.
 
 Screenshots and the short flow GIF are in [docs/media](docs/media/README.md). Verification, control results and known limits are recorded in [docs/console/VERIFICATION.md](docs/console/VERIFICATION.md).
+
+## Search real public documents
+
+Run `npm ci` and `npm run console`, then open <http://127.0.0.1:4317/corpus>. Choose **Public health documents** or the separate **Fictional demo corpus**. The public collection includes CMS NCD 240.2 coverage prose, an openFDA ZITUVIMET (sitagliptin and metformin) label, and CDC ACIP timing and spacing guidance. All 134 passages are committed and answers work offline. Each citation shows the source title, license, retrieval date, exact passage and original URL.
+
+![Public document search with an exact CMS citation](docs/media/public-corpus-light-1440x900.png)
+
+The read-only MCP tool `corpus.answer` accepts `question` and `collection` (`public` or `fictional`). It ranks passages with deterministic BM25 and returns the best passage verbatim. It does not generate clinical recommendations or write documents into the guarded personal store. Public documents are reference material, not instructions or trusted write provenance. These are excerpt snapshots, not complete or necessarily current clinical references.
+
+```json
+{"name":"corpus.answer","arguments":{"collection":"public","question":"Which test is preferred when blood gas and oximetry results conflict?"}}
+```
+
+Source URLs, licenses, retrieval timestamps, extraction boundaries and SHA256 hashes are in [SOURCES.md](corpus/public/SOURCES.md) and [manifest.json](corpus/public/manifest.json). CMS ingestion includes NCD text only, excluding LCD and CPT material. Refresh with `python3 corpus/public/fetch.py` using Python 3 and curl. `npm run corpus:check` refetches and detects upstream drift without writing files. Review passage changes and eval expectations together before committing refreshed data.
+
+`npm run eval:public` runs 18 authored regression questions against the committed public collection. It reports **retrieval hit rate at 3: 18/18 (100%)**, **citation accuracy: 18/18 (100%)**, and **exact citation resolution: 18/18 (100%)** separately. Retrieval checks whether any of the three ranked passages matches an expected passage. Citation accuracy checks whether the answer cites an expected passage with identical text. Resolution checks citation text and source metadata against committed files. These questions are not a held-out benchmark and do not measure medical correctness or general clinical performance. Existing safety evaluation fixtures and results are unchanged.
+
+[Verification and RED/GREEN evidence](docs/public-corpus/VERIFICATION.md) · [Mobile screenshot](docs/media/public-corpus-light-390x844.png)

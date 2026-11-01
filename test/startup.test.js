@@ -29,7 +29,7 @@ test("--check with defaults reports the in-memory store, seed and example list",
   assert.equal(cfg.store, "in-memory");
   assert.equal(cfg.records, 7);
   assert.equal(cfg.memoryFiles, 2);
-  assert.equal(cfg.tools.length, 17);
+  assert.equal(cfg.tools.length, 18);
   assert.equal(cfg.denyListPatterns.length, 6);
 });
 

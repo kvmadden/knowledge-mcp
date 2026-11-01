@@ -53,7 +53,7 @@ test at ../../../../../private/tmp/knowledge-mcp-focused-control.test.mjs:26:1
 ✖ provenance survives MCP creation, reading, pinning and disk reload (189.8095ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
   + actual - expected
-  
+
   + undefined
   - {
   -   observedAt: '2026-10-30',
@@ -61,7 +61,7 @@ test at ../../../../../private/tmp/knowledge-mcp-focused-control.test.mjs:26:1
   -   source: 'synthetic-handbook-v2',
   -   trust: 'asserted'
   - }
-  
+
       at TestContext.<anonymous> (file:///private/tmp/knowledge-mcp-focused-control.test.mjs:36:14)
       at async Test.run (node:internal/test_runner/test:1125:7)
       at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
@@ -77,10 +77,10 @@ test at ../../../../../private/tmp/knowledge-mcp-focused-control.test.mjs:46:1
 ✖ dry-run screens all tools and never changes records or files (9.240416ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
   + actual - expected
-  
+
   + undefined
   - true
-  
+
       at TestContext.<anonymous> (file:///private/tmp/knowledge-mcp-focused-control.test.mjs:57:14)
       at async Test.run (node:internal/test_runner/test:1125:7)
       at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
@@ -113,9 +113,9 @@ test at ../../../../../private/tmp/knowledge-mcp-focused-control.test.mjs:67:1
 test at ../../../../../private/tmp/knowledge-mcp-focused-control.test.mjs:71:1
 ✖ dry-run startup skips seed writes and leaves reads available (3.77275ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-  
+
   7 !== 0
-  
+
       at TestContext.<anonymous> (file:///private/tmp/knowledge-mcp-focused-control.test.mjs:73:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)

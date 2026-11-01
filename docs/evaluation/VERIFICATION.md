@@ -80,7 +80,7 @@ env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT npm test --prefix /tmp/knowl
 env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT npm run check --prefix /tmp/knowledge-mcp-candidate-20261031
 ```
 
-All exited 0, with 97 passed, 0 failed and 0 skipped. Both fresh clone source trees remained clean. Raw outputs are committed in `evidence/`, including RED-first, focused GREEN, focused control, both full suites and fresh candidate. `KNOWLEDGE_WRITE_MODE=dry-run npm run check` also exited 0, with no seeded records or files. The final evidence-only commit changes no executable source or fixtures.
+All exited 0, with 97 passed, 0 failed and 0 skipped. Both fresh clone source trees remained clean. Outputs are committed in `evidence/` with trailing whitespace removed, including RED-first, focused GREEN, focused control, both full suites and fresh candidate. `KNOWLEDGE_WRITE_MODE=dry-run npm run check` also exited 0, with no seeded records or files. The final evidence-only commit changes no executable source or fixtures.
 
 ## Visual recording
 

@@ -21,7 +21,7 @@ function index() {
     passageId: `fictional-${i + 1}`, text: [r.title, r.text, r.summary, r.context].filter(Boolean).join(' '),
     title: r.title || 'Fictional demo record', license: 'MIT', url: 'https://github.com/kvmadden/knowledge-mcp/blob/main/data/seed.json', file: 'data/seed.json',
   }))
-  indexes = Object.fromEntries([['public', publicPassages], ['fictional', fictional]].map(([id, docs]) => [id, docs.map(doc => ({ doc, terms: tokens(doc.title + ' ' + doc.section + ' ' + doc.text) }))]))
+  indexes = Object.fromEntries([['public', publicPassages], ['fictional', fictional]].map(([id, docs]) => [id, docs.map(doc => ({ doc, terms: tokens([doc.title, doc.section, doc.text].filter(value => typeof value === 'string').join(' ')) }))]))
   return indexes
 }
 

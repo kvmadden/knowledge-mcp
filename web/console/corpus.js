@@ -5,7 +5,9 @@ const element = (tag, text) => {
   node.textContent = text
   return node
 }
+let latestSearch = 0
 $('search-form').onsubmit = async event => {
+  const search = ++latestSearch
   event.preventDefault()
   document.querySelector('.results').setAttribute('aria-busy', 'true')
   $('status').textContent = 'Searching committed passages…'
@@ -15,6 +17,7 @@ $('search-form').onsubmit = async event => {
     const response = await fetch(`/api/corpus?${params}`)
     if (!response.ok) throw new Error('Search failed')
     const result = await response.json()
+    if (search !== latestSearch) return
     $('result-title').textContent = result.citations.length ? 'From the source' : 'No matching passage'
     $('status').textContent = result.citations.length ? 'Exact excerpt from the local snapshot. Check the current source before clinical use.' : result.answer
     for (const citation of result.citations) {
@@ -28,10 +31,11 @@ $('search-form').onsubmit = async event => {
       $('citations').append(card)
     }
   } catch {
+    if (search !== latestSearch) return
     $('result-title').textContent = 'Search unavailable'
     $('status').textContent = 'Check the local server and try again.'
   } finally {
-    document.querySelector('.results').setAttribute('aria-busy', 'false')
+    if (search === latestSearch) document.querySelector('.results').setAttribute('aria-busy', 'false')
   }
 }
 $('search-form').requestSubmit()

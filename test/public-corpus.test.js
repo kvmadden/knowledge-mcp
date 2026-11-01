@@ -81,3 +81,9 @@ test('public retrieval is available over MCP and HTTP without mutating the store
     assert.equal((await fetch(`${url}/api/corpus?question=oxygen&collection=missing`)).status, 400)
   } finally { await new Promise(resolve => server.close(resolve)) }
 })
+
+test('absent section metadata does not add undefined to fictional search terms', async () => {
+  const { searchCorpus } = await import('../src/lib/corpus.js')
+  assert.equal(searchCorpus('undefined', 'fictional', 99).length, 0)
+  assert.ok(searchCorpus('onboarding', 'fictional').length > 0)
+})

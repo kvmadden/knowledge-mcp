@@ -1,0 +1,123 @@
+[
+  {
+    "command": [
+      "git",
+      "clone",
+      "--quiet",
+      "--no-local",
+      "/Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus",
+      "/private/tmp/knowledge-corpus-candidate-ucoy3qw_"
+    ],
+    "exit": 0,
+    "log": "fresh-candidate-00.txt"
+  },
+  {
+    "command": [
+      "git",
+      "checkout",
+      "--quiet",
+      "915bf23"
+    ],
+    "exit": 0,
+    "log": "fresh-candidate-01.txt"
+  },
+  {
+    "command": [
+      "node",
+      "--version"
+    ],
+    "exit": 0,
+    "log": "fresh-candidate-02.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "ci"
+    ],
+    "exit": 0,
+    "log": "fresh-candidate-03.txt"
+  },
+  {
+    "command": [
+      "node",
+      "--test",
+      "test/console.test.js",
+      "test/startup.test.js",
+      "test/stdio.test.js",
+      "test/write-paths.test.js"
+    ],
+    "exit": 0,
+    "log": "fresh-candidate-04.txt"
+  },
+  {
+    "command": [
+      "node",
+      "--test",
+      "test/public-corpus.test.js"
+    ],
+    "exit": 0,
+    "log": "fresh-candidate-05.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "exit": 0,
+    "log": "fresh-candidate-06.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "check"
+    ],
+    "exit": 0,
+    "log": "fresh-candidate-07.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "eval:legacy"
+    ],
+    "exit": 0,
+    "log": "fresh-candidate-08.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "eval:heldout"
+    ],
+    "exit": 0,
+    "log": "fresh-candidate-09.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "eval:public"
+    ],
+    "exit": 1,
+    "log": "fresh-candidate-10.txt"
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "corpus:check"
+    ],
+    "exit": 1,
+    "log": "fresh-candidate-11.txt"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0,
+    "log": "fresh-candidate-12.txt"
+  }
+]

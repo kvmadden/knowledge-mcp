@@ -33,12 +33,14 @@ import * as memoryStrReplace from "./tools/memory.str_replace.js";
 import * as memoryInsert from "./tools/memory.insert.js";
 import * as memoryDelete from "./tools/memory.delete.js";
 import * as memoryRename from "./tools/memory.rename.js";
+import * as corpusAnswer from './tools/corpus.answer.js'
 import * as recentDecisions from "./resources/recent-decisions.js";
 
 export const SERVER_INFO = Object.freeze({ name: "knowledge-mcp", version: "1.0.0" });
 
 /** Every tool the server registers. Tests enumerate this list. */
 export const TOOLS = Object.freeze([
+  corpusAnswer,
   recordsList,
   recordsGet,
   recordsCreate,

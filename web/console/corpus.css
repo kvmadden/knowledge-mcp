@@ -1,0 +1,21 @@
+/* Uses the existing console palette from docs/media/theme.json. */
+h1 { font-size: clamp(32px, 4vw, 48px) }
+.search-panel { padding: 24px }
+form { display: grid; gap: 12px }
+label { font-size: 13px; font-weight: 600 }
+input, select { font: inherit; font-size: 16px; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 7px; min-height: 48px; padding: 12px; width: 100%; min-width: 0 }
+input:focus-visible, select:focus-visible { outline: 3px solid var(--green); outline-offset: 3px }
+form button { justify-self: start; min-height: 48px }
+.search-panel .explain { margin: 16px 0 0 }
+.results { margin: 28px 0 }
+.results h2 { font-family: Georgia, serif; font-size: 28px; font-weight: 400 }
+#status { color: var(--muted); font-size: 13px }
+.citation { padding: 24px; margin-top: 20px }
+.citation h3 { margin-top: 0; font-size: 18px }
+.citation blockquote { margin: 20px 0; border-left: 3px solid var(--green); padding-left: 20px; font-size: 16px; line-height: 1.7; overflow-wrap: anywhere; white-space: pre-wrap }
+.citation p { font-size: 12px; color: var(--muted); overflow-wrap: anywhere }
+a { color: var(--green) }
+.citation a, footer a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px }
+@media (max-width: 700px) { .search-panel, .citation { padding: 18px } .citation blockquote { font-size: 14px; padding-left: 14px } h1 { letter-spacing: -1px } }
+
+.source-notice { color: var(--muted); font-size: 12px; line-height: 1.6 }

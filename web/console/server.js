@@ -1,6 +1,7 @@
 import { createServer } from 'node:http'
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
+import { answer } from '../../src/lib/corpus.js'
 import { createSession } from './session.js'
 
 export function createConsoleServer() {
@@ -9,6 +10,11 @@ export function createConsoleServer() {
     res.setHeader('Cache-Control', 'no-store')
     res.setHeader('X-Content-Type-Options', 'nosniff')
     try {
+      if (req.url.startsWith('/api/corpus?') && req.method === 'GET') {
+        const params = new URL(req.url, 'http://localhost').searchParams
+        res.setHeader('Content-Type', 'application/json')
+        return res.end(JSON.stringify(answer((params.get('question') || '').slice(0, 2000), params.get('collection') || 'public')))
+      }
       if (req.url === '/api/session' && req.method === 'GET') {
         res.setHeader('Content-Type', 'application/json')
         return res.end(JSON.stringify(session.view()))
@@ -32,7 +38,7 @@ export function createConsoleServer() {
         res.setHeader('Content-Type', 'application/json')
         return res.end(JSON.stringify(session.view()))
       }
-      const files = { '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'] }
+      const files = { '/corpus': ['corpus.html', 'text/html'], '/corpus.js': ['corpus.js', 'text/javascript'], '/corpus.css': ['corpus.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'] }
       const file = files[req.url]
       if (req.method !== 'GET' || !file) {
         res.writeHead(404)

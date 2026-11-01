@@ -1,0 +1,284 @@
+
+> knowledge-mcp@1.0.0 eval:public
+> node eval/public.mjs
+
+{
+  "collection": "public",
+  "total": 18,
+  "retrievalK": 3,
+  "retrievalHitRate": 1,
+  "citationAccuracy": 1,
+  "resolutionAccuracy": 1,
+  "results": [
+    {
+      "id": "public-01",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cms-oxygen-005",
+        "cms-oxygen-004",
+        "cms-oxygen-006"
+      ],
+      "cited": [
+        "cms-oxygen-005"
+      ]
+    },
+    {
+      "id": "public-02",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cms-oxygen-006",
+        "cms-oxygen-004",
+        "cms-oxygen-015"
+      ],
+      "cited": [
+        "cms-oxygen-006"
+      ]
+    },
+    {
+      "id": "public-03",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cms-oxygen-008",
+        "cms-oxygen-010",
+        "cms-oxygen-009"
+      ],
+      "cited": [
+        "cms-oxygen-008"
+      ]
+    },
+    {
+      "id": "public-04",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cms-oxygen-018",
+        "cms-oxygen-003",
+        "cms-oxygen-019"
+      ],
+      "cited": [
+        "cms-oxygen-018"
+      ]
+    },
+    {
+      "id": "public-05",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cms-oxygen-019",
+        "cms-oxygen-013",
+        "cms-oxygen-007"
+      ],
+      "cited": [
+        "cms-oxygen-019"
+      ]
+    },
+    {
+      "id": "public-06",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cms-oxygen-022",
+        "cms-oxygen-003",
+        "cms-oxygen-001"
+      ],
+      "cited": [
+        "cms-oxygen-022"
+      ]
+    },
+    {
+      "id": "public-07",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "metformin-001",
+        "metformin-005",
+        "metformin-002"
+      ],
+      "cited": [
+        "metformin-001"
+      ]
+    },
+    {
+      "id": "public-08",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "metformin-002",
+        "cms-oxygen-002",
+        "cms-oxygen-016"
+      ],
+      "cited": [
+        "metformin-002"
+      ]
+    },
+    {
+      "id": "public-09",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "metformin-004",
+        "metformin-005",
+        "metformin-003"
+      ],
+      "cited": [
+        "metformin-004"
+      ]
+    },
+    {
+      "id": "public-10",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "metformin-007",
+        "metformin-008",
+        "metformin-002"
+      ],
+      "cited": [
+        "metformin-007"
+      ]
+    },
+    {
+      "id": "public-11",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "metformin-008",
+        "metformin-010",
+        "metformin-003"
+      ],
+      "cited": [
+        "metformin-008"
+      ]
+    },
+    {
+      "id": "public-12",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "metformin-009",
+        "metformin-002",
+        "metformin-007"
+      ],
+      "cited": [
+        "metformin-009"
+      ]
+    },
+    {
+      "id": "public-13",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cdc-timing-010",
+        "cdc-timing-068",
+        "cdc-timing-037"
+      ],
+      "cited": [
+        "cdc-timing-010"
+      ]
+    },
+    {
+      "id": "public-14",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cdc-timing-014",
+        "cdc-timing-033",
+        "cdc-timing-015"
+      ],
+      "cited": [
+        "cdc-timing-014"
+      ]
+    },
+    {
+      "id": "public-15",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cdc-timing-025",
+        "cdc-timing-022",
+        "cdc-timing-021"
+      ],
+      "cited": [
+        "cdc-timing-025"
+      ]
+    },
+    {
+      "id": "public-16",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cdc-timing-036",
+        "cdc-timing-037",
+        "cdc-timing-091"
+      ],
+      "cited": [
+        "cdc-timing-036"
+      ]
+    },
+    {
+      "id": "public-17",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cdc-timing-048",
+        "cdc-timing-053",
+        "cdc-timing-065"
+      ],
+      "cited": [
+        "cdc-timing-048"
+      ]
+    },
+    {
+      "id": "public-18",
+      "hit": true,
+      "citations": 1,
+      "correctCitations": 1,
+      "resolvedCitations": 1,
+      "retrieved": [
+        "cdc-timing-049",
+        "cdc-timing-008",
+        "cdc-timing-047"
+      ],
+      "cited": [
+        "cdc-timing-049"
+      ]
+    }
+  ]
+}

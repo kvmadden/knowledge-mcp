@@ -1,0 +1,41 @@
+✔ script runs real screening and approval commits only once (5.854667ms)
+✔ HTTP console isolates local actions and reports stale approval errors (58.499458ms)
+✔ red-team cases can be replayed after the scripted session completes (1.912667ms)
+✔ --check with defaults reports the in-memory store, seed and example list (149.158541ms)
+✔ missing, empty, malformed or invalid deny-list files stop startup (494.511792ms)
+✔ a store file containing matching content is refused at load (124.187667ms)
+✔ a tightened deny-list refuses previously accepted data (1.679625ms)
+✔ a seed entry with matching content aborts startup (1.483875ms)
+✔ JSON-file store persists across runtimes (2.175209ms)
+✔ stdio server: list, capture, refuse, search (178.19ms)
+✔ every registered tool declares access and has a fixture (0.955416ms)
+✔ the MCP server exposes exactly the registry, with readOnlyHint matching access (19.68075ms)
+✔ write tools are the expected set (0.096958ms)
+✔ write tool records.create: no deny-listed value in any argument reaches the store (67.781875ms)
+✔ write tool records.pin: no deny-listed value in any argument reaches the store (6.011583ms)
+✔ write tool decisions.log: no deny-listed value in any argument reaches the store (30.813041ms)
+✔ write tool inbox.capture: no deny-listed value in any argument reaches the store (30.147792ms)
+✔ write tool inbox.capture_quick: no deny-listed value in any argument reaches the store (11.159041ms)
+✔ write tool memory.create: no deny-listed value in any argument reaches the store (10.630792ms)
+✔ write tool memory.str_replace: no deny-listed value in any argument reaches the store (21.712208ms)
+✔ write tool memory.insert: no deny-listed value in any argument reaches the store (11.436334ms)
+✔ write tool memory.delete: no deny-listed value in any argument reaches the store (5.649583ms)
+✔ write tool memory.rename: no deny-listed value in any argument reaches the store (13.638042ms)
+✔ read tool corpus.answer: never changes the store (136.415584ms)
+✔ read tool records.list: never changes the store (20.842292ms)
+✔ read tool records.get: never changes the store (5.502375ms)
+✔ read tool inbox.recent: never changes the store (7.234708ms)
+✔ read tool inbox.search: never changes the store (19.2045ms)
+✔ read tool inbox.buckets: never changes the store (0.516916ms)
+✔ read tool inbox.route_suggest: never changes the store (5.026458ms)
+✔ read tool memory.view: never changes the store (6.765792ms)
+✔ resources are read-only and do not change the store (1.263208ms)
+✔ canary: the same harness flags every write tool when tools are wired to the raw store (97.769875ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 914.673084

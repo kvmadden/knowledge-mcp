@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Public document search · knowledge-mcp</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/corpus.css"><script type="module" src="/corpus.js"></script></head>
+<body>
+<header><a class="brand" href="/">knowledge<span class="muted">/ mcp</span></a><button id="theme" aria-label="Switch color theme">◐ Theme</button></header>
+<main>
+<div class="eyebrow">PUBLIC DOCUMENTS / LOCAL RETRIEVAL</div>
+<section class="intro"><div><h1>Real documents. Traceable answers.</h1><p>Ask a question. Inspect the exact source passage.</p></div></section>
+<section class="panel search-panel">
+<form id="search-form"><label for="collection">Collection</label><select id="collection"><option value="public">Public health documents</option><option value="fictional">Fictional demo corpus</option></select><label for="question">Your question</label><input id="question" maxlength="2000" required value="Which test is preferred when blood gas and oximetry results conflict?"><button class="primary" type="submit">Find source passage ↗</button></form>
+<p class="explain">CMS NCD coverage text · openFDA drug label · CDC ACIP guidance</p>
+</section>
+<section class="results" aria-live="polite" aria-busy="false"><div class="eyebrow">EXTRACTIVE ANSWER / COMMITTED SNAPSHOT</div><h2 id="result-title">Ready to search</h2><p id="status" role="status">No model or network required for answers.</p><div id="citations"></div></section>
+<p class="source-notice">Source: CDC. CDC materials are available free at the original source. Use of source materials does not imply endorsement by CDC, HHS or the United States Government.</p>
+<footer><span>Offline document retrieval demo · Not clinical advice</span><a href="/">Open write gate console ↗</a></footer>
+</main></body></html>

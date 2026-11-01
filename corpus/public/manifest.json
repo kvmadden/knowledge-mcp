@@ -1,0 +1,39 @@
+{
+  "collection": "public",
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "id": "cms-oxygen",
+      "family": "cms-ncd",
+      "title": "CMS NCD 240.2: Home Use of Oxygen (version 2)",
+      "url": "https://www.cms.gov/medicare-coverage-database/view/ncd.aspx?ncdid=169&ncdver=2",
+      "license": "Public domain (US government NCD text only)",
+      "licenseUrl": "https://www.copyright.gov/title17/92chap1.html#105",
+      "file": "cms-oxygen.json",
+      "retrievedAt": "2026-11-01T12:29:19.048349+00:00",
+      "sha256": "fd6a5e1e6ae9d22648950d0f5544dcca7af67af1188e60586aa3ed4a902ea6c0"
+    },
+    {
+      "id": "metformin",
+      "family": "openfda-label",
+      "title": "ZITUVIMET (sitagliptin and metformin hydrochloride): prescribing label",
+      "url": "https://api.fda.gov/drug/label.json?search=id:8c26dc1a-fba3-4266-bfaf-624b0941ef8b&limit=1",
+      "license": "Public domain / CC0 1.0 (openFDA)",
+      "licenseUrl": "https://open.fda.gov/license/",
+      "file": "metformin.json",
+      "retrievedAt": "2026-11-01T12:29:23.864479+00:00",
+      "sha256": "a32ba3ee87e409ac5472b6af6dd228cb26a732e1f77a120a90aa79855262a66b"
+    },
+    {
+      "id": "cdc-timing",
+      "family": "cdc-acip",
+      "title": "CDC ACIP: Timing and Spacing of Immunobiologics",
+      "url": "https://www.cdc.gov/vaccines/hcp/imz-best-practices/timing-spacing-immunobiologics.html",
+      "license": "Public domain (CDC authored text)",
+      "licenseUrl": "https://www.cdc.gov/other/agencymaterials.html",
+      "file": "cdc-timing.json",
+      "retrievedAt": "2026-11-01T12:29:24.056869+00:00",
+      "sha256": "ae5daee5de8e2b30c75c424503ec1c54d38de871a5d91d41f4663e1f68cf128b"
+    }
+  ]
+}

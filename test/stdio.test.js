@@ -22,7 +22,7 @@ test("stdio server: list, capture, refuse, search", async () => {
   await client.connect(transport);
   try {
     const { tools } = await client.listTools();
-    assert.equal(tools.length, 17);
+    assert.equal(tools.length, 18);
 
     const ok = await client.callTool({ name: "inbox.capture", arguments: { text: "Remember the stdio test", suggested_bucket: "ideas" } });
     assert.ok(!ok.isError, textOf(ok));

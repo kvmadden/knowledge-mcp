@@ -1,0 +1,28 @@
+{
+  "source": "madden-tokens 0.47.0, src/ui/theme.js resolveTheme(light)",
+  "tokens": {
+    "theme": "light",
+    "ground": "zinc",
+    "bg": "#EEECEA",
+    "surface": "#F4F3F1",
+    "surfaceElevated": "#F9F8F7",
+    "card": "#F9F8F7",
+    "text": "#1c1917",
+    "textMuted": "#44403c",
+    "textDim": "#706965",
+    "onAccent": "#fff",
+    "border": "#d6d3d1",
+    "borderSoft": "#e7e5e4",
+    "accent": "#2F7350",
+    "accentBase": "#3D9A6D",
+    "fontSans": "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    "fontMono": "'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+    "film": "rgba(23,23,26,0.03)",
+    "filmHover": "rgba(23,23,26,0.06)",
+    "filmBorder": "rgba(23,23,26,0.10)",
+    "filmBorderHover": "rgba(23,23,26,0.22)",
+    "rim": "inset 0 -1px 0 rgba(23,23,26,0.06)",
+    "dropShadow": "0 6px 20px rgba(23,23,26,0.10)",
+    "dropShadowHover": "0 10px 28px rgba(23,23,26,0.14)"
+  }
+}

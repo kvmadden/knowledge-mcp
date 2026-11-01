@@ -14,9 +14,9 @@
 test at test/clinical-showcase.test.js:6:1
 ✖ clinical case keeps identifiers and fax instructions out of shared memory (5.065375ms)
   AssertionError [ERR_ASSERTION]: The input did not match the regular expression /care.coordination/i. Input:
-  
+
   'The fictional Atlas team ships a reviewed draft every Friday.'
-  
+
       at TestContext.<anonymous> (file:///private/tmp/knowledge-clinical-control/test/clinical-showcase.test.js:10:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
@@ -33,7 +33,7 @@ test at test/clinical-showcase.test.js:6:1
 test at test/clinical-showcase.test.js:31:1
 ✖ console gives a reviewer an accountable action and visible product boundaries (0.910917ms)
   AssertionError [ERR_ASSERTION]: The input did not match the regular expression /care coordinator/i. Input:
-  
+
   '<!doctype html>\n' +
     '<html lang="en">\n' +
     '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Write gate console · knowledge-mcp</title><link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script></head>\n' +
@@ -48,7 +48,7 @@ test at test/clinical-showcase.test.js:31:1
     '<section class="panel lower"><div class="tabs" role="tablist" aria-label="Evidence view"><button id="audit-tab" role="tab" aria-selected="true" aria-controls="audit">Audit log</button><button id="red-tab" role="tab" aria-selected="false" aria-controls="red">Red-team lab</button><span>TRACEABLE BY DESIGN</span></div><div id="audit" role="tabpanel" aria-labelledby="audit-tab"></div><div id="red" role="tabpanel" aria-labelledby="red-tab" hidden></div></section>\n' +
     '<footer><span>knowledge-mcp <b>/</b> write gate console</span><span>Fictional Atlas project · Session resets on server restart</span></footer>\n' +
     '</main></body></html>\n'
-  
+
       at TestContext.<anonymous> (file:///private/tmp/knowledge-clinical-control/test/clinical-showcase.test.js:34:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)

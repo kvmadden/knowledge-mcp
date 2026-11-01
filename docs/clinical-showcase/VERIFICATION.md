@@ -2,7 +2,7 @@
 
 Date: 2026-11-01. Base: origin/main `9c19d0ba1d86eedffe090b9086389400e4405dbf`. Node v24.14.1, npm 11.11.0. Both control and candidate used `npm ci` against the unchanged package-lock.json and the same synthetic fixtures. No gate, config, evaluation data, public contract or dependency changed.
 
-Evidence home resolved by the dispatch storage-plan receipt: `/Volumes/HubData/evidence/knowledge-mcp-clinical-scenario`. The receipt allocates `/Volumes/HubData/evidence` for evidence. Selected text evidence is copied beside this file for PR inspection. Full viewport and full-page images, replay captures, original RED output and recording checks remain in that evidence home.
+Evidence home resolved by the dispatch storage-plan receipt: `/Volumes/HubData/evidence/knowledge-mcp-clinical-scenario`. The receipt allocates `/Volumes/HubData/evidence` for evidence. Selected text evidence is copied beside this file for PR inspection, with trailing whitespace removed. Original logs are preserved in the evidence home. Full viewport and full-page images, replay captures, original RED output and recording checks remain in that evidence home.
 
 ## RED then GREEN
 

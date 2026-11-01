@@ -71,7 +71,16 @@ EVAL_RUNTIME_ROOT=/tmp/knowledge-mcp-control-20261031 node eval/legacy.mjs docs/
 
 Exit 0. The held-out before report was generated before any runtime change in the original worktree at `9dc0ac6`. Both sets and all counts are in [the evaluation report](README.md). The original `test/write-paths.test.js` and `test/_helpers.js` remain byte-for-byte unchanged from main.
 
-A fresh candidate clone check is also recorded below after the documentation and recording commit.
+Fresh candidate clone of `2b5bd7d`, outside the estate:
+
+```sh
+git clone --quiet --no-local . /tmp/knowledge-mcp-candidate-20261031
+env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT npm ci --prefix /tmp/knowledge-mcp-candidate-20261031
+env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT npm test --prefix /tmp/knowledge-mcp-candidate-20261031
+env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT npm run check --prefix /tmp/knowledge-mcp-candidate-20261031
+```
+
+All exited 0, with 97 passed, 0 failed and 0 skipped. Both fresh clone source trees remained clean. Raw outputs are committed in `evidence/`, including RED-first, focused GREEN, focused control, both full suites and fresh candidate. `KNOWLEDGE_WRITE_MODE=dry-run npm run check` also exited 0, with no seeded records or files. The final evidence-only commit changes no executable source or fixtures.
 
 ## Visual recording
 

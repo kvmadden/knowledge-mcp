@@ -1,0 +1,38 @@
+[
+  {
+    "width": 1440,
+    "height": 900,
+    "overflow": false,
+    "undersized": [],
+    "approval": true,
+    "rejection": true,
+    "keyboardTabs": true,
+    "errorRecovery": true,
+    "loading": true,
+    "darkTheme": true
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "overflow": false,
+    "undersized": [],
+    "approval": true,
+    "rejection": true,
+    "keyboardTabs": true,
+    "errorRecovery": true,
+    "loading": true,
+    "darkTheme": true
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "overflow": false,
+    "undersized": [],
+    "approval": true,
+    "rejection": true,
+    "keyboardTabs": true,
+    "errorRecovery": true,
+    "loading": true,
+    "darkTheme": true
+  }
+]

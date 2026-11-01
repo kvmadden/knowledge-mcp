@@ -1,0 +1,17 @@
+✔ script runs real screening and approval commits only once (5.24625ms)
+✔ HTTP console isolates local actions and reports stale approval errors (46.268458ms)
+✔ red-team cases can be replayed after the scripted session completes (1.646583ms)
+✔ development attacks are refused across record and memory writes (4.360125ms)
+✔ explicitly untrusted document content is refused rather than promoted to a fact (0.5565ms)
+✔ provenance survives MCP creation, reading, pinning and disk reload (17.601791ms)
+✔ dry-run screens all tools and never changes records or files (2.689417ms)
+✔ invalid write mode cannot silently enable writes (0.279333ms)
+✔ dry-run startup skips seed writes and leaves reads available (1.43525ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 200.173917

@@ -6,9 +6,9 @@ The console uses `buildRuntime`, the real records library and guarded store. Eac
 
 A separate dry-run runtime screens held writes without committing. Approval submits the same input to the commit runtime, which screens it again. Reject records a console review event without writing a record. Duplicate resolution fails. Source and observed dates in the audit view are synthetic caller assertions joined to receipts by attempt ID. The underlying gate receipts remain value-free. Red-team replay works independently after the script completes.
 
-The branch includes upgrade PR #1, commit `4eb9869`, as a dependency. The PR targets main under the dispatcher's global base rule. The library changes and earlier safety media in that dependency belong to PR #1. This change adds the working console and its evidence.
+The branch includes upgrade PR #1, commit `4eb9869`, as a dependency. The PR targets main. The library changes and earlier safety media in that dependency belong to PR #1. This change adds the working console and its evidence.
 
-Repository tree and synonym searches found no existing console or parked console in main. The queue and run evidence contained this showcase job and its upgrade predecessor. Site screenshot jobs consume these assets and do not implement this console. Open PR review found only the upgrade PR before this job's PR was opened. No ledger row was changed.
+Repository tree and synonym searches found no existing console in main. Open PR review found only the upgrade PR before this PR was opened.
 
 ## RED then GREEN
 
@@ -49,6 +49,6 @@ The initial mobile target check caught the theme button below 44 pixels. A minim
 
 One synthetic in-memory session is shared across browser tabs on this loopback server. State disappears on reset or restart. This console is a local demonstration with no authentication, durable approvals or multi-user coordination. Rule coverage is the real library's existing coverage, not a guarantee against every injection. Console routing does not extend the gate policy.
 
-Evidence is also preserved under the evidence root in the dispatch storage plan for this job, `/Volumes/HubData/evidence/knowledge-mcp-showcase-ui`. No service was deployed or reloaded and no PR was merged.
+No service was deployed or reloaded and no PR was merged.
 
 Captured text logs have trailing whitespace removed for a clean diff. No result or assertion was changed.

@@ -2,7 +2,7 @@
 
 Date: 2026-11-01. Base: origin/main `9c19d0ba1d86eedffe090b9086389400e4405dbf`. Node v24.14.1, npm 11.11.0. Both control and candidate used `npm ci` against the unchanged package-lock.json and the same synthetic fixtures. No gate, config, evaluation data, public contract or dependency changed.
 
-Evidence home resolved by the dispatch storage-plan receipt: `/Volumes/HubData/evidence/knowledge-mcp-clinical-scenario`. The receipt allocates `/Volumes/HubData/evidence` for evidence. Selected text evidence is copied beside this file for PR inspection, with trailing whitespace removed. Original logs are preserved in the evidence home. Full viewport and full-page images, replay captures, original RED output and recording checks remain in that evidence home.
+Selected text evidence is copied beside this file for PR inspection, with trailing whitespace removed. Original logs, full viewport and full-page images, replay captures, original RED output and recording checks were kept in a local evidence directory outside the repository.
 
 ## RED then GREEN
 
@@ -40,10 +40,10 @@ Anchors were the existing light desktop screenshot, `docs/media/theme.json` and 
 ```sh
 node scripts/safety-demo.mjs --record
 node scripts/render-safety-demo.mjs
-EVIDENCE_HOME=/Volumes/HubData/evidence/knowledge-mcp-clinical-scenario PLAYWRIGHT_MODULE=/Volumes/HubData/work/worktrees/projects-site-case-context-screenshots/node_modules/playwright/index.mjs node scripts/record-console.mjs
-PLAYWRIGHT_MODULE=/Volumes/HubData/work/worktrees/projects-site-case-context-screenshots/node_modules/playwright/index.mjs node scripts/record-safety-demo.mjs /Volumes/HubData/evidence/knowledge-mcp-clinical-scenario/replay
+EVIDENCE_HOME=<evidence directory> PLAYWRIGHT_MODULE=<installed Playwright ES module> node scripts/record-console.mjs
+PLAYWRIGHT_MODULE=<installed Playwright ES module> node scripts/record-safety-demo.mjs <evidence directory>/replay
 /private/tmp/knowledge-clinical-media/bin/python scripts/console-gif.py
-/private/tmp/knowledge-clinical-media/bin/python scripts/demo-gif.py /Volumes/HubData/evidence/knowledge-mcp-clinical-scenario/replay
+/private/tmp/knowledge-clinical-media/bin/python scripts/demo-gif.py <evidence directory>/replay
 ```
 
 All final recording commands exit 0. Pillow was installed in a disposable local venv solely to assemble screenshots. Playwright used an existing installed browser dependency, no runtime sibling dependency was added. Scripts work with a normal Playwright installation via the default module name.
@@ -54,7 +54,7 @@ A recording assertion initially expected the exact single rule `untrusted-source
 
 ## Scope and preflight
 
-Fetched origin/main and inspected its complete tree plus function and synonym searches for Atlas, safety demo, write gate and clinical. Checked open repository PRs, local worktrees, the work ledger read-only, state briefs, parked and archived umbrella material, queued briefs and recent run evidence. Prior showcase and evaluation work is already represented in base 9c19d0b. No open PR or separate active clinical-scenario implementation was found. This session owns only the dispatched clinical-scenario branch. No ledger row was claimed, closed or edited.
+Fetched origin/main and inspected its complete tree plus function and synonym searches for Atlas, safety demo, write gate and clinical. Checked open repository PRs and local worktrees. Prior showcase and evaluation work is already represented in base 9c19d0b. No open PR or separate active clinical-scenario implementation was found.
 
 Final checks:
 

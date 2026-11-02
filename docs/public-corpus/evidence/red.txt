@@ -2,7 +2,7 @@ node:internal/modules/cjs/loader:1459
   throw err;
   ^
 
-Error: Cannot find module '/Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/eval/public.mjs'
+Error: Cannot find module '<repo>/eval/public.mjs'
     at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)
     at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)
     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)
@@ -32,7 +32,7 @@ Node.js v24.14.1
 test at test/public-corpus.test.js:7:1
 ✖ public manifest contains only allowed sources and matching committed sha256 (0.649709ms)
   AssertionError [ERR_ASSERTION]: public corpus manifest must be committed
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/public-corpus.test.js:8:10)
+      at TestContext.<anonymous> (file://<repo>/test/public-corpus.test.js:8:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
       at Test.start (node:internal/test_runner/test:1015:17)
@@ -47,7 +47,7 @@ test at test/public-corpus.test.js:7:1
 
 test at test/public-corpus.test.js:24:1
 ✖ each public answer citation resolves to an exact committed passage (0.474917ms)
-  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/src/lib/corpus.js' imported from /Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/public-corpus.test.js
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '<repo>/src/lib/corpus.js' imported from <repo>/test/public-corpus.test.js
       at finalizeResolution (node:internal/modules/esm/resolve:275:11)
       at moduleResolve (node:internal/modules/esm/resolve:865:10)
       at defaultResolve (node:internal/modules/esm/resolve:991:11)
@@ -59,17 +59,17 @@ test at test/public-corpus.test.js:24:1
       at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:650:32)
       at TracingChannel.tracePromise (node:diagnostics_channel:350:14) {
     code: 'ERR_MODULE_NOT_FOUND',
-    url: 'file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/src/lib/corpus.js'
+    url: 'file://<repo>/src/lib/corpus.js'
   }
 
 test at test/public-corpus.test.js:42:1
 ✖ public eval runs offline on committed files with separate retrieval and citation metrics (34.241916ms)
-  Error: Command failed: /Users/kevin/.local/node-v24.14.1-darwin-arm64/bin/node eval/public.mjs
+  Error: Command failed: node eval/public.mjs
   node:internal/modules/cjs/loader:1459
     throw err;
     ^
 
-  Error: Cannot find module '/Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/eval/public.mjs'
+  Error: Cannot find module '<repo>/eval/public.mjs'
       at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)
       at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)
       at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)
@@ -87,7 +87,7 @@ test at test/public-corpus.test.js:42:1
       at wrappedFn (node:internal/errors:539:14)
       at checkExecSyncError (node:child_process:925:11)
       at execFileSync (node:child_process:961:15)
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/public-corpus.test.js:43:29)
+      at TestContext.<anonymous> (file://<repo>/test/public-corpus.test.js:43:29)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
       at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
@@ -95,8 +95,8 @@ test at test/public-corpus.test.js:42:1
       at Test.run (node:internal/test_runner/test:1175:12) {
     status: 1,
     signal: null,
-    output: [ null, '', "node:internal/modules/cjs/loader:1459\n  throw err;\n  ^\n\nError: Cannot find module '/Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/eval/public.mjs'\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)\n    at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)\n    at Module._load (node:internal/modules/cjs/loader:1242:25)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47 {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: []\n}\n\nNode.js v24.14.1\n" ],
+    output: [ null, '', "node:internal/modules/cjs/loader:1459\n  throw err;\n  ^\n\nError: Cannot find module '<repo>/eval/public.mjs'\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)\n    at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)\n    at Module._load (node:internal/modules/cjs/loader:1242:25)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47 {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: []\n}\n\nNode.js v24.14.1\n" ],
     pid: 34394,
     stdout: '',
-    stderr: "node:internal/modules/cjs/loader:1459\n  throw err;\n  ^\n\nError: Cannot find module '/Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/eval/public.mjs'\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)\n    at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)\n    at Module._load (node:internal/modules/cjs/loader:1242:25)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47 {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: []\n}\n\nNode.js v24.14.1\n"
+    stderr: "node:internal/modules/cjs/loader:1459\n  throw err;\n  ^\n\nError: Cannot find module '<repo>/eval/public.mjs'\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)\n    at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)\n    at Module._load (node:internal/modules/cjs/loader:1242:25)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47 {\n  code: 'MODULE_NOT_FOUND',\n  requireStack: []\n}\n\nNode.js v24.14.1\n"
   }

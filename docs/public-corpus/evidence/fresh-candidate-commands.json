@@ -5,7 +5,7 @@
       "clone",
       "--quiet",
       "--no-local",
-      "/Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus",
+      "<repo>",
       "/private/tmp/knowledge-corpus-candidate-lrrgs96f"
     ],
     "exit": 0,

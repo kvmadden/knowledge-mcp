@@ -17,7 +17,7 @@ test at test/clinical-showcase.test.js:6:1
 
   'The fictional Atlas team ships a reviewed draft every Friday.'
 
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-clinical-scenario/test/clinical-showcase.test.js:10:10)
+      at TestContext.<anonymous> (file://<repo>/test/clinical-showcase.test.js:10:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
       at Test.start (node:internal/test_runner/test:1015:17)
@@ -49,7 +49,7 @@ test at test/clinical-showcase.test.js:31:1
     '<footer><span>knowledge-mcp <b>/</b> write gate console</span><span>Fictional Atlas project · Session resets on server restart</span></footer>\n' +
     '</main></body></html>\n'
 
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-clinical-scenario/test/clinical-showcase.test.js:34:10)
+      at TestContext.<anonymous> (file://<repo>/test/clinical-showcase.test.js:34:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
       at Test.processPendingSubtests (node:internal/test_runner/test:787:18)

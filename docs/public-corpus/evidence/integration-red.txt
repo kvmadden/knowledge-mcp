@@ -123,7 +123,7 @@ test at test/startup.test.js:25:1
 
   18 !== 17
 
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/startup.test.js:32:10)
+      at TestContext.<anonymous> (file://<repo>/test/startup.test.js:32:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
       at Test.start (node:internal/test_runner/test:1015:17)
@@ -142,7 +142,7 @@ test at test/stdio.test.js:14:1
 
   18 !== 17
 
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/stdio.test.js:25:12)
+      at TestContext.<anonymous> (file://<repo>/test/stdio.test.js:25:12)
       at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
       at async Test.run (node:internal/test_runner/test:1125:7)
       at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
@@ -167,7 +167,7 @@ test at test/write-paths.test.js:137:1
       'inbox.capture_quick',
       'inbox.recent',
 
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/write-paths.test.js:144:10)
+      at TestContext.<anonymous> (file://<repo>/test/write-paths.test.js:144:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
       at Test.start (node:internal/test_runner/test:1015:17)
@@ -203,8 +203,8 @@ test at test/write-paths.test.js:137:1
 test at test/write-paths.test.js:193:3
 ✖ read tool corpus.answer: never changes the store (0.28725ms)
   TypeError: Cannot read properties of undefined (reading 'setup')
-      at auditTool (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/write-paths.test.js:98:13)
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-public-corpus/test/write-paths.test.js:194:32)
+      at auditTool (file://<repo>/test/write-paths.test.js:98:13)
+      at TestContext.<anonymous> (file://<repo>/test/write-paths.test.js:194:32)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
       at Test.processPendingSubtests (node:internal/test_runner/test:787:18)

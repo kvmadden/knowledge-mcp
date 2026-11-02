@@ -17,7 +17,7 @@
 test at test/safety-flow.test.js:8:1
 ✖ development attacks are refused across record and memory writes (3.797458ms)
   AssertionError [ERR_ASSERTION]: Missing expected exception: instruction injection must be refused
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-upgrade/test/safety-flow.test.js:11:12)
+      at TestContext.<anonymous> (file://<repo>/test/safety-flow.test.js:11:12)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
       at Test.start (node:internal/test_runner/test:1015:17)
@@ -33,7 +33,7 @@ test at test/safety-flow.test.js:8:1
 test at test/safety-flow.test.js:19:1
 ✖ explicitly untrusted document content is refused rather than promoted to a fact (0.423917ms)
   AssertionError [ERR_ASSERTION]: Missing expected exception.
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-upgrade/test/safety-flow.test.js:21:10)
+      at TestContext.<anonymous> (file://<repo>/test/safety-flow.test.js:21:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
       at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
@@ -61,7 +61,7 @@ test at test/safety-flow.test.js:26:1
   -   trust: 'asserted'
   - }
 
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-upgrade/test/safety-flow.test.js:36:14)
+      at TestContext.<anonymous> (file://<repo>/test/safety-flow.test.js:36:14)
       at async Test.run (node:internal/test_runner/test:1125:7)
       at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
     generatedMessage: true,
@@ -80,7 +80,7 @@ test at test/safety-flow.test.js:46:1
   + undefined
   - true
 
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-upgrade/test/safety-flow.test.js:57:14)
+      at TestContext.<anonymous> (file://<repo>/test/safety-flow.test.js:57:14)
       at async Test.run (node:internal/test_runner/test:1125:7)
       at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
     generatedMessage: true,
@@ -94,7 +94,7 @@ test at test/safety-flow.test.js:46:1
 test at test/safety-flow.test.js:67:1
 ✖ invalid write mode cannot silently enable writes (0.254667ms)
   AssertionError [ERR_ASSERTION]: Missing expected exception.
-      at TestContext.<anonymous> (file:///Volumes/HubData/work/worktrees/knowledge-mcp-upgrade/test/safety-flow.test.js:68:10)
+      at TestContext.<anonymous> (file://<repo>/test/safety-flow.test.js:68:10)
       at Test.runInAsyncScope (node:async_hooks:228:14)
       at Test.run (node:internal/test_runner/test:1118:25)
       at Test.processPendingSubtests (node:internal/test_runner/test:787:18)

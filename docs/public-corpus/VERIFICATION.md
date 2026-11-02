@@ -4,9 +4,9 @@ The public collection contains 134 committed passages from three canonical publi
 
 ## Scope search
 
-Base and control: `9c19d0ba1d86eedffe090b9086389400e4405dbf`, fetched from origin/main before implementation and checked again before publishing. The isolated worktree belongs to the named `/Users/kevin/dev/repos/knowledge-mcp` clone.
+Base and control: `9c19d0ba1d86eedffe090b9086389400e4405dbf`, fetched from origin/main before implementation and checked again before publishing.
 
-`git ls-tree -r --name-only origin/main` and `git grep -n -i -E 'public.corpus|dailymed|openfda|immunization|coverage determination' origin/main` found no public retrieval collection. The estate search included parked capabilities, archived templates, state, queue briefs and recent knowledge-mcp run logs. Queue entry 36 owns this corpus scope. Upgrade, showcase and clinical scenario jobs concern distinct work. The only open PR was clinical scenario PR #3. No dependency on that branch is required. No duplicate public corpus owner was found.
+`git ls-tree -r --name-only origin/main` and `git grep -n -i -E 'public.corpus|dailymed|openfda|immunization|coverage determination' origin/main` found no public retrieval collection. The only open PR was clinical scenario PR #3. No dependency on that branch is required. No duplicate public corpus owner was found.
 
 ## RED and integration failures
 
@@ -53,12 +53,10 @@ See [public-eval.json](evidence/public-eval.json) and the fresh clone output in 
 
 ## Browser evidence
 
-Visual changes reuse the existing `docs/media/theme.json` palette and console typography. The existing write gate screenshot was the reference. Command: `PLAYWRIGHT_MODULE=/Users/kevin/dev/repos/ascent-alert-origin-build/node_modules/playwright/index.mjs node scripts/record-public-corpus.mjs`, exit 0.
+Visual changes reuse the existing `docs/media/theme.json` palette and console typography. The existing write gate screenshot was the reference. Command: `PLAYWRIGHT_MODULE=<installed Playwright ES module> node scripts/record-public-corpus.mjs`, exit 0.
 
 The recorder passed at 1440x900, 430x932 and 390x844 with no page errors or horizontal overflow, keyboard form submission, minimum 44-point controls, collection switching, empty results, failed request recovery and light/dark screenshots. Screenshots were rendered and visually inspected. See [browser.json](evidence/browser.json) and the six `docs/media/public-corpus-*` images.
 
-## Evidence home and limits
-
-A copy of this verification directory and screenshots is saved to `/Volumes/HubData/evidence/knowledge-mcp-public-corpus`, using the evidence allocation resolved in the dispatch storage receipt `storage-plan-knowledge-mcp-public-corpus-d3bde778-1f69-4d87-a05d-31730344cb9f.json`.
+## Limits
 
 The corpus contains selected prose and label sections, not complete source documents. Source URLs and retrieval timestamps are preserved. Only refresh verification uses the network. Upstream changes require review and may make the reproducibility check fail. CDC attribution, free availability and the required non-endorsement notice appear in the source documentation and demo. The demo does not generate clinical recommendations. No paid API or external service is used for answering.

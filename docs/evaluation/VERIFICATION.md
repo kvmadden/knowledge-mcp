@@ -4,9 +4,9 @@ Run on 2026-10-31 with Node `v24.14.1` and npm `11.11.0`, macOS. Public-main con
 
 ## Scope and duplicate check
 
-Fetched `origin/main` in the named knowledge-mcp clone, enumerated its tree, searched screening, audit, provenance, dry-run, approval and injection synonyms, and checked open PRs. None covered this scope. Searched current umbrella source, parked and archived capabilities and state/briefs after fetching its main. Checked dispatcher queued and started jobs and recent run evidence. The only knowledge-mcp builder job was this run. Portfolio jobs referenced the existing claim and did not own its runtime. No ledger row was claimed, edited or closed.
+Fetched `origin/main`, enumerated its tree, searched screening, audit, provenance, dry-run, approval and injection synonyms, and checked open PRs. None covered this scope.
 
-Used the dispatcher-created isolated worktree from the named clone. Local evidence is saved under `/Volumes/HubData/evidence/knowledge-mcp-upgrade`, the evidence allocation in the dispatcher's admitted storage plan. The storage receipt is `storage-plan-knowledge-mcp-upgrade-58798450-f738-40e2-8038-9c713dfe5915.json` in that evidence home. Public, synthetic evidence is committed here so review does not require access to that Mac.
+Work ran in an isolated worktree, with raw logs kept in a local evidence directory. Public, synthetic evidence is committed here so review does not require access to that directory.
 
 ## RED first, then GREEN
 
@@ -89,8 +89,8 @@ The reference is the existing console demo and shared registry light-theme token
 ```sh
 node scripts/safety-demo.mjs --record
 node scripts/render-safety-demo.mjs
-PLAYWRIGHT_MODULE=/Volumes/HubData/work/worktrees/projects-site-case-context-screenshots/node_modules/playwright/index.mjs node scripts/record-safety-demo.mjs /Volumes/HubData/evidence/knowledge-mcp-upgrade
-/tmp/knowledge-mcp-media-20261031/bin/python scripts/demo-gif.py /Volumes/HubData/evidence/knowledge-mcp-upgrade
+PLAYWRIGHT_MODULE=<installed Playwright ES module> node scripts/record-safety-demo.mjs <evidence directory>
+/tmp/knowledge-mcp-media-20261031/bin/python scripts/demo-gif.py <evidence directory>
 ```
 
 Exit 0 for each. Recording tooling used an existing Playwright installation and a disposable Pillow environment. Neither is needed by the runtime or tests. The GIF has four frames, 11.6 seconds total, at 1440×1022 to include the complete audit entry. The viewport used for desktop review is 1440×900. The first PNG and complete GIF are in `docs/media/`.

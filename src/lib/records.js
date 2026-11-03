@@ -3,6 +3,7 @@
 // sees the raw store, so it has no way to write without screening.
 
 import { isKnownBucket } from "./buckets.js";
+import { provenanceSchema } from "./provenance.js";
 
 export const RECORD_TYPES = Object.freeze(["note", "decision", "rule", "reference", "person", "task"]);
 export const SERVER_SOURCE_APP = "knowledge-mcp";
@@ -12,10 +13,36 @@ function cleanTags(tags) {
   return [...new Set(tags.map((t) => String(t).trim()).filter(Boolean))].map((t) => t.slice(0, 64));
 }
 
+// Validation errors name the field, never the submitted value, so a planted
+// identifier sent in the wrong field is not echoed back to the caller.
 function requireBucket(bucket, label) {
   if (bucket == null || bucket === "") return null;
-  if (!isKnownBucket(bucket)) throw new Error(`${label}: unknown bucket "${bucket}". Use inbox.buckets to list valid ids.`);
+  if (!isKnownBucket(bucket)) throw new Error(`${label}: unknown bucket id. Use inbox.buckets to list valid ids.`);
   return bucket;
+}
+
+// The MCP schema already validates provenance. Library callers get the same
+// check here, after trimming and lowercasing the trust label, so a label such
+// as "UNTRUSTED " cannot slip past the trust rule or be stored as written.
+function cleanProvenance(provenance, label) {
+  if (provenance === undefined || provenance === null) return undefined;
+  const candidate = provenance && typeof provenance === "object" ? { ...provenance } : provenance;
+  if (candidate && typeof candidate.trust === "string") candidate.trust = candidate.trust.trim().toLowerCase();
+  const parsed = provenanceSchema.safeParse(candidate);
+  if (!parsed.success) throw new Error(`${label}: provenance must have a source and an optional observedAt date and trust label.`);
+  return parsed.data;
+}
+
+function requireLink(linkUrl, label) {
+  if (linkUrl == null || linkUrl === "") return null;
+  let url;
+  try {
+    url = new URL(String(linkUrl));
+  } catch {
+    throw new Error(`${label}: link_url must be an absolute http or https URL.`);
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error(`${label}: link_url must be an absolute http or https URL.`);
+  return String(linkUrl);
 }
 
 export function toSummary(row) {
@@ -43,7 +70,7 @@ export function toDetail(row) {
   return { ...toSummary(row), text: row.text ?? "", meta: row.meta ?? {} };
 }
 
-export function createRecords({ store, ownerId }) {
+export function createRecords({ store, ownerId, now = () => new Date().toISOString() }) {
   return {
     list(filter = {}) {
       return store.listRecords(ownerId, filter).map(toSummary);
@@ -72,7 +99,7 @@ export function createRecords({ store, ownerId }) {
       const titled = typeof title === "string" && title.trim().length > 0;
       const row = store.insertRecord({
         owner_id: ownerId,
-        provenance,
+        provenance: cleanProvenance(provenance, "records.create"),
         text,
         bucket: requireBucket(bucket, "records.create"),
         source_app: SERVER_SOURCE_APP,
@@ -80,7 +107,8 @@ export function createRecords({ store, ownerId }) {
         tags: cleanTags(tags),
         meta: {
           type,
-          ...(titled && { title: title.trim(), summary: summary ? String(summary).trim() : null }),
+          ...(titled && { title: title.trim() }),
+          ...(summary && String(summary).trim() && { summary: String(summary).trim() }),
         },
       });
       return toSummary(row);
@@ -88,7 +116,7 @@ export function createRecords({ store, ownerId }) {
 
     pin({ id, pinned = true }) {
       if (typeof id !== "string" || !id) throw new Error("records.pin: id is required");
-      const patch = pinned ? { pinned: true, pinnedAt: new Date().toISOString() } : { pinned: null, pinnedAt: null };
+      const patch = pinned ? { pinned: true, pinnedAt: now() } : { pinned: null, pinnedAt: null };
       const row = store.updateRecordMeta(ownerId, id, patch);
       if (!row) throw new Error(`records.pin: no record with id ${id}`);
       return { id: row.id, pinned: Boolean(row.meta.pinned), pinnedAt: row.meta.pinnedAt ?? null };
@@ -100,7 +128,7 @@ export function createRecords({ store, ownerId }) {
       const body = context ? `${t}\n\n${String(context).trim()}` : t;
       const row = store.insertRecord({
         owner_id: ownerId,
-        provenance,
+        provenance: cleanProvenance(provenance, "decisions.log"),
         text: body,
         bucket: requireBucket(bucket, "decisions.log"),
         source_app: SERVER_SOURCE_APP,
@@ -110,7 +138,7 @@ export function createRecords({ store, ownerId }) {
           type: "decision",
           title: t,
           summary: summary ? String(summary).trim() : null,
-          decision: { loggedAt: new Date().toISOString() },
+          decision: { loggedAt: now() },
         },
       });
       return toSummary(row);
@@ -119,9 +147,10 @@ export function createRecords({ store, ownerId }) {
     capture({ text, source_app, suggested_bucket, tags = [], link_url, provenance }) {
       if (typeof text !== "string" || !text.trim()) throw new Error("inbox.capture: text is required");
       const bucket = requireBucket(suggested_bucket, "inbox.capture");
+      const link = requireLink(link_url, "inbox.capture");
       const row = store.insertRecord({
         owner_id: ownerId,
-        provenance,
+        provenance: cleanProvenance(provenance, "inbox.capture"),
         text,
         bucket,
         source_app: source_app || SERVER_SOURCE_APP,
@@ -130,7 +159,7 @@ export function createRecords({ store, ownerId }) {
         meta: {
           type: "note",
           ...(bucket && { suggested_bucket: bucket }),
-          ...(link_url && { link_url: String(link_url) }),
+          ...(link && { link_url: link }),
         },
       });
       return toSummary(row);

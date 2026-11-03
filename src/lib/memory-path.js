@@ -17,8 +17,10 @@ const CONTROL_CHARS = /[\x00-\x1f\x7f]/;
  * @returns {{ canonical: string, subPath: string, isRoot: boolean }}
  *   subPath is the part after /memories ("/notes/a.md"), "" for the root.
  */
-export function validateMemoryPath(input, { allowRoot = true } = {}) {
-  if (typeof input !== "string" || input.length === 0) throw new MemoryPathError("path must be a non-empty string");
+export function validateMemoryPath(rawInput, { allowRoot = true } = {}) {
+  if (typeof rawInput !== "string" || rawInput.length === 0) throw new MemoryPathError("path must be a non-empty string");
+  // One spelling per path: composed and decomposed forms of the same name are the same file.
+  const input = rawInput.normalize("NFC");
   if (input.length > 1024) throw new MemoryPathError("path exceeds 1024 characters");
   if (CONTROL_CHARS.test(input)) throw new MemoryPathError("path contains control characters");
   for (const re of TRAVERSAL) {
@@ -33,7 +35,7 @@ export function validateMemoryPath(input, { allowRoot = true } = {}) {
   if (subPath.includes("//")) throw new MemoryPathError("path contains an empty segment (//)");
   if (subPath.endsWith("/")) throw new MemoryPathError("path must not end with /");
   for (const segment of subPath.split("/").filter(Boolean)) {
-    if (segment.startsWith(".")) throw new MemoryPathError(`path segment may not start with a dot: ${segment}`);
+    if (segment.startsWith(".")) throw new MemoryPathError("a path segment may not start with a dot");
   }
   return { canonical: ROOT + subPath, subPath, isRoot: false };
 }

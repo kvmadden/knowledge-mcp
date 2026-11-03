@@ -6,7 +6,7 @@ export const config = {
   title: "Search records",
   description: 'Case-insensitive text search over record text, titles, summaries and tags. Bare words must all appear, "quoted phrases" match verbatim, -word excludes.',
   inputSchema: {
-    query: z.string().min(1).describe("Search text."),
+    query: z.string().min(1).max(2000).describe("Search text."),
     bucket: z.string().optional().describe("Bucket id to scope to."),
     sourceApp: z.string().optional().describe("Restrict to one source_app."),
     since: z.string().optional().describe("ISO timestamp; only rows created at or after this point."),

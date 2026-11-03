@@ -16,11 +16,16 @@ test('development attacks are refused across record and memory writes', () => {
   }
 })
 
-test('explicitly untrusted document content is refused rather than promoted to a fact', () => {
+test('explicitly untrusted document content is held for review, never stored as a fact', () => {
   const r = newRuntime()
-  assert.throws(() => r.ctx.records.create({ text: 'A fictional project note', provenance: { source: 'mock-attachment', observedAt: '2026-10-30', trust: 'untrusted' } }), /screening/)
+  assert.throws(() => r.ctx.records.create({ text: 'A fictional project note', provenance: { source: 'mock-attachment', observedAt: '2026-10-30', trust: 'untrusted' } }), /held for review/)
   assert.equal(r.snapshot().records.length, 0)
-  assert.deepEqual(r.snapshot().audit.at(-1).pattern_ids, ['untrusted-source'])
+  assert.equal(r.snapshot().pending.length, 1)
+  assert.equal(r.snapshot().audit.at(-1).op, 'write_held')
+  assert.deepEqual(r.snapshot().audit.at(-1).review_ids, ['untrusted-source'])
+  // The label is normalized on the library path too, so a variant spelling is not a way around it.
+  assert.throws(() => r.ctx.records.create({ text: 'Another fictional note', provenance: { source: 'mock-attachment', trust: ' UNTRUSTED ' } }), /held for review/)
+  assert.equal(r.snapshot().records.length, 0)
 })
 
 test('provenance survives MCP creation, reading, pinning and disk reload', async () => {

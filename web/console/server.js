@@ -20,7 +20,12 @@ export function createConsoleServer() {
         return res.end(JSON.stringify(session.view()))
       }
       if (req.method === 'POST') {
-        if (req.headers.origin && req.headers.origin !== `http://${req.headers.host}`) {
+        // Loopback only: the Host header must name a loopback address, so a
+        // page that rebinds its own domain to 127.0.0.1 cannot drive the
+        // console, and a browser Origin, when sent, must match that host.
+        const host = String(req.headers.host || '')
+        const loopback = /^(?:127\.0\.0\.1|localhost|\[::1\])(?::\d{1,5})?$/i.test(host)
+        if (!loopback || (req.headers.origin && req.headers.origin !== `http://${host}`)) {
           res.writeHead(403)
           return res.end('Local origin required')
         }

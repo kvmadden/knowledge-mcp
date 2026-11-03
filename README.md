@@ -4,7 +4,7 @@
 
 ## Honest headline
 
-- **Wiring, verified.** All 10 MCP write tools reach the same gate. The registry test plants 6 synthetic samples into every string argument of every write tool (324 cases). 186 are stopped by the gate itself, the rest by schema, path or URL validation, and 0 persist. A canary run with the gate removed flags 8 of 8 content-bearing tools, so the test can fail.
+- **Wiring, verified.** All 10 MCP write tools reach the same gate. The registry test plants 6 synthetic samples into every string argument of each write tool's fixture (324 cases). 186 are stopped by the gate itself, the rest by schema, path or URL validation, and 0 persist. A second test covers the provenance fields and multi-step edits the fixtures omit. A canary run with the gate removed flags 8 of 8 content-bearing tools, so the test can fail.
 - **Detection, not yet measured on blind data.** Every set used to change the rules is development data, including the 60-case set once called held-out. On those development sets the gate now does far better than before (below). A headline detection rate needs a fresh set written blind and locked before its first run. That set has been specified and is pending.
 - **What a pass means.** An allowed write means no listed pattern or rule was found in an input the gate read in full. It does not mean the content is safe, true or free of personal information that no rule describes.
 
@@ -105,6 +105,7 @@ Screening time is linear. On an Apple M1 Max with Node 24, 900,000 characters sc
 - **Reviewer labels are not authenticated.** The CLI and console record the label the operator types. There is no identity, authorization or per-agent isolation. `OWNER_ID` is a configured label.
 - **One JSON file.** The store rewrites one file per change. It is safe across processes on one machine, not across machines or network file systems.
 - **Reads are not screened.** Content is screened when written and when loaded. Memory file reads say the content is stored data with its trust label, but an agent can still follow it.
+- **The console is a local demo.** It binds to loopback and refuses requests whose Host is not a loopback address, which stops DNS rebinding. It has no session token or login.
 - **The browser helper is not access control.** It shares the gate but has no hold queue (held rows are not inserted), no audit and no database policy. A modified page can skip it.
 - **Synthetic testing only.** No patient data, model, production deployment or clinical study.
 

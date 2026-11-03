@@ -155,35 +155,49 @@ function matchCompiled(p, text) {
   return false
 }
 
-const clock = () => (globalThis.performance?.now ? globalThis.performance.now() : Date.now())
+// Speed probes measure processor time where the runtime reports it (Node),
+// so a busy host that pauses this process does not make a pattern look slow.
+// A long probe is paused more often than a short one, so wall-clock time
+// would also distort the ratio between them. Browsers fall back to wall time.
+const cpuUsage = globalThis.process?.cpuUsage
+export const speedClock = typeof cpuUsage === 'function'
+  ? () => {
+      const used = cpuUsage.call(globalThis.process)
+      return (used.user + used.system) / 1000
+    }
+  : () => (globalThis.performance?.now ? globalThis.performance.now() : Date.now())
 const SPEED_LIMIT_MS = 40
 const SPEED_CEILING_MS = 500
 const speedVerdicts = new Map()
 
 // A pattern that backtracks on long input can stall the whole server. Each
-// pattern is timed once per process on long synthetic probes. It is refused
-// when a 12,000-character probe is slow and took more than three times as
-// long as a 6,000-character one (the time grew faster than the size), or when
-// the larger probe is extremely slow. A busy host makes a linear pattern
-// slower but not super-linear. A probe that looks slow is measured again, up
-// to three times, and the pattern is refused only when every measurement
-// looks slow: a pattern that backtracks is slow every time, a pause on a busy
-// host is not. This is a backstop, not a proof that every input is fast.
-function timedTwice(run) {
-  let ms = run()
-  if (ms > SPEED_LIMIT_MS / 4 && ms <= SPEED_CEILING_MS) ms = Math.min(ms, run(), run())
-  return ms
-}
+// pattern is timed once per process on long synthetic probes. A probe of
+// 12,000 characters that runs under the speed limit passes at once. A
+// slower one is timed again, alternating with a probe a quarter of its size
+// so both see the same load, and the fastest run of each counts. The
+// pattern is refused when the larger probe stays slow and took more than
+// eight times as long as the smaller one (time grew faster than the size:
+// linear growth gives about four), or when it is extremely slow. Every slow
+// verdict is measured three times. A pattern that backtracks is slow every
+// time. A pause on a busy host is not. This is a backstop, not a proof that
+// every input is fast.
 function probeFailure(timeAt, make) {
   let last = null
   for (let attempt = 0; attempt < 3; attempt += 1) {
-    const large = timedTwice(() => timeAt(make(12_000)))
+    let large = timeAt(make(12_000))
     if (large <= SPEED_LIMIT_MS) return null
-    const small = large > SPEED_CEILING_MS ? null : timedTwice(() => timeAt(make(6_000)))
-    if (small !== null && large / Math.max(small, 0.5) <= 3) return null
+    let small = null
+    if (large <= SPEED_CEILING_MS) {
+      small = Infinity
+      for (let i = 0; i < 3; i += 1) {
+        small = Math.min(small, timeAt(make(3_000)))
+        large = Math.min(large, timeAt(make(12_000)))
+      }
+      if (large <= SPEED_LIMIT_MS || large / Math.max(small, 0.5) <= 8) return null
+    }
     last = { small, large }
     // Far past any pause: one confirming measurement is enough.
-    if (large === Infinity || (attempt >= 1 && large > 4 * SPEED_CEILING_MS)) break
+    if (attempt >= 1 && large > 2 * SPEED_CEILING_MS) break
   }
   return last
 }
@@ -192,7 +206,7 @@ export function speedFailure(label, timeAt, probes) {
     const slow = probeFailure(timeAt, make)
     if (slow) {
       const large = Number.isFinite(slow.large) ? `${Math.round(slow.large)} ms on a 12,000-character probe` : 'the retry limit on a 12,000-character probe'
-      const small = slow.small === null ? '' : `, ${Math.round(slow.small)} ms on 6,000`
+      const small = slow.small === null ? '' : `, ${Math.round(slow.small)} ms on 3,000`
       return `${label} is too slow on long input (${large}${small}). Bound its quantifiers or anchor it.`
     }
   }
@@ -208,10 +222,10 @@ export function assertFastPattern(label, re) {
   if (known === true) return
   if (typeof known === 'string') throw new Error(known)
   const failure = speedFailure(label, (probe) => {
-    const started = clock()
+    const started = speedClock()
     re.lastIndex = 0
     re.test(probe)
-    return clock() - started
+    return speedClock() - started
   }, SPEED_PROBES)
   speedVerdicts.set(key, failure ?? true)
   if (failure) throw new Error(failure)
@@ -225,13 +239,13 @@ function assertFastMatcher(label, entry) {
   if (known === true) return
   if (typeof known === 'string') throw new Error(known)
   const failure = speedFailure(`${label} with its validator`, (probe) => {
-    const started = clock()
+    const started = speedClock()
     try {
       matchCompiled(entry, probe)
     } catch {
       return Infinity
     }
-    return clock() - started
+    return speedClock() - started
   }, VALIDATED_PROBES)
   speedVerdicts.set(key, failure ?? true)
   if (failure) throw new Error(failure)

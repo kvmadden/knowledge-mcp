@@ -97,6 +97,10 @@ test('Grok 3: a lock another thread of this process holds is never taken over, a
     // left by an earlier process that had the same pid, or a failed release.
     writeFileSync(`${storePath}.lock`, JSON.stringify({ pid: process.pid, thread: 0, token: 'earlier-run', at: Date.now() }))
     assert.equal(store.insertRecord({ owner_id: 'o', text: 'after an earlier run', source_app: 't' }).id, 'rec_0001')
+    // A lock in the format of the previous version (no token) with this pid
+    // cannot belong to code running here.
+    writeFileSync(`${storePath}.lock`, JSON.stringify({ pid: process.pid, at: Date.now() }))
+    assert.equal(store.insertRecord({ owner_id: 'o', text: 'after an older version', source_app: 't' }).id, 'rec_0002')
     assert.deepEqual(leftovers(t.dir), [])
   } finally {
     t.done()
@@ -623,6 +627,15 @@ test('locks a claim: a long table of digit groups is read in full, not refused a
   const started = performance.now()
   assert.equal(decisionOf({ text: table }), 'allow')
   assert.ok(performance.now() - started < 5_000)
+})
+
+test('the timing backstop counts processor time, so a pause on a busy host does not count', async () => {
+  // Under load, wall-clock timing refused the shipped card pattern in 8 of
+  // 40 startups. Processor time does not grow while the process waits.
+  const { speedClock } = await import('../src/screening/screen.js')
+  const before = speedClock()
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 200)
+  assert.ok(speedClock() - before < 50, 'a 200 ms pause counted as processor time')
 })
 
 test('the timing backstop measures a slow probe three times before it refuses a pattern', async () => {

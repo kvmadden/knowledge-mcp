@@ -83,12 +83,12 @@ The seven that still fail:
 | Screen 900,000 characters (worst of nine shapes) | not measurable in practice | under 300 ms |
 | Screen `x` and 40,000 spaces (GPT review, finding 1) | about 3,700 ms at `9bf91ce` | under 10 ms |
 | `memory.insert` of 150,000 characters over MCP | 38,884 ms | rejected by the 100,000-character input limit |
-| Largest store that restarts | 833 one-line records | 10,000 records restart in about 1.5 s |
+| Largest store that restarts | 833 one-line records | 10,000 records restart in about 1.4 s |
 | Two runtimes writing one store file | 1 of 2 records kept | 80 of 80 records kept by two processes |
 | Two worker threads writing one store file | crashed at `9bf91ce` | 120 of 120 records kept |
 | Six processes breaking one stale lock | lost writes in 5 of 6 trials at `9bf91ce` | 6 of 6 kept in every trial |
 
-Machine: Apple M1 Max, Node 24.14.1, shared with other jobs. Reports: `bench-2026-11-03.json` (round 1), `bench-2026-11-03-round2.json`, and `npm run bench`. Round 2 reads more of each write (keys, four joined arrangements, three decoding layers). Run side by side with `9bf91ce` on the same host, restart time was about the same and a write at 10,000 records took about 1.3 times as long, most of it from the stricter lock and the directory flush.
+Machine: Apple M1 Max, Node 24.14.1, shared with other jobs. Reports: `bench-2026-11-03.json` (round 1), `bench-2026-11-03-round2.json`, and `npm run bench`. Round 2 reads more of each write (keys, four joined arrangements, three decoding layers). Run side by side with `9bf91ce` on the same host, restart time was about the same and a write at 10,000 records took somewhat longer, from the stricter lock.
 
 ## Fallacies this change removes
 

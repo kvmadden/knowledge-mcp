@@ -375,25 +375,6 @@ class FileLock {
   }
 }
 
-// Make a rename durable where the platform allows a directory to be flushed.
-function syncDirectory(dir) {
-  let fd
-  try {
-    fd = openSync(dir, 'r')
-    fsyncSync(fd)
-  } catch {
-    // not supported here (for example on Windows)
-  } finally {
-    if (fd !== undefined) {
-      try {
-        closeSync(fd)
-      } catch {
-        // nothing more to do
-      }
-    }
-  }
-}
-
 // ── the store ───────────────────────────────────────────────────────────
 
 export class MemoryStore {
@@ -790,7 +771,6 @@ export class MemoryStore {
       }
       throw error
     }
-    syncDirectory(path.dirname(this.#persistPath))
     try {
       this.#signature = this.#readSignature()
     } catch {

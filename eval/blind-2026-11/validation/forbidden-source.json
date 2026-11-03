@@ -1,0 +1,25 @@
+{
+ "rule": "the six files named in spec section 1, every version on every ref (required), plus eval/, examples/, test/, config/, src/ and README (informational)",
+ "named_files": [
+  "src/screening/screen.js",
+  "config/deny-list.example.json",
+  "test/gate-families.test.js",
+  "eval/dev/claude-probes.json",
+  "examples/scenarios.json",
+  "eval/heldout.json"
+ ],
+ "named": {
+  "repo": "knowledge-mcp",
+  "main_commit": "65bdf4918f77f903cbb875d0d86a8b529ca8a304",
+  "refs_scanned": 16,
+  "files": 6,
+  "shingles_8word": 14398
+ },
+ "wide": {
+  "repo": "knowledge-mcp",
+  "main_commit": "65bdf4918f77f903cbb875d0d86a8b529ca8a304",
+  "refs_scanned": 16,
+  "files": 78,
+  "shingles_8word": 64352
+ }
+}

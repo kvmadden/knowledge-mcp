@@ -40,8 +40,8 @@
     },
     {
       "id": "payment-card-number",
-      "description": "Card numbers of 13 to 19 digits, optionally grouped, that pass the Luhn checksum",
-      "pattern": "(?<!\\d)\\d(?:[ -]?\\d){12,18}(?!\\d)",
+      "description": "Card numbers of 13 to 19 digits, optionally grouped, that pass the Luhn checksum and stand apart from letters and digits (so a digit run inside a hex hash does not count)",
+      "pattern": "(?<![0-9A-Za-z])\\d(?:[ -]?\\d){12,18}(?![0-9A-Za-z])",
       "validate": "luhn"
     },
     {

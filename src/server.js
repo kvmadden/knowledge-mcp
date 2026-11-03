@@ -69,7 +69,23 @@ export const DEFAULT_SEED_PATH = fileURLToPath(new URL("../data/seed.json", impo
 
 const ACCESS = new Set(["read", "write"]);
 
-const AUDIT_STRING_KEYS = new Set(["op", "target", "decision", "payload_sha256", "result_ref", "hold_id", "reviewer", "policy", "at", "path"]);
+// System-generated audit fields are checked by format, not by content rules:
+// a payload hash is 64 hex characters and can contain a digit run that looks
+// like a card number. Free text (a reviewer label, and the path and details
+// of entries written before 2026-11-03) is screened.
+const AUDIT_FORMATS = {
+  op: /^[a-z_]{2,32}$/,
+  target: /^[A-Za-z][A-Za-z0-9]{0,40}$/,
+  decision: /^(?:allow|review|block)$/,
+  payload_sha256: /^[0-9a-f]{64}$/,
+  result_ref: /^[a-z]{2,8}_\d{1,9}$/,
+  hold_id: /^[a-z]{2,8}_\d{1,9}$/,
+  policy: /^[0-9A-Za-z.-]{1,64}$/,
+  at: /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/,
+};
+const AUDIT_FREE_TEXT = new Set(["reviewer", "path", "details"]);
+const AUDIT_NUMBERS = new Set(["violation_count", "count"]);
+const AUDIT_IDS = new Set(["pattern_ids", "review_ids"]);
 
 /**
  * Screens state read from disk, item by item, each with its own budget, so
@@ -113,12 +129,23 @@ export function createLoadVerifier(gate) {
       if (verdict.decision === "block") refuse(`pending[${i}]`, verdict);
     });
     state.audit.forEach((entry, i) => {
+      const freeText = {};
       for (const [key, value] of Object.entries(entry)) {
-        const ok = typeof value === "number" || typeof value === "boolean" || value === null || Array.isArray(value) || (typeof value === "string" && AUDIT_STRING_KEYS.has(key)) || (key === "details" && value && typeof value === "object") || (key === "counts" && value && typeof value === "object");
+        let ok = false;
+        if (AUDIT_FORMATS[key]) ok = typeof value === "string" && AUDIT_FORMATS[key].test(value);
+        else if (AUDIT_NUMBERS.has(key)) ok = Number.isFinite(value);
+        else if (AUDIT_IDS.has(key)) ok = Array.isArray(value) && value.every((id) => typeof id === "string" && /^[a-z0-9-]{1,64}$/.test(id));
+        else if (key === "counts") ok = value && typeof value === "object" && Object.values(value).every(Number.isInteger);
+        else if (AUDIT_FREE_TEXT.has(key)) {
+          ok = true;
+          freeText[key] = value;
+        }
         if (!ok) refuse(`audit[${i}]`, { violations: [{ field: key, patternId: "unexpected-audit-field" }] });
       }
-      const verdict = gate.screen(entry);
-      if (verdict.decision === "block") refuse(`audit[${i}]`, verdict);
+      if (Object.keys(freeText).length) {
+        const verdict = gate.screen(freeText);
+        if (verdict.decision === "block") refuse(`audit[${i}]`, verdict);
+      }
     });
     report = { reviewItems, screenedItems: screened };
   }

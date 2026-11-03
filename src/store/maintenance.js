@@ -23,7 +23,11 @@ function inspect(state, gate) {
   state.records.forEach((r, i) => visit('records', i, r, r.id))
   state.files.forEach((f, i) => visit('files', i, f, null))
   state.pending.forEach((p, i) => visit('pending', i, p.args, p.id))
-  state.audit.forEach((e, i) => visit('audit', i, e, null))
+  // Only the free-text fields of an audit entry are content-screened.
+  state.audit.forEach((e, i) => {
+    const freeText = Object.fromEntries(Object.entries(e).filter(([key]) => ['reviewer', 'path', 'details'].includes(key)))
+    if (Object.keys(freeText).length) visit('audit', i, freeText, null)
+  })
   return { blocking, review }
 }
 

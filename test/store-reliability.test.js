@@ -220,6 +220,23 @@ test('a write that changes nothing is audited as a no-op, not as allowed', () =>
   assert.deepEqual(runtime.snapshot().audit.map((e) => e.op), ['write_noop'])
 })
 
+test('system fields of audit entries are checked by format, so a payload hash never blocks a restart', () => {
+  const t = tmp()
+  try {
+    const storePath = t.file('store.json')
+    buildRuntime({ storePath }).ctx.records.create({ text: 'clean note' })
+    const state = JSON.parse(readFileSync(storePath, 'utf8'))
+    state.audit[0].payload_sha256 = `a${'4111111111111111'}${'b'.repeat(47)}`
+    writeFileSync(storePath, JSON.stringify(state))
+    assert.equal(buildRuntime({ storePath }).snapshot().audit.length, 1)
+    state.audit[0].note = 'an unexpected free-text field'
+    writeFileSync(storePath, JSON.stringify(state))
+    assert.throws(() => buildRuntime({ storePath }), /unexpected-audit-field/)
+  } finally {
+    t.done()
+  }
+})
+
 test('the audit log is screened at load, and the operator purge clears what blocks it', async () => {
   const t = tmp()
   try {

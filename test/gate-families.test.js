@@ -156,6 +156,7 @@ test('harmless numbers and public lines pass', () => {
     'Patient born 1980, year only.',
     'Version 10.0.19041 build notes.',
     'Read the Patient Counseling Information section.',
+    'Checksum ab4111111111111111cd matches the release.',
   ])
 })
 

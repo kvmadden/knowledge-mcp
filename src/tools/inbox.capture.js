@@ -11,8 +11,8 @@ export const config = {
     text: z.string().min(1).max(8000).describe("Capture body."),
     source_app: z.string().regex(/^[a-z][a-z0-9-]{0,63}$/).optional().describe("Lowercase kebab-case source label (default knowledge-mcp)."),
     suggested_bucket: z.string().optional().describe("Bucket id hint."),
-    tags: z.array(z.string()).optional().describe("Tags."),
-    link_url: z.string().max(2000).optional().describe("A related URL."),
+    tags: z.array(z.string().max(64)).max(32).optional().describe("Tags."),
+    link_url: z.string().max(2000).optional().describe("A related http or https URL."),
   },
 };
 

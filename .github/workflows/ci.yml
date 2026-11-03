@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Tests (registry harness, canary, store, gate, review queue, CLI, console)
+        run: npm test
+      - name: Startup check
+        run: npm run check
+      - name: Frozen development set still matches its committed hash
+        run: shasum -a 256 -c eval/heldout.sha256
+      - name: Evaluations (development data, reported, not gated)
+        run: |
+          npm run -s eval:legacy
+          npm run -s eval:heldout
+          npm run -s eval:dev
+          npm run -s eval:public
+      - name: Synthetic examples
+        run: npm run -s examples
+      - name: Benchmark (informational)
+        run: npm run -s bench

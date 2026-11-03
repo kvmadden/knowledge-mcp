@@ -7,8 +7,8 @@ export const config = {
   description: "Replace a unique occurrence of old_str with new_str. The resulting file content is screened before the write.",
   inputSchema: {
     path: z.string().describe("Path under /memories."),
-    old_str: z.string().describe("Exact text to replace; must occur once."),
-    new_str: z.string().describe("Replacement text."),
+    old_str: z.string().max(100000).describe("Exact text to replace; must occur once."),
+    new_str: z.string().max(100000).describe("Replacement text."),
   },
 };
 

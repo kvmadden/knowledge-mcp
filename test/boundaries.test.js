@@ -15,19 +15,52 @@ function files(dir) {
   });
 }
 
-const SOURCE = [...files(path.join(ROOT, "src")), ...files(path.join(ROOT, "web")), ...files(path.join(ROOT, "scripts"))];
+const SOURCE = [...files(path.join(ROOT, "src")), ...files(path.join(ROOT, "web")), ...files(path.join(ROOT, "scripts")), ...files(path.join(ROOT, "eval")), ...files(path.join(ROOT, "examples"))];
+
+// Every module specifier in a file: static imports and re-exports with either
+// quote style, dynamic import() calls and require() calls.
+export function specifiers(text) {
+  const out = [];
+  for (const m of text.matchAll(/\b(?:import|export)\s[^'"`;]*?\bfrom\s*(['"`])([^'"`]+)\1/g)) out.push(m[2]);
+  for (const m of text.matchAll(/\bimport\s*(['"`])([^'"`]+)\1/g)) out.push(m[2]);
+  for (const m of text.matchAll(/\b(?:import|require)\s*\(\s*(['"`])([^'"`]+)\1\s*\)/g)) out.push(m[2]);
+  for (const m of text.matchAll(/\bimport\s*\(\s*`([^`]*)`/g)) out.push(m[1]);
+  return out;
+}
+
+test("the specifier scan sees every import style, so a boundary test cannot be dodged by quoting", () => {
+  const sample = [
+    'import a from "../store/memory-store.js";',
+    "import { b } from '../store/memory-store.js'",
+    'export * from "../store/memory-store.js"',
+    "const c = await import('../store/memory-store.js')",
+    'const d = require("../store/memory-store.js")',
+    "import '../store/memory-store.js'",
+  ].join("\n");
+  assert.equal(specifiers(sample).filter((s) => s.endsWith("memory-store.js")).length, 6);
+});
 
 test("only src/server.js and src/store/ import the raw memory store", () => {
-  const importers = SOURCE.filter((f) => /from\s+"[^"]*memory-store\.js"/.test(readFileSync(f, "utf8"))).map((f) => path.relative(ROOT, f));
+  const importers = SOURCE.filter((f) => specifiers(readFileSync(f, "utf8")).some((s) => s.endsWith("memory-store.js"))).map((f) => path.relative(ROOT, f));
   assert.deepEqual(importers.filter((f) => !f.startsWith("src/store/")), ["src/server.js"]);
 });
 
 test("tools import nothing that can write to a store", () => {
   for (const f of files(path.join(ROOT, "src/tools"))) {
-    const imports = [...readFileSync(f, "utf8").matchAll(/from\s+"([^"]+)"/g)].map((m) => m[1]);
+    const imports = specifiers(readFileSync(f, "utf8"));
+    assert.ok(imports.length > 0, `${path.relative(ROOT, f)} has imports the scan can see`);
     for (const spec of imports) {
       assert.ok(spec === "zod" || spec.startsWith("../lib/"), `${path.relative(ROOT, f)} imports ${spec}`);
     }
+  }
+});
+
+test("the reviewer desk is never part of the tool context", async () => {
+  const { buildRuntime } = await import("../src/server.js");
+  const runtime = buildRuntime();
+  assert.deepEqual(Object.keys(runtime.ctx).sort(), ["buckets", "defaultBucket", "memory", "records"]);
+  for (const lib of [runtime.ctx.records, runtime.ctx.memory]) {
+    for (const name of Object.keys(lib)) assert.ok(!/approve|reject|retract|review|purge/i.test(name), name);
   }
 });
 

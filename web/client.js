@@ -9,10 +9,13 @@
 // Two rules hold for every method:
 //   1. Every row is screened in full by the same gate the MCP server uses
 //      (src/screening/screen.js) immediately before insert. On a match the
-//      method returns { blocked } and the insert is never called.
+//      method returns { blocked }; when the gate would hold the row for review
+//      it returns { held }. In both cases the insert is never called.
 //   2. The client refuses to construct around a service-role or secret key,
-//      or around a key whose role it cannot read. Browser code never holds a
-//      key that bypasses row-level security.
+//      or around a key whose role it cannot read. This catches an accidental
+//      paste of the wrong key. It reads the supabaseKey property only, so it
+//      cannot see a privileged token supplied another way (for example a
+//      custom Authorization header), and it is not access control.
 //
 // This check runs in the browser, so a user who edits the page can skip it.
 // It keeps honest apps from sending matching content; enforcing the same
@@ -78,6 +81,9 @@ export function createWebClient({ supabase, denyList, table = "records" } = {}) 
     if (!userId) return invalid("not signed in");
     const full = { ...row, owner_id: userId };
     const verdict = gate.screen(full);
+    // The browser has no hold queue, so content the gate would hold for review
+    // is not inserted either; the caller gets the reason ids.
+    if (verdict.decision === "review") return { held: { reviews: verdict.reviews } };
     if (!verdict.ok) return { blocked: { violations: verdict.violations } };
     const { data, error } = await supabase.from(table).insert(full).select(selectCols).single();
     return { data, error };

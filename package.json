@@ -1,32 +1,28 @@
 {
   "name": "knowledge-mcp",
   "version": "1.0.0",
-  "description": "MCP server that gives AI agents read and write access to a shared knowledge store, with every write screened by one fail-closed deny-list gate. Includes a browser write client that uses the same gate.",
+  "description": "MCP server that gives AI agents read and write access to a shared knowledge store. Every write passes one screening gate that blocks listed patterns, holds what it cannot judge for a reviewer, and audits each decision.",
   "type": "module",
   "license": "MIT",
   "private": true,
   "main": "src/index.js",
-  "exports": {
-    ".": "./src/server.js",
-    "./web": "./web/client.js",
-    "./screening": "./src/screening/screen.js"
-  },
-  "bin": {
-    "knowledge-mcp": "src/index.js"
-  },
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "start": "node src/index.js",
     "check": "node src/index.js --check",
+    "test": "node --test test/*.test.js",
     "demo": "node scripts/demo.mjs",
     "demo:safety": "node scripts/safety-demo.mjs",
+    "examples": "node examples/run.mjs",
     "eval:legacy": "node eval/legacy.mjs",
     "eval:heldout": "node eval/run.mjs",
-    "test": "node --test test/*.test.js",
-    "console": "node web/console/server.js",
+    "eval:dev": "node eval/dev-probes.mjs",
     "eval:public": "node eval/public.mjs",
+    "eval:blind": "node eval/blind/run.mjs",
+    "bench": "node scripts/bench.mjs",
+    "console": "node web/console/server.js",
     "corpus:check": "python3 corpus/public/fetch.py --check"
   },
   "dependencies": {
@@ -36,8 +32,10 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
+    "agent-memory",
     "knowledge-store",
-    "deny-list"
+    "deny-list",
+    "human-review"
   ],
   "files": [
     "src/",

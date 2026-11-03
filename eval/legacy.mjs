@@ -6,13 +6,20 @@ import { pathToFileURL } from 'node:url'
 import path from 'node:path'
 const root = path.resolve(process.env.EVAL_RUNTIME_ROOT || '.')
 const original = readFileSync(path.join(root, 'test/write-paths.test.js'), 'utf8')
+// Each patch must apply exactly once. If the test file changes, the runner
+// fails instead of silently reporting wrong counts.
+function patch(text, from, to) {
+  const hits = typeof from === 'string' ? text.split(from).length - 1 : (text.match(from) || []).length
+  if (hits < 1) throw new Error(`eval/legacy.mjs: the registry test changed, a patch no longer applies (${String(from).slice(0, 60)})`)
+  return text.replace(from, to)
+}
 let source = original
-  .replace('import test from "node:test";', 'const test = () => {}')
-  .replace(/from "(\.\.?\/[^\"]+)"/g, (_, spec) => `from "${pathToFileURL(path.resolve(root, 'test', spec))}"`)
-  .replace('let screenBlocked = 0;', 'let screenBlocked = 0; let rejected = 0; let noOp = 0; let allowed = 0; let benignAllowed = 0;')
-  .replace('if (result.isError) failures.push', 'if (!result.isError) benignAllowed += 1; if (result.isError) failures.push')
-  .replace('const where = `${tool.name}', 'if (result.isError) rejected += 1; else if (/No replacement was performed/.test(textOf(result))) noOp += 1; else allowed += 1; const where = `${tool.name}')
-  .replace('return { failures, cases, screenBlocked };', 'return { failures, cases, screenBlocked, rejected, noOp, allowed, benignAllowed };')
+source = patch(source, 'import test from "node:test";', 'const test = () => {}')
+source = patch(source, /from "(\.\.?\/[^\"]+)"/g, (_, spec) => `from "${pathToFileURL(path.resolve(root, 'test', spec))}"`)
+source = patch(source, 'let screenBlocked = 0;', 'let screenBlocked = 0; let rejected = 0; let noOp = 0; let allowed = 0; let benignAllowed = 0;')
+source = patch(source, 'if (result.isError) failures.push', 'if (!result.isError) benignAllowed += 1; if (result.isError) failures.push')
+source = patch(source, 'const where = `${tool.name}', 'if (result.isError) rejected += 1; else if (/No replacement was performed/.test(textOf(result))) noOp += 1; else allowed += 1; const where = `${tool.name}')
+source = patch(source, 'return { failures, cases, screenBlocked };', 'return { failures, cases, screenBlocked, rejected, noOp, allowed, benignAllowed };')
 source += '\nexport async function report() { return Promise.all(WRITE_TOOLS.map(async tool => ({tool: tool.name, ...await auditTool(tool, guardedRuntime)}))) }\n'
 const { report } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`)
 const results = await report()

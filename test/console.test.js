@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { request } from 'node:http'
 import { createSession } from '../web/console/session.js'
 
 test('script runs real screening and approval commits only once', () => {
@@ -18,7 +19,8 @@ test('script runs real screening and approval commits only once', () => {
   assert.equal(s.view().records.length, 2)
   assert.equal(s.view().events[3].status, 'rejected')
   assert.equal(s.view().records[1].provenance.source, 'synthetic-refill-outreach-v3')
-  assert.ok(s.view().audit.some(e => e.op === 'write_deferred'))
+  assert.ok(s.view().audit.some(e => e.op === 'write_held'))
+  assert.ok(s.view().audit.some(e => e.op === 'review_rejected'))
   assert.ok(s.view().audit.some(e => e.op === 'screen_blocked'))
 })
 
@@ -30,6 +32,12 @@ test('HTTP console isolates local actions and reports stale approval errors', as
   try {
     assert.equal((await fetch(url)).status, 200)
     assert.equal((await fetch(`${url}/api/next`, { method: 'POST', headers: { origin: 'https://example.test' } })).status, 403)
+    const rebound = await new Promise((resolve, reject) => {
+      const req = request({ host: '127.0.0.1', port: server.address().port, path: '/api/next', method: 'POST', headers: { host: `attacker.example:${server.address().port}`, origin: `http://attacker.example:${server.address().port}` } }, (res) => { res.resume(); resolve(res.statusCode) })
+      req.on('error', reject)
+      req.end()
+    })
+    assert.equal(rebound, 403, 'a rebound host name is refused even when Origin matches it')
     for (let i = 0; i < 3; i++) assert.equal((await fetch(`${url}/api/next`, { method: 'POST' })).status, 200)
     assert.equal((await fetch(`${url}/api/review/3/approve`, { method: 'POST' })).status, 200)
     assert.equal((await fetch(`${url}/api/review/3/approve`, { method: 'POST' })).status, 400)

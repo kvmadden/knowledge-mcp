@@ -1,0 +1,14 @@
+{
+ "cases": 564,
+ "checked": 564,
+ "missing": 0,
+ "invalid": 0,
+ "bad_json_lines": 0,
+ "kappa_expected_3class": 0.996875363571393,
+ "kappa_expected_store_vs_not": 1.0,
+ "weighted_kappa_harm": 0.9686079861702267,
+ "raw_agreement_expected": 0.99822695035461,
+ "disagreements": 1,
+ "disagreements_expected": 1,
+ "disagreements_harm_only": 0
+}

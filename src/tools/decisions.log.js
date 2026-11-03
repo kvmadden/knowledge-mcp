@@ -5,12 +5,12 @@ export const name = "decisions.log";
 export const access = "write";
 export const config = {
   title: "Log decision",
-  description: "Record a decision with a title, optional summary and optional context. Every field is screened before the write.",
+  description: "Record a decision with a title, optional summary and optional context. Every field is screened before the write. A decision with clinical content is held for a reviewer instead of saved.",
   inputSchema: {
     provenance: provenanceSchema.optional(),
     title: z.string().min(1).max(200).describe("Decision headline."),
-    summary: z.string().optional().describe("One-paragraph summary."),
-    context: z.string().optional().describe("Why, alternatives considered. Stored as the body text."),
+    summary: z.string().max(2000).optional().describe("One-paragraph summary."),
+    context: z.string().max(20000).optional().describe("Why, alternatives considered. Stored as the body text."),
     bucket: z.string().optional().describe("Bucket id."),
   },
 };

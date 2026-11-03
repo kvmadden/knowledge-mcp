@@ -22,7 +22,7 @@ Scores: 0 = absent, 1 = partial, 2 = demonstrated or explicitly bounded with ins
 | 10. Data boundary | 1 | 2 | Visible synthetic/no-PHI label and expandable boundary explain origin, loopback transport, no vendor/model transfer, memory retention, Reset and restart. No employer data, OCR, EMR or EDI connection. |
 | 11. Security judgment | 2 | 2 | Phone and MRN show both actual rule IDs. Fax shows untrusted-source and instruction-override. Audit receipts omit raw content. No multi-user isolation, authenticated provenance or compliance certification. |
 | 12. Generalization | 1 | 1 | Tested English synthetic strings only. No populations, document-quality slices, multilingual or fairness study. UI explicitly limits generalization. |
-| 13. Platform boundary | 2 | 1 | Existing records and memory consumers reuse the gate. MCP and local web paths share runtime contracts and audit receipts. Held-out gate results match control. No service SLO, latency/cost benchmark, rollout controller or production rollback demonstrated. |
+| 13. Platform boundary | 2 | 1 | Existing records and memory consumers reuse the gate. MCP and local web paths share runtime contracts and audit receipts. Gate results on the 60-case set match control. No service SLO, latency/cost benchmark, rollout controller or production rollback demonstrated. |
 | 14. Core usability | 2 | 2 | Six light/dark captures at 1440x900, 430x932, 390x844. Browser checks cover keyboard approval, tabs, target sizes, overflow, empty/loading/error/reconnect and rejection. |
 | 15. Coherent claims and ownership | 1 | 2 | Both demos import one clinical scenario. README, assets and this assessment agree. RED-first tests drove replacement of office copy. Contribution and known limits are stated here. |
 

@@ -16,7 +16,9 @@
 //      MCP client and server, once per subject, and scores the judged call as
 //      stored, held, blocked or invalid. Invalid outcomes are listed for
 //      investigation and never count as correct.
-//   4. Writes report.json and report.md to the output directory.
+//   4. Writes report.json and report.md to the output directory. The exit
+//      code is 3 when any outcome is invalid, so it gets investigated, and 2
+//      when the set is refused.
 //
 // The two off-the-shelf detectors run offline in Python (baselines/score.py)
 // before any case runs, in one batch over every text the set's writes would

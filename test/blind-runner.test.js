@@ -188,6 +188,6 @@ test('the runner scores the fixture through a real MCP client and server, with k
   const md = renderMarkdown(report)
   for (const c of set.cases) assert.ok(md.includes(`| ${c.id} |`), `${c.id} has a row`)
   assert.match(md, /## Where the gate at head is behind a baseline/)
-  assert.match(md, /benign-security-and-policy: false hold, by case: no-gate.* lower than gate-head/)
+  assert.match(md, /benign families, benign-security-and-policy: false hold, by case: no-gate.* lower than gate-head/)
   assert.match(md, /Invalid outcomes, to investigate[\s\S]*gate-head, f-0026: setup call 1/)
 })

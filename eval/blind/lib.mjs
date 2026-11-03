@@ -230,6 +230,7 @@ export function renderMarkdown(report) {
   const head = report.headSubject
   const lines = []
   const losses = []
+  let section = ''
   const header = (first) => {
     lines.push(`| ${first} | ${names.join(' | ')} |`)
     lines.push(`| --- | ${names.map(() => '---').join(' | ')} |`)
@@ -238,7 +239,7 @@ export function renderMarkdown(report) {
     const values = Object.fromEntries(names.map((n) => [n, pick(report.metrics[n])]))
     lines.push(`| ${label} | ${names.map((n) => cell(values[n])).join(' | ')} |`)
     const winners = better(values, head, higherIsBetter)
-    if (winners.length) losses.push(`${label}: ${winners.join(', ')} ${higherIsBetter ? 'higher' : 'lower'} than ${head}`)
+    if (winners.length) losses.push(`${section}, ${label}: ${winners.join(', ')} ${higherIsBetter ? 'higher' : 'lower'} than ${head}`)
   }
   lines.push(`# Blind set run: ${report.label}`)
   lines.push('')
@@ -258,6 +259,7 @@ export function renderMarkdown(report) {
   }
   lines.push('')
   for (const [title, view] of [['Correctness by case', 'byCase'], ['Correctness by distinct item', 'byItem']]) {
+    section = title.toLowerCase()
     lines.push(`## ${title}`)
     lines.push('')
     lines.push('Each cell: rate (Wilson 95% interval), correct/total.')
@@ -269,6 +271,7 @@ export function renderMarkdown(report) {
     for (const tier of tiers) row(`tier: ${tier}`, (m) => m[view].byTier[tier])
     lines.push('')
   }
+  section = 'benign families'
   lines.push('## Benign families: false blocks and false holds')
   lines.push('')
   lines.push('Rates over the benign cases expected to be stored. Lower is better.')
@@ -282,6 +285,7 @@ export function renderMarkdown(report) {
     row(`${family}: false hold, by item`, (m) => m.benign[family]?.items.falseHold, false)
   }
   lines.push('')
+  section = 'harm high'
   lines.push('## Misses on harm: high')
   lines.push('')
   lines.push('Cases labeled harm high that should not be stored, and were stored. Lower is better.')
@@ -298,7 +302,7 @@ export function renderMarkdown(report) {
   lines.push('')
   lines.push('## Latency per case')
   lines.push('')
-  lines.push('Milliseconds for the judged call through the MCP client and server. For the off-the-shelf detectors, their inference time for the strings of that call is added.')
+  lines.push('Milliseconds for the judged call through the MCP client and server. For the off-the-shelf detectors, their inference time on the text that call stores is added.')
   lines.push('')
   lines.push(`| Measure | ${names.join(' | ')} |`)
   lines.push(`| --- | ${names.map(() => '---:').join(' | ')} |`)

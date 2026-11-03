@@ -6,14 +6,6 @@
   "license": "MIT",
   "private": true,
   "main": "src/index.js",
-  "exports": {
-    ".": "./src/server.js",
-    "./web": "./web/client.js",
-    "./screening": "./src/screening/screen.js"
-  },
-  "bin": {
-    "knowledge-mcp": "src/index.js"
-  },
   "engines": {
     "node": ">=20"
   },

@@ -85,7 +85,7 @@ export function createLoadVerifier(gate) {
   const refuse = (where, verdict) => {
     const first = verdict.violations[0];
     const error = new ScreeningError({ ...verdict, violations: [{ ...first, field: `${where}${first.field && first.field !== "(value)" ? `.${first.field}` : ""}` }] }, "store load");
-    error.message += ". Run `knowledge-mcp store scan` to list blocking items and `knowledge-mcp store purge --apply --reviewer <label>` to remove them.";
+    error.message += ". Run `node src/index.js store scan` to list blocking items and `node src/index.js store purge --apply --reviewer <label>` to remove them.";
     throw error;
   };
   function verify(state) {

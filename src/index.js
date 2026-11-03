@@ -15,19 +15,19 @@ import { POLICY_VERSION } from "./screening/screen.js";
 import { purgeStore, scanStore } from "./store/maintenance.js";
 
 const USAGE = `Usage:
-  knowledge-mcp                                   serve MCP over stdio
-  knowledge-mcp --check                           print configuration and the load report, then exit
-  knowledge-mcp screen --text "..." | --file F    print the screening verdict for a text (no values echoed)
-  knowledge-mcp review list                       list held writes
-  knowledge-mcp review show <hold-id>             print one held write, payload included, for the reviewer
-  knowledge-mcp review approve <hold-id> --reviewer <label>
-  knowledge-mcp review reject <hold-id> --reviewer <label>
-  knowledge-mcp records retract <record-id> --reviewer <label> [--reason "..."]
-  knowledge-mcp store scan                        list items that block loading or need review
-  knowledge-mcp store purge [--apply --reviewer <label>]
+  node src/index.js                                   serve MCP over stdio
+  node src/index.js --check                           print configuration and the load report, then exit
+  node src/index.js screen --text "..." | --file F    print the screening verdict for a text (no values echoed)
+  node src/index.js review list                       list held writes
+  node src/index.js review show <hold-id>             print one held write, payload included, for the reviewer
+  node src/index.js review approve <hold-id> --reviewer <label>
+  node src/index.js review reject <hold-id> --reviewer <label>
+  node src/index.js records retract <record-id> --reviewer <label> [--reason "..."]
+  node src/index.js store scan                        list items that block loading or need review
+  node src/index.js store purge [--apply --reviewer <label>]
 
 Operator commands need KNOWLEDGE_STORE_PATH. Reviewer labels are recorded in
-the audit log; they are not authenticated.
+the audit log. They are not authenticated.
 `;
 
 export function configFromEnv(env = process.env) {

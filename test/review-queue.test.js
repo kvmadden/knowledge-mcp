@@ -59,7 +59,7 @@ test('rejection leaves nothing written and is audited; a reviewer label is requi
   assert.equal(runtime.snapshot().audit.at(-1).op, 'review_rejected')
 })
 
-test('holds survive a restart, and a payload changed on disk cannot be approved', () => {
+test('holds survive a restart, and a payload edited on disk without its hash cannot be approved', () => {
   const dir = mkdtempSync(path.join(tmpdir(), 'knowledge-holds-'))
   try {
     const storePath = path.join(dir, 'store.json')
@@ -70,7 +70,7 @@ test('holds survive a restart, and a payload changed on disk cannot be approved'
     writeFileSync(storePath, JSON.stringify(state))
     const later = buildRuntime({ storePath })
     assert.equal(later.review.list().length, 2)
-    assert.throws(() => later.review.approve('hold_0002', { reviewer: 'pharmacist-reviewer-1' }), /does not match its recorded hash/)
+    assert.throws(() => later.review.approve('hold_0002', { reviewer: 'pharmacist-reviewer-1' }), /recorded when it was held/)
     later.review.approve('hold_0001', { reviewer: 'pharmacist-reviewer-1' })
     assert.equal(buildRuntime({ storePath }).snapshot().records[0].text, RULE.text)
     assert.equal(payloadHash(state.pending[0].args), state.pending[0].payload_sha256)

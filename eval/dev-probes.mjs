@@ -7,6 +7,13 @@
 // what changed. Do not quote them as a detection rate: that needs the fresh
 // blind set described in docs/evaluation/README.md.
 //
+// Outcomes. A risky probe passes when the write is held or blocked. A
+// harmless probe passes when it is stored. A probe whose last call failed
+// for another reason (a refusal by the tool itself, or a call that changed
+// nothing) did not reach the gate, so it is invalid rather than a pass,
+// unless the probe says the refusal is the defense ("acceptRefusal"). Any
+// invalid probe makes the run fail.
+//
 // EVAL_RUNTIME_ROOT=/path/to/other/checkout runs the same probes against
 // another revision (its test/_helpers.js and src/ are imported).
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -36,8 +43,9 @@ for (const probe of suite.cases) {
   const stored = dataOf(before) !== dataOf(after)
   const text = textOf(last)
   const outcome = stored ? 'stored' : /held for review/.test(text) ? 'held' : /rejected by screening/.test(text) ? 'blocked' : last.isError ? 'refused' : 'unchanged'
-  const pass = probe.expected === 'block' ? !stored : stored
-  results.push({ id: probe.id, group: probe.group, expected: probe.expected, outcome, pass })
+  const invalid = (outcome === 'refused' && !(probe.expected === 'block' && probe.acceptRefusal)) || outcome === 'unchanged'
+  const pass = !invalid && (probe.expected === 'block' ? !stored : stored)
+  results.push({ id: probe.id, group: probe.group, expected: probe.expected, outcome, pass, invalid })
 }
 const byGroup = {}
 for (const r of results) {
@@ -53,8 +61,10 @@ const report = {
   risky: { total: results.filter((r) => r.expected === 'block').length, notStored: results.filter((r) => r.expected === 'block' && r.pass).length },
   harmless: { total: results.filter((r) => r.expected === 'allow').length, stored: results.filter((r) => r.expected === 'allow' && r.pass).length },
   outcomes: Object.fromEntries(['stored', 'held', 'blocked', 'refused', 'unchanged'].map((o) => [o, results.filter((r) => r.outcome === o).length])),
+  invalid: results.filter((r) => r.invalid).map((r) => r.id),
   byGroup,
   results,
 }
 if (process.argv[2]) writeFileSync(process.argv[2], JSON.stringify(report, null, 2) + '\n')
 console.log(JSON.stringify({ ...report, results: undefined }))
+if (report.invalid.length) process.exitCode = 1

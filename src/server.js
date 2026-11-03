@@ -15,6 +15,7 @@ import { loadGate, EXAMPLE_DENY_LIST_PATH } from "./screening/load-deny-list.js"
 import { createGate, ScreeningError } from "./screening/screen.js";
 import { CLASSIFICATION, MemoryStore, SCREENED_ARGS } from "./store/memory-store.js";
 import { AUDIT_OPS, createWriteGuard } from "./store/guarded-store.js";
+import { auditFields } from "./store/audit-format.js";
 import { createRecords } from "./lib/records.js";
 import { createMemoryFiles } from "./lib/memory-files.js";
 import { BUCKETS, DEFAULT_BUCKET } from "./lib/buckets.js";
@@ -69,24 +70,6 @@ export const DEFAULT_SEED_PATH = fileURLToPath(new URL("../data/seed.json", impo
 
 const ACCESS = new Set(["read", "write"]);
 
-// System-generated audit fields are checked by format, not by content rules:
-// a payload hash is 64 hex characters and can contain a digit run that looks
-// like a card number. Free text (a reviewer label, and the path and details
-// of entries written before 2026-11-03) is screened.
-const AUDIT_FORMATS = {
-  op: /^[a-z_]{2,32}$/,
-  target: /^[A-Za-z][A-Za-z0-9]{0,40}$/,
-  decision: /^(?:allow|review|block)$/,
-  payload_sha256: /^[0-9a-f]{64}$/,
-  result_ref: /^[a-z]{2,8}_\d{1,9}$/,
-  hold_id: /^[a-z]{2,8}_\d{1,9}$/,
-  policy: /^[0-9A-Za-z.-]{1,64}$/,
-  at: /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/,
-};
-const AUDIT_FREE_TEXT = new Set(["reviewer", "path", "details"]);
-const AUDIT_NUMBERS = new Set(["violation_count", "count"]);
-const AUDIT_IDS = new Set(["pattern_ids", "review_ids"]);
-
 /**
  * Screens state read from disk, item by item, each with its own budget, so
  * a large store can always be reopened. An item that matches a block rule
@@ -128,20 +111,11 @@ export function createLoadVerifier(gate) {
       screened += 1;
       if (verdict.decision === "block") refuse(`pending[${i}]`, verdict);
     });
+    // Audit entries are checked against one schema (src/store/audit-format.js),
+    // the same one the operator scan and purge use.
     state.audit.forEach((entry, i) => {
-      const freeText = {};
-      for (const [key, value] of Object.entries(entry)) {
-        let ok = false;
-        if (AUDIT_FORMATS[key]) ok = typeof value === "string" && AUDIT_FORMATS[key].test(value);
-        else if (AUDIT_NUMBERS.has(key)) ok = Number.isFinite(value);
-        else if (AUDIT_IDS.has(key)) ok = Array.isArray(value) && value.every((id) => typeof id === "string" && /^[a-z0-9-]{1,64}$/.test(id));
-        else if (key === "counts") ok = value && typeof value === "object" && Object.values(value).every(Number.isInteger);
-        else if (AUDIT_FREE_TEXT.has(key)) {
-          ok = true;
-          freeText[key] = value;
-        }
-        if (!ok) refuse(`audit[${i}]`, { violations: [{ field: key, patternId: "unexpected-audit-field" }] });
-      }
+      const { unexpected, freeText } = auditFields(entry);
+      if (unexpected.length) refuse(`audit[${i}]`, { violations: [{ field: unexpected[0], patternId: "unexpected-audit-field" }] });
       if (Object.keys(freeText).length) {
         const verdict = gate.screen(freeText);
         if (verdict.decision === "block") refuse(`audit[${i}]`, verdict);
@@ -179,8 +153,8 @@ export function buildRuntime({
   const verifier = createLoadVerifier(gate);
   const raw = new MemoryStore({ persistPath: storePath, now, verify: verifier.verify, lockTimeoutMs });
   // An in-memory store has nothing on disk; screen it anyway so the report is complete.
-  if (!storePath) verifier.verify(raw.snapshot());
-  const loaded = raw.snapshot();
+  if (!storePath) verifier.verify(raw.rawSnapshot());
+  const loaded = raw.rawSnapshot();
 
   const { store, review } = createWriteGuard(raw, gate, { ...CLASSIFICATION, screenedArgs: SCREENED_ARGS, writeMode });
   const clock = now ?? (() => new Date().toISOString());
@@ -213,8 +187,10 @@ export function buildRuntime({
       retract: (recordId, opts) => review.retract(ownerId, recordId, opts),
     }),
     loadReport: () => verifier.report(),
-    // Read-only view of everything persisted, for tests and --check.
-    snapshot: () => raw.snapshot(),
+    // Everything persisted, held payloads included, for tests, --check and the
+    // operator. Not given to tools: the read method the guarded store exposes
+    // leaves held payloads out.
+    snapshot: () => raw.rawSnapshot(),
   };
 }
 

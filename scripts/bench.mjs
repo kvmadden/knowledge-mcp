@@ -1,4 +1,4 @@
-// Benchmarks for the two availability limits found in the 2026-11-03 review:
+// Benchmarks for the two availability limits found in the 2026-11-03 reviews:
 // screening time against input size and shape, and restart time against
 // store size. Prints JSON; writes nothing unless a path is given.
 //
@@ -23,6 +23,12 @@ const shapes = {
   'url-safe base64': (n) => Array.from({ length: n }, (_, i) => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_'[(i * 29 + 5) % 64]).join(''),
   'one long word': (n) => 'a'.repeat(n),
   'digits with spaces': (n) => '1234 '.repeat(Math.ceil(n / 5)).slice(0, n),
+  // Added after the second outside review: a long run of spaces was
+  // quadratic in the whitespace pass (about 3.7 s at 40,000 characters).
+  'x then spaces': (n) => 'x' + ' '.repeat(n - 1),
+  'space and newline': (n) => ' \n'.repeat(Math.ceil(n / 2)).slice(0, n),
+  'short base64 tokens': (n) => 'QUJDREVGR0hJSktM '.repeat(Math.ceil(n / 17)).slice(0, n),
+  'combining marks': (n) => 'a\u0301'.repeat(Math.ceil(n / 2)).slice(0, n),
 }
 const screening = []
 for (const [shape, make] of Object.entries(shapes)) {

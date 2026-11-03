@@ -85,6 +85,22 @@ export function payloadHash(args) {
 }
 
 /**
+ * A reviewer label is 1 to 100 characters that the gate would store as it is.
+ * It goes into the audit log, so a label the gate would block or hold is
+ * refused: a blocked one would stop the next load, and a held one would
+ * reach the log without review.
+ */
+export function checkReviewerLabel(gate, reviewer) {
+  if (typeof reviewer !== 'string' || !reviewer.trim() || reviewer.length > 100) {
+    throw new Error('a reviewer label of 1 to 100 characters is required')
+  }
+  const verdict = gate.screen(reviewer)
+  if (verdict.decision === 'block') throw new Error('the reviewer label must not contain a listed pattern')
+  if (verdict.decision !== 'allow') throw new Error('the reviewer label would be held for review; use a plain label such as a name or role')
+  return reviewer.trim()
+}
+
+/**
  * @param {object} rawStore  store instance
  * @param {{screen: Function, patternIds: string[], policyIds: string[], policyId: string}} gate  from createGate()
  * @param {{reads: string[], writes: string[], internal?: string[], screenedArgs?: object, writeMode?: string}} options
@@ -232,14 +248,11 @@ export function createWriteGuard(rawStore, gate, { reads, writes, internal = [],
   // Lets tests and startup checks confirm what they were handed.
   Object.defineProperty(guarded, 'isGuarded', { value: true })
 
-  function reviewerLabel(reviewer) {
-    if (typeof reviewer !== 'string' || !reviewer.trim() || reviewer.length > 100) {
-      throw new Error('a reviewer label of 1 to 100 characters is required')
-    }
-    const verdict = gate.screen(reviewer)
-    if (verdict.decision === 'block') throw new Error('the reviewer label must not contain a listed pattern')
-    return reviewer.trim()
-  }
+  const reviewerLabel = (reviewer) => checkReviewerLabel(gate, reviewer)
+
+  // The `write_held` receipt for this hold, with the hash taken when the
+  // write was screened and held.
+  const heldReceipt = (held, hash) => rawStore.listAudit().some((e) => e.op === 'write_held' && e.hold_id === held.id && e.target === held.target && e.payload_sha256 === hash)
 
   // The reviewer desk. It is not part of the guarded store, so nothing that
   // holds only the guarded store (tools, record and memory logic, seeding)
@@ -251,24 +264,34 @@ export function createWriteGuard(rawStore, gate, { reads, writes, internal = [],
     get(id) {
       return rawStore.getPending(id)
     },
+    // Everything from reading the hold to committing it runs under the store
+    // lock, so what is checked is what is written. The payload must hash to
+    // the value in the hold and in its `write_held` receipt: a hold edited on
+    // disk, even with its hash rewritten to match, is refused. Someone who
+    // can rewrite the receipt as well can also edit the records directly, so
+    // that is outside what this check can catch.
     approve(id, { reviewer } = {}) {
       const label = reviewerLabel(reviewer)
       if (writeMode === 'dry-run') throw new Error('approvals need a commit-mode runtime')
-      const held = rawStore.getPending(id)
-      if (!held) throw new Error('hold not found or already resolved')
-      if (!writeSet.has(held.target)) throw new Error('held write targets an unknown method')
-      if (payloadHash(held.args) !== held.payload_sha256) throw new Error('held payload does not match its recorded hash')
-      const verdict = gate.screen(screenedView(held.target, held.args))
-      if (verdict.decision === 'block') {
-        audit(blockedEntry(held.target, verdict))
-        throw new ScreeningError(readable(verdict), held.target)
-      }
-      return rawStore.transaction(() => {
-        if (!rawStore.removePending(id)) throw new Error('hold not found or already resolved')
-        audit({ op: 'review_approved', target: held.target, hold_id: id, reviewer: label, review_ids: held.review_ids, payload_sha256: held.payload_sha256, policy })
+      const outcome = rawStore.transaction(() => {
+        const held = rawStore.getPending(id)
+        if (!held) throw new Error('hold not found or already resolved')
+        if (!writeSet.has(held.target)) throw new Error('held write targets an unknown method')
+        const hash = payloadHash(held.args)
+        if (hash !== held.payload_sha256 || !heldReceipt(held, hash)) throw new Error('the held payload does not match the payload recorded when it was held')
+        const verdict = gate.screen(screenedView(held.target, held.args))
+        if (verdict.decision === 'block') return { blocked: verdict, target: held.target }
+        rawStore.removePending(id)
+        audit({ op: 'review_approved', target: held.target, hold_id: id, reviewer: label, review_ids: held.review_ids, payload_sha256: hash, policy })
         const result = commitWrite(held.target, held.args, { hold_id: id })
         return { hold_id: id, target: held.target, result_ref: refOf(result) ?? null }
       })
+      // A payload the current policy blocks stays held and gets its own receipt.
+      if (outcome.blocked) {
+        audit(blockedEntry(outcome.target, outcome.blocked))
+        throw new ScreeningError(readable(outcome.blocked), outcome.target)
+      }
+      return outcome
     },
     reject(id, { reviewer } = {}) {
       const label = reviewerLabel(reviewer)
@@ -282,8 +305,10 @@ export function createWriteGuard(rawStore, gate, { reads, writes, internal = [],
     retract(ownerId, recordId, { reviewer, reason = 'retracted by reviewer' } = {}) {
       const label = reviewerLabel(reviewer)
       if (typeof reason !== 'string' || reason.length > 500) throw new Error('reason must be a string of at most 500 characters')
+      // The reason is stored on the record, so it passes the gate like content.
       const verdict = gate.screen(reason)
       if (verdict.decision === 'block') throw new ScreeningError(readable(verdict), 'retract reason')
+      if (verdict.decision !== 'allow') throw new Error('the retract reason would be held for review; write a plain reason')
       return rawStore.transaction(() => {
         const record = rawStore.setRecordStatus(ownerId, recordId, 'retracted', { reason, reviewer: label })
         if (!record) throw new Error('no record with that id')

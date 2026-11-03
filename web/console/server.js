@@ -4,11 +4,21 @@ import { fileURLToPath } from 'node:url'
 import { answer } from '../../src/lib/corpus.js'
 import { createSession } from './session.js'
 
+// Loopback only, for every method and path: the Host header must name a
+// loopback address, so a page that rebinds its own domain to 127.0.0.1 can
+// neither read the session nor drive it.
+const LOOPBACK_HOST = /^(?:127\.0\.0\.1|localhost|\[::1\])(?::\d{1,5})?$/i
+
 export function createConsoleServer() {
   let session = createSession()
   return createServer(async (req, res) => {
     res.setHeader('Cache-Control', 'no-store')
     res.setHeader('X-Content-Type-Options', 'nosniff')
+    const host = String(req.headers.host || '')
+    if (!LOOPBACK_HOST.test(host)) {
+      res.writeHead(403)
+      return res.end('Local origin required')
+    }
     try {
       if (req.url.startsWith('/api/corpus?') && req.method === 'GET') {
         const params = new URL(req.url, 'http://localhost').searchParams
@@ -20,12 +30,9 @@ export function createConsoleServer() {
         return res.end(JSON.stringify(session.view()))
       }
       if (req.method === 'POST') {
-        // Loopback only: the Host header must name a loopback address, so a
-        // page that rebinds its own domain to 127.0.0.1 cannot drive the
-        // console, and a browser Origin, when sent, must match that host.
-        const host = String(req.headers.host || '')
-        const loopback = /^(?:127\.0\.0\.1|localhost|\[::1\])(?::\d{1,5})?$/i.test(host)
-        if (!loopback || (req.headers.origin && req.headers.origin !== `http://${host}`)) {
+        // A state change also needs a browser Origin, when one is sent, that
+        // matches the loopback host.
+        if (req.headers.origin && req.headers.origin !== `http://${host}`) {
           res.writeHead(403)
           return res.end('Local origin required')
         }

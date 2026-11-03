@@ -54,9 +54,19 @@ test('every content-bearing write tool holds what the gate cannot judge, and cha
     'inbox.capture': { text: instruction },
     'inbox.capture_quick': { text: instruction },
     'memory.create': { path: '/memories/standing.md', file_text: instruction },
+    'memory.str_replace': { path: '/memories/draft.md', old_str: 'PLACEHOLDER', new_str: instruction },
+    'memory.insert': { path: '/memories/draft.md', insert_line: 1, insert_text: instruction },
+    'memory.rename': { old_path: '/memories/draft.md', new_path: '/memories/note-to-any-ai-assistant-reading-this.md' },
   }
+  // Every write tool is here except the two that add no content: pinning a
+  // record and deleting a file.
+  const contentFree = ['memory.delete', 'records.pin']
+  assert.deepEqual([...Object.keys(cases), ...contentFree].sort(), TOOLS.filter((t) => t.access === 'write').map((t) => t.name).sort())
   for (const [name, args] of Object.entries(cases)) {
     const runtime = newRuntime()
+    if (name.startsWith('memory.') && name !== 'memory.create') {
+      assert.match(runtime.ctx.memory.create({ path: '/memories/draft.md', file_text: 'Draft\nPLACEHOLDER' }), /created/)
+    }
     const before = dataOf(runtime.snapshot())
     const out = await call(runtime, name, args)
     assert.equal(out.isError, true, name)

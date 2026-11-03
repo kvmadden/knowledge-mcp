@@ -11,15 +11,20 @@
 // the guard calls them, to append audit entries, hold writes for review and
 // commit a data change together with its audit entry.
 //
-// Persistence and several processes. Every change runs in a transaction that
+// Persistence and several writers. Every change runs in a transaction that
 // takes an exclusive lock file next to the store, rereads the file if another
-// process changed it, applies the change to a new copy of the state, writes
-// the whole state to a temporary file, flushes it and renames it into place.
-// Reads reread the file when it changed. A failed write leaves the previous
-// state in memory and on disk.
+// process or thread changed it, applies the change to a new copy of the
+// state, writes the whole state to a temporary file, flushes it and renames it
+// into place. The rename is the commit point. Reads reread the file when it
+// changed. A write that fails before the rename leaves the previous state in
+// memory and on disk.
 
-import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, statSync, unlinkSync, writeSync } from 'node:fs'
+import { randomUUID } from 'node:crypto'
+import {
+  closeSync, existsSync, fstatSync, fsyncSync, linkSync, mkdirSync, openSync, readFileSync, readSync, renameSync, statSync, unlinkSync, writeFileSync, writeSync,
+} from 'node:fs'
 import path from 'node:path'
+import { threadId } from 'node:worker_threads'
 
 import { matchesQuery } from '../lib/search.js'
 
@@ -43,6 +48,7 @@ export const WRITE_METHODS = Object.freeze([
 
 export const INTERNAL_METHODS = Object.freeze([
   'transaction',
+  'rawSnapshot',
   'appendAudit',
   'addPending',
   'getPending',
@@ -80,7 +86,7 @@ function clone(value) {
 }
 
 function emptyState() {
-  return { version: STATE_VERSION, nextRecord: 1, nextHold: 1, records: [], files: [], audit: [], pending: [] }
+  return { version: STATE_VERSION, nextRecord: 1, nextHold: 1, nextVersion: 1, records: [], files: [], audit: [], pending: [] }
 }
 
 export class StoreFormatError extends Error {
@@ -128,13 +134,54 @@ export function normalizeState(parsed) {
       throw new StoreFormatError(`pending[${i}] is missing id, target or args`)
     }
   })
+  // File versions come from one counter for the whole store, so a version is
+  // never used twice, even after a file is deleted and created again. A
+  // store written before the counter existed starts it above every version
+  // it holds.
+  const highest = state.files.reduce((max, f) => (Number.isInteger(f.version) && f.version > max ? f.version : max), 0)
+  state.nextVersion = Math.max(Number.isInteger(state.nextVersion) ? state.nextVersion : 1, highest + 1)
   return state
 }
 
 // ── cross-process lock ──────────────────────────────────────────────────
+//
+// The lock is a file next to the store that only one writer can create. Its
+// body names the process (pid) and thread that took it and a random token
+// for that one acquisition. It appears with its whole body at once: the body
+// is written to a private file that is then linked into place, and the link
+// fails when a lock already exists.
+//
+// Stale or live. A lock is stale when its process is gone (the pid is not
+// running), or when it carries this process's pid and this thread's id but a
+// token this thread does not hold: an earlier process that had the same pid
+// left it, or a release here failed. A lock from another thread of this
+// process, or from a running process, is live: the write waits for it and,
+// past the timeout, fails with StoreLockedError. It is never taken over. A
+// lock without a readable body is stale once it is two seconds old.
+//
+// Breaking a stale lock happens under a second file, `<lock>.break`, which one
+// process at a time can hold. The breaker rereads the lock and removes it
+// only if it is still the one judged stale. Nothing else can change the lock
+// in that window: its holder is gone, a new writer needs the name to be free,
+// and other breakers wait for the `.break` file. Release removes the lock
+// only when it still holds this acquisition's token.
+//
+// Limit. A breaker that dies inside that window leaves `.break` behind. It is
+// cleared once its process is gone, by moving it aside and checking that the
+// moved file is the one judged abandoned. A crash inside that window of a few
+// microseconds, followed by an exact three-way race, could still let two
+// writers through. An operating-system lock (flock) would close it, and Node
+// has no built-in one.
 
 const sleeper = new Int32Array(new SharedArrayBuffer(4))
 const sleep = (ms) => Atomics.wait(sleeper, 0, 0, ms)
+
+const UNREADABLE_GRACE_MS = 2_000
+const MAX_LOCK_BYTES = 64 * 1024
+const NO_LINKS = new Set(['EPERM', 'ENOTSUP', 'EOPNOTSUPP', 'ENOSYS', 'EXDEV', 'EMLINK'])
+// Tokens of the locks this thread holds now. Shared by every copy of this
+// module loaded in the thread.
+const HELD = (globalThis[Symbol.for('knowledge-mcp.held-locks')] ??= new Set())
 
 function pidAlive(pid) {
   if (!Number.isInteger(pid) || pid <= 0) return false
@@ -148,87 +195,206 @@ function pidAlive(pid) {
 
 export class StoreLockedError extends Error {
   constructor(file, holder) {
-    super(`store is locked by another process${holder ? ` (pid ${holder})` : ''}; lock file ${file}`)
+    super(`store is locked by another writer${holder ? ` (pid ${holder})` : ''}; lock file ${file}`)
     this.name = 'StoreLockedError'
+  }
+}
+
+const lockBody = (token) => JSON.stringify({ pid: process.pid, thread: threadId, token, at: Date.now() })
+
+function removeQuietly(file) {
+  try {
+    unlinkSync(file)
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error
+  }
+}
+
+// Create `file` holding `body` only if no file has that name. The file is
+// never visible empty or half written.
+function createExclusive(file, body) {
+  const draft = `${file}.${process.pid}.${threadId}.${randomUUID()}.new`
+  writeFileSync(draft, body, { flag: 'wx' })
+  try {
+    linkSync(draft, file)
+    return true
+  } catch (error) {
+    if (error.code === 'EEXIST') return false
+    if (!NO_LINKS.has(error.code)) throw error
+    // No hard links on this file system: create the file in place. A reader
+    // may see it empty for an instant, which the two-second grace covers.
+    try {
+      writeFileSync(file, body, { flag: 'wx' })
+      return true
+    } catch (inner) {
+      if (inner.code === 'EEXIST') return false
+      throw inner
+    }
+  } finally {
+    try {
+      unlinkSync(draft)
+    } catch {
+      // already gone
+    }
+  }
+}
+
+// A lock file as found: an identity that changes whenever the file is
+// replaced (inode, size, modification time and content) and its parsed body.
+function readLock(file) {
+  let fd
+  try {
+    fd = openSync(file, 'r')
+  } catch (error) {
+    if (error.code === 'ENOENT') return null
+    throw error
+  }
+  try {
+    const stat = fstatSync(fd)
+    const buffer = Buffer.alloc(Math.min(stat.size, MAX_LOCK_BYTES))
+    const length = buffer.length ? readSync(fd, buffer, 0, buffer.length, 0) : 0
+    const text = buffer.subarray(0, length).toString('utf8')
+    let info = null
+    try {
+      info = JSON.parse(text)
+    } catch {
+      info = null
+    }
+    return { id: `${stat.ino}:${stat.size}:${stat.mtimeMs}:${text}`, info: isObject(info) ? info : null, mtimeMs: stat.mtimeMs }
+  } finally {
+    closeSync(fd)
+  }
+}
+
+// The pid of a live holder, true for a live holder that cannot be named, or
+// null when the lock is stale.
+function liveHolder(seen) {
+  if (!seen.info) return Date.now() - seen.mtimeMs < UNREADABLE_GRACE_MS ? true : null
+  const { pid, thread, token } = seen.info
+  if (!pidAlive(pid)) return null
+  if (pid !== process.pid) return pid
+  // This process. A lock written without a token comes from an older version
+  // of this module, which no thread here runs.
+  if (typeof token !== 'string') return null
+  if (thread === threadId) return HELD.has(token) ? pid : null
+  return pid
+}
+
+function removeIfOurs(file, token) {
+  const seen = readLock(file)
+  if (seen?.info?.token === token) removeQuietly(file)
+}
+
+// Move an abandoned `.break` file aside. If the file moved is not the one
+// judged abandoned, a new breaker made it in the meantime: link it back.
+function clearAbandoned(file, seen) {
+  const aside = `${file}.${randomUUID()}.old`
+  try {
+    renameSync(file, aside)
+  } catch (error) {
+    if (error.code === 'ENOENT') return
+    throw error
+  }
+  try {
+    const moved = readLock(aside)
+    if (moved && moved.id !== seen.id) {
+      try {
+        linkSync(aside, file)
+      } catch {
+        // a newer one exists already, or links are not supported
+      }
+    }
+  } finally {
+    removeQuietly(aside)
   }
 }
 
 class FileLock {
   #file
   #timeoutMs
+  #token = null
   constructor(file, timeoutMs) {
     this.#file = file
     this.#timeoutMs = timeoutMs
   }
 
   acquire() {
+    mkdirSync(path.dirname(this.#file), { recursive: true })
+    const token = randomUUID()
     const deadline = Date.now() + this.#timeoutMs
     let holder = null
     for (;;) {
-      try {
-        const fd = openSync(this.#file, 'wx')
-        try {
-          writeSync(fd, JSON.stringify({ pid: process.pid, at: Date.now() }))
-        } finally {
-          closeSync(fd)
-        }
+      if (createExclusive(this.#file, lockBody(token))) {
+        HELD.add(token)
+        this.#token = token
         return
-      } catch (error) {
-        if (error.code !== 'EEXIST') throw error
       }
-      holder = this.#removeIfStale()
-      if (holder === 'removed') continue
-      if (Date.now() > deadline) throw new StoreLockedError(this.#file, holder)
+      const seen = readLock(this.#file)
+      if (seen) {
+        holder = liveHolder(seen)
+        if (holder === null && this.#breakStale(seen)) continue
+      } else {
+        continue
+      }
+      if (Date.now() > deadline) throw new StoreLockedError(this.#file, typeof holder === 'number' ? holder : null)
       sleep(5)
     }
   }
 
+  // Release never throws: the change it guarded is already committed. A lock
+  // left behind by a failed removal is stale to this thread's next write.
   release() {
+    const token = this.#token
+    this.#token = null
+    if (!token) return
+    HELD.delete(token)
     try {
-      unlinkSync(this.#file)
+      removeIfOurs(this.#file, token)
     } catch {
-      // already gone
+      // left for the next write to clear
     }
   }
 
-  // A lock whose holder is this process (left by an interrupted write) or a
-  // process that no longer exists is stale and is removed.
-  #removeIfStale() {
-    let raw
-    try {
-      raw = readFileSync(this.#file, 'utf8')
-    } catch {
-      return 'removed'
+  // Remove the stale lock `seen` unless it changed meanwhile. Returns false
+  // when another process is breaking it right now.
+  #breakStale(seen) {
+    const guard = `${this.#file}.break`
+    const token = randomUUID()
+    if (!createExclusive(guard, lockBody(token))) {
+      const other = readLock(guard)
+      if (other && liveHolder(other) === null) clearAbandoned(guard, other)
+      return false
     }
-    let info = null
     try {
-      info = JSON.parse(raw)
-    } catch {
-      info = null
+      const now = readLock(this.#file)
+      if (now && now.id === seen.id) removeQuietly(this.#file)
+    } finally {
+      removeIfOurs(guard, token)
     }
-    if (!info) {
+    return true
+  }
+}
+
+// Make a rename durable where the platform allows a directory to be flushed.
+function syncDirectory(dir) {
+  let fd
+  try {
+    fd = openSync(dir, 'r')
+    fsyncSync(fd)
+  } catch {
+    // not supported here (for example on Windows)
+  } finally {
+    if (fd !== undefined) {
       try {
-        if (Date.now() - statSync(this.#file).mtimeMs < 2_000) return null
+        closeSync(fd)
       } catch {
-        return 'removed'
+        // nothing more to do
       }
-    } else if (info.pid !== process.pid && pidAlive(info.pid)) {
-      return info.pid
-    }
-    try {
-      if (readFileSync(this.#file, 'utf8') === raw) unlinkSync(this.#file)
-      return 'removed'
-    } catch (error) {
-      // Gone already means someone else removed it first. Any other error
-      // (for example no permission) leaves the lock in place until the deadline.
-      return error.code === 'ENOENT' ? 'removed' : null
     }
   }
 }
 
 // ── the store ───────────────────────────────────────────────────────────
-
-let tmpCounter = 0
 
 export class MemoryStore {
   #state
@@ -420,7 +586,16 @@ export class MemoryStore {
     return clone(this.#state.audit)
   }
 
+  /** The whole state, except that held writes show no payload. */
   snapshot() {
+    this.#refresh()
+    const state = clone(this.#state)
+    state.pending = state.pending.map(({ args, ...hold }) => hold)
+    return state
+  }
+
+  /** The whole state, payloads of held writes included. Internal: for the runtime and maintenance. */
+  rawSnapshot() {
     this.#refresh()
     return clone(this.#state)
   }
@@ -473,24 +648,28 @@ export class MemoryStore {
   }
 
   /**
-   * Create or replace a file. Versions only increase. When expectedVersion is
-   * given and the file changed since the caller read it, the write is refused.
+   * Create or replace a file. Every write takes the next version from one
+   * counter for the store, so a version is never reused. When expectedVersion
+   * is given, the write is refused unless the file still exists at that
+   * version: an edit cannot bring back a file deleted since it was read, or
+   * overwrite a file created again at the same path.
    */
   putFile(ownerId, filePath, content, expectedVersion) {
     return this.transaction(() => {
       const at = this.#now()
       const files = this.#state.files
       const existing = files.find((f) => f.owner_id === ownerId && f.path === filePath)
-      if (Number.isInteger(expectedVersion) && existing && existing.version !== expectedVersion) {
+      if (Number.isInteger(expectedVersion) && existing?.version !== expectedVersion) {
         throw new Error('the file changed since it was read; read it again and retry')
       }
       if (!existing) assertFreePath(files, ownerId, filePath)
+      const version = this.#state.nextVersion
       let next
       if (existing) {
         const updated = {
           ...existing,
           content,
-          version: (existing.version ?? 0) + 1,
+          version,
           size_bytes: byteLength(content),
           updated_at: at,
           provenance: { ...existing.provenance, lastWrittenAt: at },
@@ -502,13 +681,13 @@ export class MemoryStore {
           path: filePath,
           content,
           provenance: { source: 'knowledge-mcp-memory', observedAt: null, recordedAt: at, lastWrittenAt: at, trust: 'unspecified' },
-          version: 1,
+          version,
           size_bytes: byteLength(content),
           created_at: at,
           updated_at: at,
         }]
       }
-      this.#state = { ...this.#state, files: next }
+      this.#state = { ...this.#state, nextVersion: version + 1, files: next }
       return true
     })
   }
@@ -582,29 +761,42 @@ export class MemoryStore {
     if (this.#readSignature() !== this.#signature) this.#reload()
   }
 
+  // Write the whole state to a private temporary file, in full, flush it and
+  // rename it over the store. Any failure before the rename removes the
+  // temporary file and leaves the store as it was. The rename is the commit
+  // point: nothing after it can undo the change in memory.
   #persist() {
     if (!this.#persistPath) return
-    mkdirSync(path.dirname(this.#persistPath), { recursive: true })
-    tmpCounter += 1
-    const tmp = `${this.#persistPath}.${process.pid}.${tmpCounter}.tmp`
-    const fd = openSync(tmp, 'w')
+    const tmp = `${this.#persistPath}.${process.pid}.${threadId}.${randomUUID()}.tmp`
+    const data = Buffer.from(JSON.stringify(this.#state, null, 2), 'utf8')
     try {
-      writeSync(fd, JSON.stringify(this.#state, null, 2))
-      fsyncSync(fd)
-    } finally {
-      closeSync(fd)
-    }
-    try {
+      const fd = openSync(tmp, 'wx')
+      try {
+        for (let offset = 0; offset < data.length;) {
+          const written = writeSync(fd, data, offset, data.length - offset)
+          if (!(written > 0)) throw new Error('the store file could not be written in full')
+          offset += written
+        }
+        fsyncSync(fd)
+      } finally {
+        closeSync(fd)
+      }
       renameSync(tmp, this.#persistPath)
     } catch (error) {
       try {
         unlinkSync(tmp)
       } catch {
-        // nothing to clean
+        // never created, or already renamed
       }
       throw error
     }
-    this.#signature = this.#readSignature()
+    syncDirectory(path.dirname(this.#persistPath))
+    try {
+      this.#signature = this.#readSignature()
+    } catch {
+      // Unknown signature: the next read rereads the file, which is correct.
+      this.#signature = null
+    }
   }
 }
 

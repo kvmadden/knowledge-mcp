@@ -174,7 +174,9 @@ test('a change that fails partway leaves the earlier state in memory and on disk
   }
 })
 
-test('a write that cannot reach the disk fails loudly and changes nothing', { skip: process.getuid?.() === 0 ? 'root ignores directory permissions' : false }, () => {
+// This one fails at the lock, before any write. Failures after the lock is
+// taken (write, flush and rename) are injected in test/review-round-2.test.js.
+test('a store whose directory turned read-only refuses the next write and changes nothing', { skip: process.getuid?.() === 0 ? 'root ignores directory permissions' : false }, () => {
   const t = tmp()
   try {
     const storePath = t.file('store.json')

@@ -1,0 +1,181 @@
+{
+  "node": "v24.14.1",
+  "cpu": "Apple M1 Max",
+  "policy": "2-d6e161237b6cfdfd",
+  "screening": [
+    {
+      "shape": "english prose",
+      "chars": 10000,
+      "ms": 2.5,
+      "decision": "allow"
+    },
+    {
+      "shape": "english prose",
+      "chars": 100000,
+      "ms": 16.4,
+      "decision": "allow"
+    },
+    {
+      "shape": "english prose",
+      "chars": 900000,
+      "ms": 134.5,
+      "decision": "allow"
+    },
+    {
+      "shape": "hex dump",
+      "chars": 10000,
+      "ms": 1.1,
+      "decision": "review"
+    },
+    {
+      "shape": "hex dump",
+      "chars": 100000,
+      "ms": 7,
+      "decision": "review"
+    },
+    {
+      "shape": "hex dump",
+      "chars": 900000,
+      "ms": 69.5,
+      "decision": "review"
+    },
+    {
+      "shape": "url-safe base64",
+      "chars": 10000,
+      "ms": 1.1,
+      "decision": "review"
+    },
+    {
+      "shape": "url-safe base64",
+      "chars": 100000,
+      "ms": 10.8,
+      "decision": "review"
+    },
+    {
+      "shape": "url-safe base64",
+      "chars": 900000,
+      "ms": 94.3,
+      "decision": "review"
+    },
+    {
+      "shape": "one long word",
+      "chars": 10000,
+      "ms": 0.7,
+      "decision": "review"
+    },
+    {
+      "shape": "one long word",
+      "chars": 100000,
+      "ms": 6.9,
+      "decision": "review"
+    },
+    {
+      "shape": "one long word",
+      "chars": 900000,
+      "ms": 58.4,
+      "decision": "review"
+    },
+    {
+      "shape": "digits with spaces",
+      "chars": 10000,
+      "ms": 3.6,
+      "decision": "allow"
+    },
+    {
+      "shape": "digits with spaces",
+      "chars": 100000,
+      "ms": 34.4,
+      "decision": "allow"
+    },
+    {
+      "shape": "digits with spaces",
+      "chars": 900000,
+      "ms": 294,
+      "decision": "allow"
+    },
+    {
+      "shape": "x then spaces",
+      "chars": 10000,
+      "ms": 0.6,
+      "decision": "allow"
+    },
+    {
+      "shape": "x then spaces",
+      "chars": 100000,
+      "ms": 5.8,
+      "decision": "allow"
+    },
+    {
+      "shape": "x then spaces",
+      "chars": 900000,
+      "ms": 52.6,
+      "decision": "allow"
+    },
+    {
+      "shape": "space and newline",
+      "chars": 10000,
+      "ms": 0.7,
+      "decision": "allow"
+    },
+    {
+      "shape": "space and newline",
+      "chars": 100000,
+      "ms": 7.5,
+      "decision": "allow"
+    },
+    {
+      "shape": "space and newline",
+      "chars": 900000,
+      "ms": 64.9,
+      "decision": "allow"
+    },
+    {
+      "shape": "short base64 tokens",
+      "chars": 10000,
+      "ms": 3,
+      "decision": "review"
+    },
+    {
+      "shape": "short base64 tokens",
+      "chars": 100000,
+      "ms": 11.2,
+      "decision": "review"
+    },
+    {
+      "shape": "short base64 tokens",
+      "chars": 900000,
+      "ms": 83.8,
+      "decision": "review"
+    },
+    {
+      "shape": "combining marks",
+      "chars": 10000,
+      "ms": 1.9,
+      "decision": "review"
+    },
+    {
+      "shape": "combining marks",
+      "chars": 100000,
+      "ms": 15.1,
+      "decision": "review"
+    },
+    {
+      "shape": "combining marks",
+      "chars": 900000,
+      "ms": 135.2,
+      "decision": "review"
+    }
+  ],
+  "restart": [
+    {
+      "records": 1000,
+      "restartMs": 186,
+      "writeMs": 14.8
+    },
+    {
+      "records": 10000,
+      "restartMs": 1468,
+      "writeMs": 26.5
+    }
+  ]
+}

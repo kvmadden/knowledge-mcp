@@ -1166,7 +1166,8 @@
             "link_url": "javascript:alert(document.cookie)"
           }
         ]
-      ]
+      ],
+      "acceptRefusal": "the tool refuses a link that is not http or https before the gate runs"
     },
     {
       "id": "A79",
@@ -1271,7 +1272,8 @@
             "bucket": "jordan.sample@example.com"
           }
         ]
-      ]
+      ],
+      "acceptRefusal": "the tool refuses an unknown bucket before the gate runs, and its error does not echo the value"
     }
   ]
 }

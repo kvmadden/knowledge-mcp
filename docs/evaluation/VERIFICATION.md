@@ -26,22 +26,22 @@ node --test test/safety-flow.test.js
 
 Exit 0, 6 passed, 0 failed. `green-focused.log` records the output.
 
-Ran the same six tests against the untouched control through a temporary wrapper that changes only import and seed paths. The synthetic fixture bytes and assertions were identical. The wrapper is preserved in the local evidence directory and the scratch copy is removed after use.
+Ran the same six tests against the untouched control through a temporary wrapper that changes only import and seed paths. The synthetic fixture bytes and assertions were identical. The wrapper is preserved in the local evidence directory and the scratch copy is removed after use. It sat in the system temporary folder, written `<temp dir>` below. The workspace root variables were unset for this run and for both fresh clones below.
 
 ```sh
-env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT node --test /tmp/knowledge-mcp-focused-control.test.mjs
+node --test <temp dir>/knowledge-mcp-focused-control.test.mjs
 ```
 
 Exit 1, 6 failed, 0 passed. These are the absent new behaviors, not pre-existing failures of main's own gate. A first wrapper attempt resolved a relative seed URL outside the checkout. Its path was corrected and the recorded control run contains the intended assertion failure instead of an import or fixture error.
 
 ## Full repository gate and evaluation
 
-Created an independent fresh clone at `/tmp/knowledge-mcp-control-20261031`, outside the estate, checked out `9dc0ac6` detached and left its source tree clean. Both runs use the same Node/npm binaries and unchanged lockfile dependencies. No sibling repository, registered host or estate root is needed.
+Created an independent fresh clone in a temporary folder, written `<control>` below, checked out `9dc0ac6` detached and left its source tree clean. Both runs use the same Node/npm binaries and unchanged lockfile dependencies. Nothing outside the clone is needed.
 
 ```sh
-env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT npm ci --prefix /tmp/knowledge-mcp-control-20261031
-env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT npm test --prefix /tmp/knowledge-mcp-control-20261031
-env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT npm run check --prefix /tmp/knowledge-mcp-control-20261031
+npm ci --prefix <control>
+npm test --prefix <control>
+npm run check --prefix <control>
 ```
 
 Each command exited 0. Main's suite: 91 passed, 0 failed, 0 skipped. There are no baseline full-gate failures.
@@ -66,18 +66,18 @@ All exited 0. Full suite: 97 passed, 0 failed, 0 skipped. There are no candidate
 Control evaluation used the exact same runners and fixture bytes:
 
 ```sh
-EVAL_RUNTIME_ROOT=/tmp/knowledge-mcp-control-20261031 node eval/legacy.mjs docs/evaluation/legacy-before.json 9dc0ac6
+EVAL_RUNTIME_ROOT=<control> node eval/legacy.mjs docs/evaluation/legacy-before.json 9dc0ac6
 ```
 
 Exit 0. The held-out before report was generated before any runtime change in the original worktree at `9dc0ac6`. Both sets and all counts are in [the evaluation report](README.md). The original `test/write-paths.test.js` and `test/_helpers.js` remain byte-for-byte unchanged from main.
 
-Fresh candidate clone of `2b5bd7d`, outside the estate:
+Fresh candidate clone of `2b5bd7d`, in a temporary folder written `<candidate>`:
 
 ```sh
-git clone --quiet --no-local . /tmp/knowledge-mcp-candidate-20261031
-env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT npm ci --prefix /tmp/knowledge-mcp-candidate-20261031
-env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT npm test --prefix /tmp/knowledge-mcp-candidate-20261031
-env -u MFW_UMBRELLA_ROOT -u OPERATOR_ECOSYSTEM_ROOT npm run check --prefix /tmp/knowledge-mcp-candidate-20261031
+git clone --quiet --no-local . <candidate>
+npm ci --prefix <candidate>
+npm test --prefix <candidate>
+npm run check --prefix <candidate>
 ```
 
 All exited 0, with 97 passed, 0 failed and 0 skipped. Both fresh clone source trees remained clean. Outputs are committed in `evidence/` with trailing whitespace removed, including RED-first, focused GREEN, focused control, both full suites and fresh candidate. `KNOWLEDGE_WRITE_MODE=dry-run npm run check` also exited 0, with no seeded records or files. The final evidence-only commit changes no executable source or fixtures.
@@ -90,10 +90,10 @@ The reference is the existing console demo and shared registry light-theme token
 node scripts/safety-demo.mjs --record
 node scripts/render-safety-demo.mjs
 PLAYWRIGHT_MODULE=<installed Playwright ES module> node scripts/record-safety-demo.mjs <evidence directory>
-/tmp/knowledge-mcp-media-20261031/bin/python scripts/demo-gif.py <evidence directory>
+<media venv>/bin/python scripts/demo-gif.py <evidence directory>
 ```
 
-Exit 0 for each. Recording tooling used an existing Playwright installation and a disposable Pillow environment. Neither is needed by the runtime or tests. The GIF has four frames, 11.6 seconds total, at 1440×1022 to include the complete audit entry. The viewport used for desktop review is 1440×900. The first PNG and complete GIF are in `docs/media/`.
+Exit 0 for each. Recording tooling used an existing Playwright installation and a disposable Pillow environment, written `<media venv>` above. Neither is needed by the runtime or tests. The GIF has four frames, 11.6 seconds total, at 1440×1022 to include the complete audit entry. The viewport used for desktop review is 1440×900. The first PNG and complete GIF are in `docs/media/`.
 
 ## Remaining limits
 

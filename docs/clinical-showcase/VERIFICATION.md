@@ -16,12 +16,11 @@ Exit 1, two failures. The first assertion expected `/care.coordination/i` and re
 
 ## Control and candidate commands
 
-Control is a fresh clone outside the estate at `/private/tmp/knowledge-clinical-control`, detached at the exact base SHA. Candidate is another fresh clone at `/private/tmp/knowledge-clinical-candidate`, detached at that SHA with the candidate diff and new clinical test applied. Both temporary clones are deleted after preserving evidence.
+Control is a fresh clone in a temporary folder, written `<control>` in the evidence logs, detached at the exact base SHA. Candidate is another fresh temporary clone, detached at that SHA with the candidate diff and new clinical test applied. Both temporary clones are deleted after preserving evidence.
 
-Run in each clone:
+Run in each clone, with the workspace root variables unset:
 
 ```sh
-unset MFW_UMBRELLA_ROOT OPERATOR_ECOSYSTEM_ROOT
 npm ci
 node --test test/console.test.js test/safety-flow.test.js
 npm test
@@ -42,11 +41,11 @@ node scripts/safety-demo.mjs --record
 node scripts/render-safety-demo.mjs
 EVIDENCE_HOME=<evidence directory> PLAYWRIGHT_MODULE=<installed Playwright ES module> node scripts/record-console.mjs
 PLAYWRIGHT_MODULE=<installed Playwright ES module> node scripts/record-safety-demo.mjs <evidence directory>/replay
-/private/tmp/knowledge-clinical-media/bin/python scripts/console-gif.py
-/private/tmp/knowledge-clinical-media/bin/python scripts/demo-gif.py <evidence directory>/replay
+<media venv>/bin/python scripts/console-gif.py
+<media venv>/bin/python scripts/demo-gif.py <evidence directory>/replay
 ```
 
-All final recording commands exit 0. Pillow was installed in a disposable local venv solely to assemble screenshots. Playwright used an existing installed browser dependency, no runtime sibling dependency was added. Scripts work with a normal Playwright installation via the default module name.
+All final recording commands exit 0. Pillow was installed in a disposable local venv, written `<media venv>` above, solely to assemble screenshots. Playwright used an existing installed browser dependency, no runtime sibling dependency was added. Scripts work with a normal Playwright installation via the default module name.
 
 Six viewport screenshots cover light and dark at 1440x900, 430x932 and 390x844. Browser checks show no horizontal document overflow or undersized visible buttons. Approval is activated with keyboard Enter. Rejection, arrow-key tabs, empty state, loading, error and reconnect are exercised. Both GIFs are regenerated. The console GIF adds a final fax/injection view. Full-page captures preserve mobile review cards and provenance below the fold.
 

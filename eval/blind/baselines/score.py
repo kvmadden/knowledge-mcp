@@ -60,7 +60,8 @@ socket.socket.connect_ex = _no_connect_ex
 THRESHOLD = 0.5
 INJECTION_MODEL = "protectai/deberta-v3-base-prompt-injection-v2"
 INJECTION_REVISION = "90c9989b1a342275dd0d1a95aad283c04e075671"
-MODELS_ROOT = os.environ.get("BLIND_MODELS_ROOT", "/Volumes/HubData/models")
+# Defaults to .models beside this script, where setup.sh puts the weights.
+MODELS_ROOT = os.environ.get("BLIND_MODELS_ROOT", os.path.join(os.path.dirname(os.path.abspath(__file__)), ".models"))
 SPACY_MODEL_DIR = os.path.join(MODELS_ROOT, "spacy", "en_core_web_lg-3.7.1", "en_core_web_lg", "en_core_web_lg-3.7.1")
 os.environ.setdefault("HF_HOME", os.path.join(MODELS_ROOT, "huggingface"))
 

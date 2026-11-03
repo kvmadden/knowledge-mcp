@@ -6,7 +6,7 @@
       "--quiet",
       "--no-local",
       "<repo>",
-      "/private/tmp/knowledge-corpus-candidate-ucoy3qw_"
+      "<candidate>"
     ],
     "exit": 0,
     "log": "fresh-candidate-00.txt"

@@ -4,9 +4,9 @@
 #
 #   sh eval/blind/baselines/setup.sh
 #
-# Python packages go in a virtual environment under ~/dev/toolchains. Model
-# weights go under BLIND_MODELS_ROOT (default /Volumes/HubData/models), the
-# Hub's place for weights. Every version is pinned:
+# Python packages go in the virtual environment BLIND_VENV names, and model
+# weights under BLIND_MODELS_ROOT. They default to .venv and .models beside
+# this script, both ignored by git. Every version is pinned:
 #   - Python packages: requirements.txt next to this script (pip freeze)
 #   - the classifier: protectai/deberta-v3-base-prompt-injection-v2 at a fixed
 #     revision, checked by the SHA-256 of its weights
@@ -17,8 +17,8 @@
 set -eu
 
 HERE=$(cd "$(dirname "$0")" && pwd)
-VENV=${BLIND_VENV:-"$HOME/dev/toolchains/blind-baselines"}
-MODELS=${BLIND_MODELS_ROOT:-/Volumes/HubData/models}
+VENV=${BLIND_VENV:-"$HERE/.venv"}
+MODELS=${BLIND_MODELS_ROOT:-"$HERE/.models"}
 PYTHON=${BLIND_SYSTEM_PYTHON:-python3}
 REVISION=90c9989b1a342275dd0d1a95aad283c04e075671
 WEIGHTS_SHA256=6521cb8d0ac08148c81464899c424e6148fcc62befa371089fa4061d8b6e0424

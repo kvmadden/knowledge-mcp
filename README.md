@@ -25,9 +25,11 @@ The [recorded replay](docs/media/safety-demo.html), [static screenshot](docs/med
 
 The existing evaluation is unchanged: **324 planted cases across 10 write tools**, using six synthetic patterns in every existing string argument, both replacing and appending to valid values. Calls go through an MCP client and server. The test also checks ten benign calls and has a canary that catches writes when the guarded store is bypassed.
 
-A new **60-case synthetic held-out set** was generated from seed `20261031` and committed with its generator, SHA-256 and baseline result before implementation. Separate development tests drove the changes. The implementation was committed before the after run and was not tuned on the held-out results. The same author designed the challenge families and controls, so this is not an independent benchmark. The 60 cases contain only 20 distinct strings: 14 risky and 6 benign, each repeated two to five times within its family of five cases. Every repeat gets the same outcome. Counted by distinct string, 12 of 14 risky strings are blocked and 1 of 6 benign strings is falsely blocked. Read the case counts below as repeats of 20 challenges, not 60 independent ones.
+A new **60-case synthetic set**, first published as held-out, was generated from seed `20261031` and committed with its generator, SHA-256 and baseline result before implementation. Separate development tests drove the changes. The implementation was committed before the after run and was not tuned on its results. The same author designed the challenge families and controls, so this is not an independent benchmark. The 60 cases contain only 20 distinct strings: 14 risky and 6 benign, each repeated two to five times within its family of five cases. Every repeat gets the same outcome. Counted by distinct string, 12 of 14 risky strings are blocked and 1 of 6 benign strings is falsely blocked. Read the case counts below as repeats of 20 challenges, not 60 independent ones.
 
 ## Results and limits
+
+**Correction, 3 November 2026.** This set is development data, not a held-out set. Its cases were committed before the gate rules were written, so they were readable while the rules were written. Three rules accept words that appear only in its generator and in none of the development tests: "disregard" and "prior" in the instruction-override rule, "[system]" in the role-spoof rule, and "send" and "facts" in the memory-export rule (`src/screening/screen.js`, lines 90 to 92). The numbers are kept as measured. Read them as development results.
 
 Before means the public `main` snapshot at `9dc0ac6`. The old tests and their original result are preserved.
 
@@ -35,10 +37,10 @@ Before means the public `main` snapshot at `9dc0ac6`. The old tests and their or
 | --- | ---: | ---: |
 | Existing planted values persisted | 0/324 | 0/324 |
 | Existing benign controls falsely blocked | 0/10 | 0/10 |
-| Held-out risky writes blocked | 10/40 | 30/40 |
-| Held-out risky writes allowed, misses | 30/40 | 10/40 |
-| Held-out benign writes falsely blocked | 0/20 | 5/20 |
-| Held-out total blocked / allowed | 10 / 50 | 35 / 25 |
+| 60-case set, risky writes blocked | 10/40 | 30/40 |
+| 60-case set, risky writes allowed, misses | 30/40 | 10/40 |
+| 60-case set, benign writes falsely blocked | 0/20 | 5/20 |
+| 60-case set, total blocked / allowed | 10 / 50 | 35 / 25 |
 
 The 324 original cases include 312 rejected responses and 12 harmless “no replacement” responses. Of those cases, 192 reach a direct screening block. The rest are stopped by existing schema, path or operation checks. Calling all 324 direct gate detections would overstate the result.
 

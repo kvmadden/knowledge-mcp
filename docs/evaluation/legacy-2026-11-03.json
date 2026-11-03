@@ -1,0 +1,113 @@
+{
+  "runtime": "candidate",
+  "cases": 324,
+  "rejected": 312,
+  "noOp": 12,
+  "allowed": 0,
+  "screenBlocked": 186,
+  "benignAllowed": 10,
+  "falseBlocks": 0,
+  "failures": [],
+  "results": [
+    {
+      "tool": "records.create",
+      "failures": [],
+      "cases": 72,
+      "screenBlocked": 48,
+      "rejected": 72,
+      "noOp": 0,
+      "allowed": 0,
+      "benignAllowed": 1
+    },
+    {
+      "tool": "records.pin",
+      "failures": [],
+      "cases": 12,
+      "screenBlocked": 12,
+      "rejected": 12,
+      "noOp": 0,
+      "allowed": 0,
+      "benignAllowed": 1
+    },
+    {
+      "tool": "decisions.log",
+      "failures": [],
+      "cases": 48,
+      "screenBlocked": 36,
+      "rejected": 48,
+      "noOp": 0,
+      "allowed": 0,
+      "benignAllowed": 1
+    },
+    {
+      "tool": "inbox.capture",
+      "failures": [],
+      "cases": 60,
+      "screenBlocked": 30,
+      "rejected": 60,
+      "noOp": 0,
+      "allowed": 0,
+      "benignAllowed": 1
+    },
+    {
+      "tool": "inbox.capture_quick",
+      "failures": [],
+      "cases": 12,
+      "screenBlocked": 12,
+      "rejected": 12,
+      "noOp": 0,
+      "allowed": 0,
+      "benignAllowed": 1
+    },
+    {
+      "tool": "memory.create",
+      "failures": [],
+      "cases": 24,
+      "screenBlocked": 18,
+      "rejected": 24,
+      "noOp": 0,
+      "allowed": 0,
+      "benignAllowed": 1
+    },
+    {
+      "tool": "memory.str_replace",
+      "failures": [],
+      "cases": 36,
+      "screenBlocked": 12,
+      "rejected": 24,
+      "noOp": 12,
+      "allowed": 0,
+      "benignAllowed": 1
+    },
+    {
+      "tool": "memory.insert",
+      "failures": [],
+      "cases": 24,
+      "screenBlocked": 12,
+      "rejected": 24,
+      "noOp": 0,
+      "allowed": 0,
+      "benignAllowed": 1
+    },
+    {
+      "tool": "memory.delete",
+      "failures": [],
+      "cases": 12,
+      "screenBlocked": 0,
+      "rejected": 12,
+      "noOp": 0,
+      "allowed": 0,
+      "benignAllowed": 1
+    },
+    {
+      "tool": "memory.rename",
+      "failures": [],
+      "cases": 24,
+      "screenBlocked": 6,
+      "rejected": 24,
+      "noOp": 0,
+      "allowed": 0,
+      "benignAllowed": 1
+    }
+  ]
+}

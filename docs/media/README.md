@@ -1,5 +1,7 @@
 # Synthetic safety recording
 
+> These recordings were made on 2026-10-31, before the 2026-11-03 change. They show the protocol draft held by a dry-run runtime. Today the gate itself holds it in the store hold queue, and `npm run demo:safety` prints the current outcomes. The images have not been re-recorded.
+
 `safety-demo.gif` is a four-frame recording of the actual MCP transcript rendered in `safety-demo.html`. It is an animated screenshot sequence, not a video of a live model. Each frame is held for 2.6 or 3.2 seconds, for 11.6 seconds total. The replay is also usable with Tab and Enter. All four attempts run in independent runtimes. The four cases are a care-coordination note, blocked phone and MRN, a protocol draft held for pharmacist review and an injected fax instruction. The live console demonstrates approval resubmission and rejection. It does not authenticate reviewers or provide a durable approval service.
 
 The repository had a programmatic browser helper and a console demo, with no existing screen to extend. The visual reference is the existing demo's accepted/refused flow. Light-theme tokens are imported from `madden-tokens` version 0.47.0, `src/ui/theme.js`, `resolveTheme('light')`, into the committed `theme.json` snapshot. The renderer reads that snapshot so ordinary clones need no sibling registry. Font stacks use local fallbacks, with no font download. Only presentation is added to the recorded runtime outcomes.

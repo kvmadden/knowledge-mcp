@@ -1,118 +1,131 @@
 # knowledge-mcp
 
-**A testable write boundary for AI agents that share long-term memory.** For engineers and product teams evaluating agent controls, including clinical AI platforms. This is a small, local prototype with inspectable tests, not a clinical system or a compliance certification.
+**A write gate for AI agents that share long-term memory.** Every write from every tool passes one screening gate. The gate blocks what matches a listed rule, holds what it cannot judge for a person, and audits each decision without copying submitted values. For engineers and product teams evaluating agent memory controls, including clinical AI platforms. This is a local prototype with inspectable tests. It is not a clinical system, a de-identification service or a compliance certification.
+
+## Honest headline
+
+- **Wiring, verified.** All 10 MCP write tools reach the same gate. The registry test plants 6 synthetic samples into every string argument of every write tool (324 cases). 186 are stopped by the gate itself, the rest by schema, path or URL validation, and 0 persist. A canary run with the gate removed flags 8 of 8 content-bearing tools, so the test can fail.
+- **Detection, not yet measured on blind data.** Every set used to change the rules is development data, including the 60-case set once called held-out. On those development sets the gate now does far better than before (below). A headline detection rate needs a fresh set written blind and locked before its first run. That set has been specified and is pending.
+- **What a pass means.** An allowed write means no listed pattern or rule was found in an input the gate read in full. It does not mean the content is safe, true or free of personal information that no rule describes.
 
 ## The problem
 
-An agent can copy private information, a false claim or instructions hidden in a document into shared memory. Later agents may retrieve that entry and treat it as reliable context. A mistaken write can outlive the conversation that produced it.
-
-This project puts one gate between the agent and the store. It makes the write decision visible and lets an operator defer writes for review. It cannot determine whether a clinical statement is true.
+An agent can copy private information, a false claim or instructions hidden in a document into shared memory. Later agents may retrieve that entry and treat it as reliable context. A mistaken write can outlive the conversation that produced it, and several agents writing to one store can corrupt it.
 
 ## What it does
 
-- Screens every store-write argument, including nested fields, keys, numbers and file paths. The example deny-list checks six patterns: email, US phone, SSN format, birth-date labels, record-number labels and payment-card format.
-- Checks raw and normalized text, including full-width characters and invisible-character bypasses. Unreadable, circular, oversized or unsupported values fail closed.
-- Adds small heuristics for instruction overrides, system/developer role spoofing and bulk memory export instructions. Explicitly untrusted provenance is refused. These are literal checks, not an injection classifier.
-- Records a timestamp, store operation, outcome and reason identifiers for allowed, blocked and deferred writes. Gate-decision entries contain no submitted values or excerpts.
-- Offers **dry-run mode** for manual review. Safe requests are screened and deferred. Records and files stay unchanged, while the audit decision is still written. An operator must resubmit an approved request in commit mode.
-- Stores source provenance on records: caller-supplied source and source date, plus the server's recording timestamp. Older callers still work. Unknown source dates stay unknown. Provenance is traceability, not verification.
+- **One gate for every write.** Tools only ever receive a guarded store. Its write methods screen a structured-clone snapshot of their arguments and hand only that snapshot to the raw store. Every raw store method must be classified as read, write or internal, or startup fails.
+- **Three decisions.** `block` when a listed pattern or block-tier rule matches, or when the input cannot be read in full. `review` when the gate finds something it cannot judge. `allow` when nothing listed was found.
+- **A hold queue.** A `review` decision stores the payload in a hold queue that no read tool can see, and the tool call returns an error with the hold id. An operator approves or rejects it from the CLI or the console. Approval screens the payload again, checks its recorded SHA-256 and commits it with an audit entry that names the reviewer label. No MCP tool can approve, reject or retract.
+- **Retraction.** An operator can retract a record. It disappears from list, search, recent and the recent-decisions resource, stays inspectable by id, and the retraction is audited.
+- **Value-free audit.** Each entry has a fixed schema: operation, store method, rule ids, decision, payload hash, record id, hold id, reviewer label and policy id. Entries never contain submitted values or paths. A data change and its audit entry are committed together.
+- **Several processes, one store.** Writes take a lock file, reread what another process wrote and commit atomically. Two agent hosts can share one store file without losing writes.
 
-![Recorded synthetic MCP write flow with gate decision and audit entry](docs/media/safety-demo.gif)
+## Rules
 
-The [recorded replay](docs/media/safety-demo.html), [static screenshot](docs/media/safety-demo.png) and [raw transcript](docs/media/safety-demo.json) use real in-process MCP client calls with fictional inputs. The [demo script](scripts/safety-demo.mjs) shows a synthetic care-coordination note saved, phone and MRN blocked, a refill-outreach draft held for pharmacist review and a fax instruction blocked. The four attempts use independent runtimes. No model, network call or paid API is required.
+The gate reads each string as written, after compatibility folding (NFKC, default-ignorable characters removed, dashes and non-ASCII digits folded, common Cyrillic and Greek look-alike letters mapped to Latin), after decoding base64, hex, percent and HTML-entity segments, and with all fields of one write joined in both orders.
 
-## How it was tested
+| Rule | Decision | What it looks for |
+| --- | --- | --- |
+| `email-address` | block | Email addresses, with a linear-time pattern |
+| `obfuscated-email` | review | `name [at] host [dot] com` and similar |
+| `us-phone-number` | block | Separated or parenthesized US numbers, toll-free lines excepted |
+| `us-ssn-format` | block | 3-2-4 numbers with hyphens or spaces |
+| `date-of-birth-label` | block | A birth-date label or "born" followed by a full date |
+| `record-number-label` | block | MRN, MR#, medical record, patient ID or chart labels with 4 or more digits |
+| `payment-card-number` | block | 13 to 19 digits that pass Luhn |
+| `medicare-beneficiary-id` | block | The 11-character MBI format |
+| `ipv4-address`, `street-address`, `person-name-cue` | review | Heuristics for identifiers that patterns cannot pin down |
+| `instruction-override` | block | An imperative to ignore, forget, bypass or replace prior or system instructions, in English, Spanish, Portuguese, French, Italian or German |
+| `role-spoof` | block | Chat-template markers, role headers, `"role":"system"` and mode-switch phrases |
+| `bulk-export` | block | An imperative to send stored data to an external address |
+| `encoded-instruction` | block | An instruction to decode something and follow it |
+| `clinical-assertion`, `clinical-directive` | review | A rule or decision with clinical content, a dose claim, a safety claim or an imperative clinical order |
+| `addressed-to-agent`, `quoted-instruction`, `possible-instruction-override`, `bulk-transfer`, `memory-tampering` | review | Text aimed at an AI, quoted directives without a disavowal, unqualified overrides, bulk copying and orders to rewrite memory |
+| `untrusted-source` | review | Provenance labeled untrusted, after normalizing the label |
+| `unreadable-encoded-content` | review | An encoded block of 256 or more characters that is not readable text |
+| `mixed-script-token` | review | A word that mixes Latin and Cyrillic letters |
 
-The existing evaluation is unchanged: **324 planted cases across 10 write tools**, using six synthetic patterns in every existing string argument, both replacing and appending to valid values. Calls go through an MCP client and server. The test also checks ten benign calls and has a canary that catches writes when the guarded store is bypassed.
+Negated clauses ("never send all records to external endpoints") and quoted lessons next to an explicit "do not follow" are treated as mentions, not directives. Deny-list patterns live in `config/deny-list.example.json` and are timed at startup: a pattern that is slow on long input cannot be loaded.
 
-A new **60-case synthetic held-out set** was generated from seed `20261031` and committed with its generator, SHA-256 and baseline result before implementation. Separate development tests drove the changes. The implementation was committed before the after run and was not tuned on the held-out results. The same author designed the challenge families and controls, so this is not an independent benchmark. The 60 cases contain only 20 distinct strings: 14 risky and 6 benign, each repeated two to five times within its family of five cases. Every repeat gets the same outcome. Counted by distinct string, 12 of 14 risky strings are blocked and 1 of 6 benign strings is falsely blocked. Read the case counts below as repeats of 20 challenges, not 60 independent ones.
+### Coverage of the 18 HIPAA Safe Harbor identifiers
 
-## Results and limits
+This is a coverage map of the shipped example list, not a de-identification claim.
 
-Before means the public `main` snapshot at `9dc0ac6`. The old tests and their original result are preserved.
+| Identifier | Coverage |
+| --- | --- |
+| Names | Partial heuristic, review only (`person-name-cue`). Most names pass. |
+| Geographic subdivisions | Street addresses partly (`street-address`, review). City, county and ZIP are not covered. |
+| Dates related to a person | Birth dates with a label or "born" only. Admission, discharge and death dates are not covered. |
+| Phone numbers, fax numbers | US formats with separators. Unseparated and international numbers pass. |
+| Email addresses | Covered, plus spelled-out forms for review. |
+| Social security numbers | 3-2-4 format with hyphens or spaces. Unseparated numbers pass. |
+| Medical record numbers | With a label. Unlabeled numbers pass. |
+| Health plan beneficiary numbers | Medicare MBI format only. |
+| Account numbers | Payment cards only (Luhn). |
+| Certificate and license numbers | Not covered. |
+| Vehicle identifiers | Not covered. |
+| Device identifiers and serial numbers | Not covered. |
+| Web URLs | Not covered (links are allowed). |
+| IP addresses | IPv4, review only. |
+| Biometric identifiers, photographs | Not covered. Long encoded blocks such as images are held as unreadable. |
+| Any other unique identifying number | Not covered. |
 
-| Measured outcome | Before | After |
-| --- | ---: | ---: |
-| Existing planted values persisted | 0/324 | 0/324 |
-| Existing benign controls falsely blocked | 0/10 | 0/10 |
-| Held-out risky writes blocked | 10/40 | 30/40 |
-| Held-out risky writes allowed, misses | 30/40 | 10/40 |
-| Held-out benign writes falsely blocked | 0/20 | 5/20 |
-| Held-out total blocked / allowed | 10 / 50 | 35 / 25 |
+## Results
 
-The 324 original cases include 312 rejected responses and 12 harmless “no replacement” responses. Of those cases, 192 reach a direct screening block. The rest are stopped by existing schema, path or operation checks. Calling all 324 direct gate detections would overstate the result.
+Every set below was seen while the rules were changed on 2026-11-03, so every result is a development result. Before means public `main` at `2e39dbf`, scored with the same runners.
 
-The new controls reduce allowed risky writes on this set, at the cost of five false blocks. **The gate still allows encoded instructions and plausible false clinical claims.** It also blocks benign security lessons that quote an attack phrase. The [full evaluation](docs/evaluation/README.md) publishes every outcome and concrete misses. Repeated variants within a family do not establish broad attack coverage.
+| Set and status | Measure | Before | After |
+| --- | --- | ---: | ---: |
+| Registry harness, 324 planted cases, wiring test | Planted values persisted | 0 / 324 | 0 / 324 |
+| | Stopped by the gate itself | 192 / 324 | 186 / 324 |
+| | Benign baseline calls allowed | 10 / 10 | 10 / 10 |
+| 60-case set (seed 20261031), development data | Risky cases not committed, by case | 30 / 40 | 40 / 40 (30 blocked, 10 held) |
+| | Risky strings not committed, by distinct string | 12 / 14 | 14 / 14 |
+| | Benign cases refused | 5 / 20 | 0 / 20 |
+| | Benign strings refused, by distinct string | 1 / 6 | 0 / 6 |
+| 84 probes from the 2026-11-03 review, development data | Probes that met their expectation | 22 / 84 | 78 / 84 |
+| | Risky probes not stored | 20 / 74 | 70 / 74 |
+| | Harmless probes stored | 2 / 10 | 8 / 10 |
+| 12 synthetic examples, development data | Behaved as described | not run | 12 / 12 |
 
-Other limits matter for a platform reader:
+The 186 is lower than 192 because six planted link values that are not http or https URLs are now refused by URL validation before they reach the gate. The 60-case set was readable when its rules were first written, and its phrasings match those rules, so it was never held-out. The probes were written by the reviewer who then changed the rules. Reports: `docs/evaluation/`.
 
-- Pattern checks miss names, street addresses, novel attacks and many identifier formats. The example patterns are US-oriented. A matching value rejects the whole request, including benign contact information.
-- Source and trust labels are caller assertions. An agent can omit or mislabel them. There is no authenticated source attestation or clinical fact checking. Use dry-run for uncertain material.
-- Dry-run defers all writes in that runtime, not just a selected risk class. It has no approval queue or durable approval token. Seeding is skipped in dry-run. Loaded data must still pass the current gate.
-- Gate-decision audit entries are value-free. Older memory-operation audit entries include already-screened file paths and sizes. Validation errors that never reach the guarded store are not audited. Audit records share the store file, have no tamper protection and are not transactionally committed with the data change.
-- The store is in memory or one JSON file, for one process without locking. The stdio server trusts its host. `OWNER_ID` is a configured label, not an authenticated user.
-- The browser helper shares text screening but has no dry-run or server audit persistence. It is tested with a fake database client. A modified page can bypass browser checks, so database enforcement is still needed.
-- This is synthetic testing of deterministic controls, not a patient study, production deployment or proof of clinical safety.
+The six probes that still fail: an unseparated 10-digit phone number, a phone number spelled in words, a phone number split across two separate records, a public agency email address (still blocked), honest untrusted content (held rather than stored) and deleting a protocol directory (allowed). The first three are known pattern limits, the fourth and fifth are deliberate choices, and the sixth is an open policy decision.
 
-## Run the demo and tests
+Screening time is linear. On an Apple M1 Max with Node 24, 900,000 characters screen in under 300 ms in each of the five shapes tested, where the old email pattern took 10.9 s on 80,000 characters. A store of 10,000 records restarts in about 1.3 s and takes about 18 ms per write. See `docs/evaluation/bench-2026-11-03.json` and `npm run bench`.
 
-Requires Node 20 or later. This comparison was run with Node 24.14.1 and npm 11.11.0 on macOS.
+## Limits
+
+- **Detection is rules.** Paraphrases, languages and encodings the rules do not describe will pass. Names, most dates and many identifier formats pass. A rule cannot judge whether a clinical claim is true. It can only hold rules and dose claims for a pharmacist.
+- **Splits across separate writes pass.** Each write is screened alone, so two records that only form an instruction or an identifier together are both stored.
+- **Holding has a cost.** Text aimed at an AI, clinical rules, untrusted sources and opaque blocks wait for a person. Nobody has measured reviewer time or false holds on real workloads.
+- **Trust labels are caller assertions.** Untrusted content is held, not rejected, so an honest label no longer destroys the content. A caller can still omit the label.
+- **Whole-write rejection.** One identifier in a long note rejects the whole note. There is no redaction mode.
+- **Reviewer labels are not authenticated.** The CLI and console record the label the operator types. There is no identity, authorization or per-agent isolation. `OWNER_ID` is a configured label.
+- **One JSON file.** The store rewrites one file per change. It is safe across processes on one machine, not across machines or network file systems.
+- **Reads are not screened.** Content is screened when written and when loaded. Memory file reads say the content is stored data with its trust label, but an agent can still follow it.
+- **The browser helper is not access control.** It shares the gate but has no hold queue (held rows are not inserted), no audit and no database policy. A modified page can skip it.
+- **Synthetic testing only.** No patient data, model, production deployment or clinical study.
+
+## Run it
+
+Requires Node 20 or later.
 
 ```sh
 npm ci
 npm test
 npm run check
-npm run demo:safety
-npm run eval:legacy
-npm run eval:heldout
+npm run examples
+npm run eval:dev
+npm run bench
 ```
 
-The original `npm run demo` remains available. It runs seven benign writes and seven planted attempts with zero planted values left in the store.
-
-To start an MCP server in dry-run mode:
+Start an MCP server on stdio:
 
 ```sh
-KNOWLEDGE_WRITE_MODE=dry-run npm start
+KNOWLEDGE_STORE_PATH=./data/store.local.json npm start
 ```
-
-Reads still work. Blocked writes return a screening error. Safe writes return a dry-run deferral error so an agent cannot mistake a preview for a successful save. To make a reviewed write, start a commit-mode runtime and resubmit the request. This does not bypass screening.
-
-Example additive provenance input for `records.create`, `decisions.log` or `inbox.capture`:
-
-```json
-{
-  "text": "Synthetic care-coordination note: verify outreach readiness before contacting a member.",
-  "provenance": {
-    "source": "synthetic-coordination-note",
-    "observedAt": "2026-10-30",
-    "trust": "asserted"
-  }
-}
-```
-
-New records receive `recordedAt` from the server clock. Without supplied provenance, the source falls back to the writer label, the source date is null and trust is unspecified. Memory files record their writer and recording date, with a null source date. Existing rows are not retroactively given a source. Reads expose record provenance alongside the content.
-
-A reviewer can read the audit in the JSON snapshot or through the embedded runtime's `store.listAudit()`. For example, the demo persists this decision:
-
-```json
-{
-  "op": "screen_blocked",
-  "target": "insertRecord",
-  "pattern_ids": ["instruction-override"],
-  "violation_count": 1,
-  "at": "2026-10-31T12:00:00.000Z"
-}
-```
-
-A matching request never reaches the raw write method. A passing dry-run uses `write_deferred`, and a completed store write uses `write_allowed`. These events describe store operations rather than authenticated agent identities. An allowed operation can be a no-op when no matching row exists.
-
-## Technical detail
-
-The runtime is `MCP tools → record/file logic → guarded store → shared screening function → raw store`. Tools and seeding receive only the guarded store. Every raw method must be classified as read or write, or startup fails. The registry test fails if a registered tool lacks a fixture. The browser helper imports the same pure screening module.
-
-There are 17 existing tools: seven reads and ten writes. Their existing input fields and output behavior are preserved, with optional provenance fields on three tools and additive provenance in record reads. The resource is `knowledge://records/recent-decisions`. No new daemon, queue or authority is introduced.
-
-The shared screening code applies the six configurable deny-list patterns plus four fixed policy checks. `patternIds` continues to identify the configured deny-list. `policyIds` lists the added checks. A missing, empty or invalid deny-list prevents startup. Data loaded from disk is re-screened against current policy, so stricter checks can refuse an older store at startup. Make a reviewed copy before changing policy on real data.
 
 MCP host configuration:
 
@@ -122,66 +135,65 @@ MCP host configuration:
     "knowledge": {
       "command": "node",
       "args": ["/absolute/path/to/knowledge-mcp/src/index.js"],
-      "env": {
-        "KNOWLEDGE_STORE_PATH": "/absolute/path/to/store.local.json",
-        "KNOWLEDGE_WRITE_MODE": "dry-run"
-      }
+      "env": { "KNOWLEDGE_STORE_PATH": "/absolute/path/to/store.local.json" }
     }
   }
 }
 ```
 
+Several hosts can point at the same `KNOWLEDGE_STORE_PATH`.
+
 | Environment variable | Default | Effect |
 | --- | --- | --- |
-| `KNOWLEDGE_WRITE_MODE` | `commit` | `commit` or `dry-run`, invalid modes refuse startup |
-| `KNOWLEDGE_STORE_PATH` | unset | Optional JSON persistence, including audit decisions |
-| `KNOWLEDGE_SEED` | `data/seed.json` | Synthetic seed on empty commit-mode stores, `none` disables |
-| `DENY_LIST_PATH` | example config | Configurable privacy deny-list |
+| `KNOWLEDGE_WRITE_MODE` | `commit` | `commit` or `dry-run`. Dry-run defers every write and reports what the gate would have done. |
+| `KNOWLEDGE_STORE_PATH` | unset | JSON persistence, including the hold queue and audit |
+| `KNOWLEDGE_SEED` | `data/seed.json` | Synthetic seed for an empty commit-mode store, `none` disables |
+| `DENY_LIST_PATH` | example config | Deny-list file. Missing, empty, invalid or slow lists prevent startup. |
 | `OWNER_ID` | `local-owner` | Configured owner label on records and files |
 
-For the browser helper, import `createWebClient` from `knowledge-mcp/web` and supply an existing supabase-js client and deny-list. It refuses service-role, secret or unreadable keys. No hosted database schema or row-level security policy ships here.
+## Operator commands
 
-## History and verification
+These need `KNOWLEDGE_STORE_PATH` and never run through MCP.
 
-Built May to October 2026 over 71 commits in a private repository. This is a cleaned public snapshot because the private history contains personal notes and configuration. The original private-version probe found 7 unchanged writes, 3 masked writes and one blocked write that leaked surrounding text to audit across 11 probes. That historical observation is separate from the public-main comparison above.
+```sh
+knowledge-mcp review list
+knowledge-mcp review show hold_0001
+knowledge-mcp review approve hold_0001 --reviewer pharmacist-a
+knowledge-mcp review reject hold_0002 --reviewer pharmacist-a
+knowledge-mcp records retract rec_0042 --reviewer pharmacist-a --reason "superseded"
+knowledge-mcp screen --text "..."            # prints the decision and rule ids, never the text
+knowledge-mcp store scan                     # lists items that block loading, by location and rule id
+knowledge-mcp store purge --apply --reviewer operator-a
+```
 
-See [verification evidence](docs/evaluation/VERIFICATION.md) for RED-first failures, control and candidate commands, exit codes, visual checks and remaining limits. See [media reproduction](docs/media/README.md) for the recording process.
+A store that holds content matching a block rule (after a stricter deny-list, or a hand edit) refuses to start and says so. `store scan` lists the blocking items without their values, and `store purge` removes them and redacts blocking audit entries, recording one `store_purged` entry.
 
-MIT, Copyright (c) 2026 Kevin Madden. All committed data is fictional or synthetic.
+## Technical detail
+
+The runtime is `MCP tools → record and file logic → guarded store → gate → raw store`. Tools and seeding receive only the guarded store. The reviewer desk is returned to the operator and is not part of the tool context. There are 18 tools: 8 reads and 10 writes. The resource is `knowledge://records/recent-decisions`.
+
+Audit operations: `screen_blocked`, `write_allowed`, `write_noop`, `write_held`, `write_deferred`, `review_approved`, `review_rejected`, `record_retracted`, `store_purged` and `audit_redacted`. Allowed and held writes carry the SHA-256 of the screened payload. Deletions carry only a count. A payload hash can be confirmed by anyone who already has the payload, and a short guessable payload can be confirmed by guessing, so the audit is pseudonymous rather than anonymous.
+
+Data loaded from disk is screened item by item: records, files, held payloads and audit entries. An item that matches a block rule refuses the load. An item the current policy would hold is counted in `--check` as `storedItemsCurrentPolicyWouldHold` and stays readable.
+
+For the browser helper, import `createWebClient` from `knowledge-mcp/web` and supply a supabase-js client and deny-list. It refuses service-role, secret or unreadable keys by reading the `supabaseKey` property, which catches an accidental paste but is not access control. No database schema or row-level security policy ships here.
 
 ## Write gate console
-
-Run the local console with Node 20 or newer:
 
 ```sh
 npm ci && npm run console
 ```
 
-Open **http://127.0.0.1:4317**. Run the scripted care-team session or advance one write at a time. A care coordinator checks proposed shared memory before outreach. A pharmacist can approve or reject protocol drafts. All content is synthetic. The console calls the actual record library and guarded store with the bundled deny list. Outcomes and rule IDs come from gate audit receipts. Source and date appear beside each attempt and in the review card. This is an administrative prototype with synthetic text, no patient data, document ingestion or clinical decisions. Reviewer credentials are not authenticated. See the [15-point showcase assessment](docs/clinical-showcase/ASSESSMENT.md) for evidence and unresolved product limits.
+Open **http://127.0.0.1:4317**. Six synthetic attempts run through the real gate: a care-coordination note is allowed, a phone number and MRN are blocked, two protocol drafts are held because they are clinical rules, and two injected instructions are blocked. Approve and reject act on the real hold queue and write audit entries with the label `console reviewer (unauthenticated demo)`. One in-memory session is shared by all tabs and disappears on restart. Screenshots and the short flow GIF in [docs/media](docs/media/README.md) were recorded before the 2026-11-03 change, when holds came from a dry-run runtime.
 
-- **Attempted writes** shows the tool, input, outcome and rule.
-- **Approval queue** holds screening-passed writes in dry-run mode. Approve resubmits through the real commit gate. Reject leaves the record unwritten.
-- **Audit log** joins gate receipts to synthetic source and observed-date assertions. Execution timestamps are real. Human rejection entries are console events.
-- **Red-team lab** independently replays injection and untrusted-document cases, including after the main session ends.
+## Search public documents
 
-Use Theme to switch light and dark. Reset starts a new empty session. One in-memory session is shared by tabs connected to this local server and disappears on restart. This is a synthetic demonstration, with no authentication or durable approval queue. It binds to loopback and uses no model, external service or private data. `PORT=4318 npm run console` selects another port.
+Open <http://127.0.0.1:4317/corpus>. The public collection holds 134 committed passages from CMS NCD 240.2, an openFDA ZITUVIMET label and CDC ACIP timing guidance. The read-only tool `corpus.answer` ranks passages with BM25 and returns the best one verbatim. It abstains when fewer than half of the question's content words appear in the best passage, and lists the candidates for a person instead. That threshold was set while looking at the 18 regression questions and a few off-topic questions, so it is development tuning. `npm run eval:public` still reports 18 of 18 on its authored regression questions, which share most of their wording with the expected passages and measure the citation path, not retrieval quality. Sources, licenses and hashes are in [SOURCES.md](corpus/public/SOURCES.md).
 
-Screenshots and the short flow GIF are in [docs/media](docs/media/README.md). Verification, control results and known limits are recorded in [docs/console/VERIFICATION.md](docs/console/VERIFICATION.md).
+## Evaluation and history
 
-## Search real public documents
+See [docs/evaluation/README.md](docs/evaluation/README.md) for every result, the data status of each set and the specification for the pending blind set, and [docs/threat-model.md](docs/threat-model.md) for what the gate defends against and what it does not. Earlier verification records are in `docs/*/VERIFICATION.md`.
 
-Run `npm ci` and `npm run console`, then open <http://127.0.0.1:4317/corpus>. Choose **Public health documents** or the separate **Fictional demo corpus**. The public collection includes CMS NCD 240.2 coverage prose, an openFDA ZITUVIMET (sitagliptin and metformin) label, and CDC ACIP timing and spacing guidance. All 134 passages are committed and answers work offline. Each citation shows the source title, license, retrieval date, exact passage and original URL.
+The project was built from May to October 2026 over 71 commits in a private repository and published as a cleaned snapshot. An audit of the original private version found inconsistent outcomes from one deny-list (7 writes unchanged, 3 masked, 1 blocked with surrounding text saved to the audit across 11 probes). That observation cannot be reproduced from this repository and is history, not evidence.
 
-![Public document search with an exact CMS citation](docs/media/public-corpus-light-1440x900.png)
-
-The read-only MCP tool `corpus.answer` accepts `question` and `collection` (`public` or `fictional`). It ranks passages with deterministic BM25 and returns the best passage verbatim. It does not generate clinical recommendations or write documents into the guarded personal store. Public documents are reference material, not instructions or trusted write provenance. These are excerpt snapshots, not complete or necessarily current clinical references.
-
-```json
-{"name":"corpus.answer","arguments":{"collection":"public","question":"Which test is preferred when blood gas and oximetry results conflict?"}}
-```
-
-Source URLs, licenses, retrieval timestamps, extraction boundaries and SHA256 hashes are in [SOURCES.md](corpus/public/SOURCES.md) and [manifest.json](corpus/public/manifest.json). CMS ingestion includes NCD text only, excluding LCD and CPT material. Refresh with `python3 corpus/public/fetch.py` using Python 3 and curl. `npm run corpus:check` refetches and detects upstream drift without writing files. Review passage changes and eval expectations together before committing refreshed data.
-
-`npm run eval:public` runs 18 authored regression questions against the committed public collection. It reports **retrieval hit rate at 3: 18/18 (100%)**, **citation accuracy: 18/18 (100%)**, and **exact citation resolution: 18/18 (100%)** separately. Retrieval checks whether any of the three ranked passages matches an expected passage. Citation accuracy checks whether the answer cites an expected passage with identical text. Resolution checks citation text and source metadata against committed files. The questions were written while reading the expected passages and share most of their wording (50 to 90 percent of question words appear in the expected passage), each with exactly one expected passage. So 18/18 shows the citation path works on easy lexical matches. It is not a measure of retrieval on questions phrased the way users ask. A wrong-key control scores each answer against a different question's expected passage and should land near zero (0/18 on this run), which shows the metric can fail. These questions are not a held-out benchmark and do not measure medical correctness or general clinical performance. Existing safety evaluation fixtures and results are unchanged.
-
-[Verification and RED/GREEN evidence](docs/public-corpus/VERIFICATION.md) · [Mobile screenshot](docs/media/public-corpus-light-390x844.png)
+MIT, Copyright (c) 2026 Kevin Madden. Committed data is synthetic, except the public reference excerpts in `corpus/public/`, which are attributed there. No real patient data.

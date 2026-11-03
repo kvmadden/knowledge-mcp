@@ -1,10 +1,12 @@
 # Clinical operations showcase assessment
 
+> **Superseded, 2026-11-03.** This is an author self-assessment against an author-chosen checklist, and its total rewarded clearly stated limits as if they were working controls. Do not read the scores as an independent rating. Since this assessment, the console holds protocol drafts because the gate classifies them as clinical rules (not because the script says so), approvals are store audit entries that name the reviewer label, and the evaluation sets it cites are development data. See `docs/evaluation/README.md` and `docs/threat-model.md`.
+
 Assessment date: 2026-11-01. This is an author assessment against an inferred 15-point expert-reader checklist, not a hiring rubric, independent review or clinical validation. Kevin Madden owns the project. Codex assisted with this scenario, presentation, tests and evidence. Existing gate code and contracts are unchanged.
 
 A care coordinator decides what an assistant may save into shared memory before outreach. A pharmacist compares an administrative protocol proposal with its source and date, then approves a newly screened submission or rejects it. No real patient is represented. The note is synthetic from inception, not a real record that has undergone de-identification.
 
-Scores: 0 = absent, 1 = partial, 2 = demonstrated or explicitly bounded with inspectable evidence. A score of 2 for a limitation means the product communicates it honestly, not that the missing capability is implemented. Before refers to origin/main 9c19d0b. After refers to this PR. Total changes from 20/30 to 27/30. The three remaining partial scores are research and deployment limits that a scripted showcase cannot resolve.
+Scores: 0 = absent, 1 = partial, 2 = demonstrated or explicitly bounded with inspectable evidence. A score of 2 for a limitation means the product communicates it honestly, not that the missing capability is implemented. Before refers to origin/main 9c19d0b. After refers to this PR. The three remaining partial scores are research and deployment limits that a scripted showcase cannot resolve.
 
 | Check | Before | After | Evidence and boundary |
 | --- | ---: | ---: | --- |

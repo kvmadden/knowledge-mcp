@@ -1,0 +1,109 @@
+{
+  "node": "v24.14.1",
+  "cpu": "Apple M1 Max",
+  "policy": "2-d6e161237b6cfdfd",
+  "screening": [
+    {
+      "shape": "english prose",
+      "chars": 10000,
+      "ms": 1.6,
+      "decision": "allow"
+    },
+    {
+      "shape": "english prose",
+      "chars": 100000,
+      "ms": 12.5,
+      "decision": "allow"
+    },
+    {
+      "shape": "english prose",
+      "chars": 900000,
+      "ms": 109.4,
+      "decision": "allow"
+    },
+    {
+      "shape": "hex dump",
+      "chars": 10000,
+      "ms": 0.9,
+      "decision": "review"
+    },
+    {
+      "shape": "hex dump",
+      "chars": 100000,
+      "ms": 7.4,
+      "decision": "review"
+    },
+    {
+      "shape": "hex dump",
+      "chars": 900000,
+      "ms": 64.6,
+      "decision": "review"
+    },
+    {
+      "shape": "url-safe base64",
+      "chars": 10000,
+      "ms": 1.1,
+      "decision": "review"
+    },
+    {
+      "shape": "url-safe base64",
+      "chars": 100000,
+      "ms": 10,
+      "decision": "review"
+    },
+    {
+      "shape": "url-safe base64",
+      "chars": 900000,
+      "ms": 81.9,
+      "decision": "review"
+    },
+    {
+      "shape": "one long word",
+      "chars": 10000,
+      "ms": 0.8,
+      "decision": "review"
+    },
+    {
+      "shape": "one long word",
+      "chars": 100000,
+      "ms": 6.2,
+      "decision": "review"
+    },
+    {
+      "shape": "one long word",
+      "chars": 900000,
+      "ms": 54.8,
+      "decision": "review"
+    },
+    {
+      "shape": "digits with spaces",
+      "chars": 10000,
+      "ms": 3.1,
+      "decision": "allow"
+    },
+    {
+      "shape": "digits with spaces",
+      "chars": 100000,
+      "ms": 28.4,
+      "decision": "allow"
+    },
+    {
+      "shape": "digits with spaces",
+      "chars": 900000,
+      "ms": 269.7,
+      "decision": "allow"
+    }
+  ],
+  "restart": [
+    {
+      "records": 1000,
+      "restartMs": 135,
+      "writeMs": 7.9
+    },
+    {
+      "records": 10000,
+      "restartMs": 1292,
+      "writeMs": 18
+    }
+  ]
+}

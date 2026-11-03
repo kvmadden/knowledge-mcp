@@ -42,7 +42,35 @@ export function searchCorpus(question, collection = 'public', limit = 3) {
   }).filter(p => p.score > 0).sort((a, b) => b.score - a.score || a.passageId.localeCompare(b.passageId)).slice(0, limit)
 }
 
+// Share of the question's content words that appear in a passage. BM25 ranks
+// any overlap, so a question about a drug the collection never mentions can
+// still rank a passage that shares one word. Below this share the tool
+// abstains and lists the candidates for a person instead of quoting one as
+// the answer. The threshold was set while looking at the 18 regression
+// questions and a handful of off-topic questions, so it is development
+// tuning, not a measured abstention rate.
+export const MIN_COVERAGE = 0.5
+
+export function coverageOf(question, passage) {
+  const asked = [...new Set(tokens(question))]
+  if (!asked.length) return 0
+  const present = new Set(tokens([passage.title, passage.section, passage.text].filter(value => typeof value === 'string').join(' ')))
+  return asked.filter(term => present.has(term)).length / asked.length
+}
+
 export function answer(question, collection = 'public') {
-  const citations = searchCorpus(question, collection, 1)
-  return { collection, mode: 'extractive', answer: citations[0]?.text || 'No matching passage in this collection.', citations }
+  const ranked = searchCorpus(question, collection, 3)
+  if (!ranked.length) return { collection, mode: 'extractive', answer: 'No matching passage in this collection.', citations: [], candidates: [] }
+  const coverage = coverageOf(question, ranked[0])
+  if (coverage < MIN_COVERAGE) {
+    return {
+      collection,
+      mode: 'abstain',
+      answer: 'No passage in this collection covers this question well enough to quote as an answer. Low-overlap candidates are listed for a person to check.',
+      coverage: Number(coverage.toFixed(2)),
+      citations: [],
+      candidates: ranked.map(({ passageId, title, url }) => ({ passageId, title, url })),
+    }
+  }
+  return { collection, mode: 'extractive', answer: ranked[0].text, coverage: Number(coverage.toFixed(2)), citations: [ranked[0]] }
 }

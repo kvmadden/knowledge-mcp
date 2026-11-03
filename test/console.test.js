@@ -18,7 +18,8 @@ test('script runs real screening and approval commits only once', () => {
   assert.equal(s.view().records.length, 2)
   assert.equal(s.view().events[3].status, 'rejected')
   assert.equal(s.view().records[1].provenance.source, 'synthetic-refill-outreach-v3')
-  assert.ok(s.view().audit.some(e => e.op === 'write_deferred'))
+  assert.ok(s.view().audit.some(e => e.op === 'write_held'))
+  assert.ok(s.view().audit.some(e => e.op === 'review_rejected'))
   assert.ok(s.view().audit.some(e => e.op === 'screen_blocked'))
 })
 

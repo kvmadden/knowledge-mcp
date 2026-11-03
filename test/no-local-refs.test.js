@@ -1,7 +1,8 @@
 // Prose that ships with the repo names no place on the author's machine and no
 // local server address. A reader needs the step, not the address. Prose is every
-// README*.md, SECURITY.md and CONTRIBUTING.md, and the .md, .txt, .json and .py
-// files under docs/. Code, config and tests may still use loopback addresses.
+// README*.md, SECURITY.md and CONTRIBUTING.md, and every plain-text file under
+// docs/: Markdown, text, logs, JSON, YAML, CSV and Python. Code, config and tests
+// may still use loopback addresses.
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
@@ -11,7 +12,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const PROSE = /(?:^|\/)(?:README[^/]*\.md|SECURITY\.md|CONTRIBUTING\.md)$|^docs\/.*\.(?:md|txt|json|py)$/i
+const PROSE = /(?:^|\/)(?:README[^/]*\.md|SECURITY\.md|CONTRIBUTING\.md)$|^docs\/.*\.(?:md|markdown|txt|text|log|json|jsonl|py|ya?ml|csv|tsv)$/i
 
 const PATTERNS = [
   ['a home folder', /(?<![\w-])\/Users\//],

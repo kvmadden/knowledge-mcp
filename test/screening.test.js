@@ -7,8 +7,8 @@ import { SAMPLES } from "./_helpers.js";
 
 const gate = loadGate();
 
-test("the example list compiles and covers every sample pattern", () => {
-  assert.deepEqual([...gate.patternIds].sort(), Object.keys(SAMPLES).sort());
+test("the example list compiles and includes every sample pattern", () => {
+  for (const id of Object.keys(SAMPLES)) assert.ok(gate.patternIds.includes(id), id);
 });
 
 for (const [id, sample] of Object.entries(SAMPLES)) {
@@ -32,7 +32,10 @@ test("benign text passes", () => {
     "/memories/notes/a.md",
     "https://example.org/articles/retrieval-evaluation",
   ]) {
-    assert.deepEqual(gate.screen({ text: value }), { ok: true }, value);
+    const verdict = gate.screen({ text: value });
+    assert.equal(verdict.ok, true, value);
+    assert.equal(verdict.decision, "allow", value);
+    assert.equal(verdict.finding, "no-listed-pattern-found", value);
   }
 });
 
@@ -45,10 +48,13 @@ test("verdicts carry field paths and pattern ids, never the matched text", () =>
   assert.ok(!err.message.includes("jordan"));
 });
 
-test("object keys are screened, not just values", () => {
+test("object keys are screened, not just values, and a matching key is reported by position", () => {
   const verdict = gate.screen({ [SAMPLES["email-address"]]: true });
   assert.equal(verdict.ok, false);
-  assert.match(verdict.violations[0].field, /\(key\)$/);
+  assert.match(verdict.violations[0].field, /\(key #1\)$/);
+  assert.ok(!JSON.stringify(verdict).includes("jordan"));
+  const err = new ScreeningError(verdict, "insertRecord");
+  assert.ok(!err.message.includes("jordan"));
 });
 
 test("numbers are screened as text", () => {

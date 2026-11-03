@@ -1,39 +1,72 @@
 {
-  "version": 1,
-  "description": "Generic example deny-list. Each pattern is a JavaScript regular expression source. A write that matches any pattern in any string field (including object keys) is rejected. Replace or extend this list for your own data; the server refuses to start if the list is missing, empty, or invalid.",
+  "version": 2,
+  "description": "Generic example deny-list. Each pattern is a JavaScript regular expression source. A write that matches a block entry in any string field (including object keys, decoded segments and the joined fields of one write) is rejected. A review entry holds the write for a person instead. An optional validate check must also pass for a match to count. Patterns must stay fast on long input: the gate times each one at startup and refuses slow ones. Replace or extend this list for your own data; the server refuses to start if the list is missing, empty, invalid or slow.",
   "patterns": [
     {
       "id": "email-address",
-      "description": "Email addresses",
-      "pattern": "[A-Z0-9._%+-]+@[A-Z0-9-]+(?:\\.[A-Z0-9-]+)*\\.[A-Z]{2,}",
+      "description": "Email addresses. The local part is anchored to the start of its run and bounded, so matching stays linear on long tokens.",
+      "pattern": "(?<![A-Z0-9._%+-])[A-Z0-9._%+-]{1,64}@[A-Z0-9-]{1,63}(?:\\.[A-Z0-9-]{1,63}){0,8}\\.[A-Z]{2,24}(?![A-Z0-9-])",
       "flags": "i"
     },
     {
+      "id": "obfuscated-email",
+      "description": "An email address written with the at sign or dot spelled out, e.g. name [at] host [dot] com. Held for review: ordinary prose can look similar.",
+      "pattern": "(?<![A-Z0-9._%+-])[A-Z0-9._%+-]{1,64}\\s*(?:[\\[({]\\s*(?:at|@)\\s*[\\])}]|\\s(?:at)\\s)\\s*[A-Z0-9-]{1,63}\\s*(?:[\\[({]\\s*(?:dot|\\.)\\s*[\\])}]|\\s(?:dot)\\s)\\s*(?:com|org|net|edu|gov|mil|io|us|co|info|test)\\b",
+      "flags": "i",
+      "action": "review"
+    },
+    {
       "id": "us-phone-number",
-      "description": "US-style phone numbers written with separators, e.g. 555-010-0199 or (555) 010-0199",
-      "pattern": "(?<!\\d)(?:\\+?1[-.\\s]?)?\\(?\\d{3}\\)?[-.\\s]\\d{3}[-.\\s]\\d{4}(?!\\d)"
+      "description": "US-style phone numbers written with separators or a parenthesized area code, e.g. 555-010-0199, (555)010-0199 or +1 555 010 0199. Toll-free numbers (800, 833, 844, 855, 866, 877, 888) are public organization lines and do not count.",
+      "pattern": "(?<!\\d)(?:\\+?1[-.\\s]?)?(?:\\(\\d{3}\\)[-.\\s]?|\\d{3}[-.\\s])\\d{3}[-.\\s]\\d{4}(?!\\d)",
+      "validate": "not-us-toll-free"
     },
     {
       "id": "us-ssn-format",
-      "description": "Numbers in the 3-2-4 social security number format",
-      "pattern": "(?<!\\d)\\d{3}-\\d{2}-\\d{4}(?!\\d)"
+      "description": "Numbers in the 3-2-4 social security number format, separated by hyphens or spaces",
+      "pattern": "(?<!\\d)\\d{3}[- ]\\d{2}[- ]\\d{4}(?!\\d)"
     },
     {
       "id": "date-of-birth-label",
-      "description": "A date-of-birth label followed by a digit",
-      "pattern": "\\b(?:DOB|D\\.O\\.B\\.?|date\\s+of\\s+birth)\\s*[:#-]?\\s*\\d",
+      "description": "A birth-date label or the word born, followed by a full date (01/02/1980, 1980-01-02, January 2 1980 or 2 January 1980)",
+      "pattern": "\\b(?:DOB|D\\.O\\.B\\.?|date\\s+of\\s+birth|birth\\s*date|born(?:\\s+on)?)\\s*[:#-]?\\s*(?:\\d{1,2}[/.-]\\d{1,2}[/.-]\\d{2,4}|\\d{4}[/.-]\\d{1,2}[/.-]\\d{1,2}|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]{0,6}\\.?\\s+\\d{1,2}|\\d{1,2}\\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]{0,6})",
       "flags": "i"
     },
     {
       "id": "record-number-label",
-      "description": "A record-number label (MRN, medical record number) followed by four or more digits",
-      "pattern": "\\b(?:MRN|medical\\s+record\\s+(?:number|no\\.?|#))\\s*[:#-]?\\s*\\d{4,}",
+      "description": "A record-number label (MRN, M.R.N., MR#, medical record number, patient ID, chart number) followed by an identifier with four or more digits, optionally with a short letter prefix or digit groups",
+      "pattern": "\\b(?:MRN|M\\.R\\.N\\.?|MR\\s?#|medical\\s+record\\s+(?:number|no\\.?|#)|patient\\s+(?:id|identifier|number|no\\.?)|chart\\s+(?:number|no\\.?|#))\\s*[:#-]?\\s*(?:[A-Z]{1,3}[-\\s]?)?\\d(?:[\\s-]?\\d){3,11}(?!\\d)",
       "flags": "i"
     },
     {
       "id": "payment-card-number",
-      "description": "Sixteen-digit card numbers, optionally grouped by four",
-      "pattern": "(?<!\\d)\\d{4}(?:[ -]?\\d{4}){3}(?!\\d)"
+      "description": "Card numbers of 13 to 19 digits, optionally grouped, that pass the Luhn checksum",
+      "pattern": "(?<!\\d)\\d(?:[ -]?\\d){12,18}(?!\\d)",
+      "validate": "luhn"
+    },
+    {
+      "id": "medicare-beneficiary-id",
+      "description": "Medicare Beneficiary Identifier format (11 characters, letters exclude S, L, O, I, B and Z), with or without hyphens",
+      "pattern": "\\b[1-9][AC-HJKMNP-RT-Y][AC-HJKMNP-RT-Y0-9]\\d-?[AC-HJKMNP-RT-Y][AC-HJKMNP-RT-Y0-9]\\d-?[AC-HJKMNP-RT-Y]{2}\\d{2}\\b",
+      "flags": "i"
+    },
+    {
+      "id": "ipv4-address",
+      "description": "IPv4 addresses. Held for review rather than blocked, because four-part version numbers look the same.",
+      "pattern": "(?<![\\d.])(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?![\\d.])",
+      "action": "review"
+    },
+    {
+      "id": "street-address",
+      "description": "A house number, one to three capitalized words and a street suffix. Held for review: this is a heuristic, not an address parser.",
+      "pattern": "\\b\\d{1,5}\\s+(?:[A-Z][a-z]+\\s+){1,3}(?:St|Street|Ave|Avenue|Rd|Road|Blvd|Boulevard|Dr|Drive|Ln|Lane|Ct|Court|Way|Pl|Place|Ter|Terrace|Pkwy|Parkway|Hwy|Highway|Cir|Circle)\\b",
+      "action": "review"
+    },
+    {
+      "id": "person-name-cue",
+      "description": "A capitalized name after a patient, member or honorific cue, e.g. Patient Jane Synthetic or Mrs. Synthetic. Held for review: this is a heuristic, not name recognition.",
+      "pattern": "\\b(?:[Pp]atient|[Mm]ember|[Rr]esident|[Cc]lient|Mr|Mrs|Ms|Miss|Mx)\\.?(?:\\s+name)?\\s*[:,]?\\s+(?!(?:Information|Use|Counseling|Education|Safety|Care|Portal|Assistance|Services|Instructions|Guide|Name|Identifier|Number|Record|Records|Rights|Support|Experience|Outcomes|Access|Advocate|Advisory|Engagement|Navigator|Navigation|Population|Panel|Registry|Satisfaction|Medication|Medications)\\b)[A-Z][a-z]+(?:\\s+(?:[A-Z]\\.\\s*)?[A-Z][a-z-]+)?\\b",
+      "action": "review"
     }
   ]
 }

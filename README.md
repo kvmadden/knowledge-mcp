@@ -98,6 +98,7 @@ Screening time is linear. On an Apple M1 Max with Node 24, 900,000 characters sc
 ## Limits
 
 - **Detection is rules.** Paraphrases, languages and encodings the rules do not describe will pass. Names, most dates and many identifier formats pass. A rule cannot judge whether a clinical claim is true. It can only hold rules and dose claims for a pharmacist.
+- **The mention rules can be gamed.** An instruction wrapped in quotes next to an explicit "do not follow" is treated as a lesson and passes, and so does a negated one. That trade keeps security training and safety policies storable.
 - **Splits across separate writes pass.** Each write is screened alone, so two records that only form an instruction or an identifier together are both stored.
 - **Holding has a cost.** Text aimed at an AI, clinical rules, untrusted sources and opaque blocks wait for a person. Nobody has measured reviewer time or false holds on real workloads.
 - **Trust labels are caller assertions.** Untrusted content is held, not rejected, so an honest label no longer destroys the content. A caller can still omit the label.

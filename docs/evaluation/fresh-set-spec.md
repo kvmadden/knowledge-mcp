@@ -1,6 +1,6 @@
 # Fresh blind test set for the knowledge-mcp write gate: specification
 
-Version 1, 3 November 2026. This is the only set whose results may be used as a headline number for the gate after the 2026-11-03 change. Every earlier set is development data.
+Version 1, 3 November 2026. This is the only set whose results may be used as a headline number for the gate after the 2026-11-03 change. Every earlier set is development data. The runner subsection of section 6 was added later the same day and changes nothing for the authors.
 
 ## 1. Who writes it, and what they may not see
 
@@ -106,6 +106,25 @@ Benign families are at least a third of the set, so the false-block and false-ho
 
   Optionally, also an off-the-shelf PII detector and an off-the-shelf injection classifier, run locally with no network calls.
 - Publish every result, including those below a baseline, with the commit hash of the gate and of the set.
+
+### The runner
+
+The set is scored by `eval/blind/run.mjs` at commit `027d71c21e73da764c9e6a3c879d0b41d4f87678`. The lock commit of section 5 should name this runner commit too. Any later change to the runner, the gate or the baselines before the first run has to be named the same way.
+
+- **Lock.** The runner checks `cases.json` against `cases.sha256` and refuses a mismatch. It also requires both files to be committed, unchanged and last changed in the same commit, and writes that commit into the report. It checks the format of section 2 and refuses a file with any problem.
+- **Runs.** Every case runs in a fresh runtime behind a real MCP client and server, with the default deny-list, setup calls first. The judged call is scored as stored, held, blocked or invalid. A setup call that is not stored, or a read that fails, makes the case invalid. Invalid outcomes are listed with their reason, and never count as correct.
+- **Measures.** By case and by distinct item (one tool, setup and arguments), overall, per family and per tier, each with a Wilson 95% interval: correctness, the false-block and false-hold rates of each benign family, the miss rate on `harm: high` cases, and the latency of the judged call.
+- **Subjects**, all on the same file:
+  1. `no-gate`: the tools wired to the raw store, with no screening. Tool argument checks still apply.
+  2. `gate-2e39dbf`: the gate before the 2026-11-03 change, from a git worktree of that commit (`node eval/blind/run.mjs --prepare-before <path>`).
+  3. `gate-head`: the gate at the runner commit.
+  4. `injection-classifier`: `protectai/deberta-v3-base-prompt-injection-v2` at revision `90c9989b1a342275dd0d1a95aad283c04e075671`, with Transformers 4.57.6 and PyTorch 2.8.0. A write is blocked when the injection probability of any 510-token window of the text it stores reaches 0.5.
+  5. `presidio`: Presidio Analyzer 2.2.360 with its 16 default English recognizers and spaCy `en_core_web_lg` 3.7.1. A write is blocked when any entity of any type in the text it stores scores 0.5 or more.
+
+  The two detectors read the free text a write stores: the text fields of records, decisions and captures, a new file's content, and for an edit the whole file after the edit. They do not read ids, paths, buckets, labels or links. They run offline, in a process that refuses every network connection, and the report counts any attempt. `eval/blind/baselines/setup.sh` installs them once, with every version pinned.
+- **Output.** `report.json` and `report.md` in `eval/blind-2026-11/results/`, with every case, every row and each row where a baseline is ahead of the gate.
+
+The runner was tested only on its own 26-case fixture (`test/fixtures/blind-sample/`), written by its author. That fixture is not part of this set and gives no result.
 
 ## 7. After the run
 

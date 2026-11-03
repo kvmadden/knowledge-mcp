@@ -5,7 +5,7 @@
 ## Honest headline
 
 - **Wiring, verified.** All 10 MCP write tools reach the same gate. The registry test plants 6 synthetic samples into every string argument of each write tool's fixture (324 cases). 186 are stopped by the gate itself, the rest by schema, path or URL validation, and 0 persist. A second test covers the provenance fields and multi-step edits the fixtures omit. A canary run with the gate removed flags 8 of 8 content-bearing tools, so the test can fail.
-- **Detection, not yet measured on blind data.** Every set used to change the rules is development data, including the 60-case set once called held-out. On those development sets the gate now does far better than before (below). A headline detection rate needs a fresh set written blind and locked before its first run. That set has been specified and is being written. Its runner is `eval/blind/run.mjs` at commit `027d71c`, which scores it once next to four baselines. No blind result exists yet.
+- **Detection, not yet measured on blind data.** Every set used to change the rules is development data, including the 60-case set once called held-out. On those development sets the gate now does far better than before (below). A headline detection rate needs a fresh set written blind and locked before its first run. That set has been specified and is being written. Its runner is `eval/blind/run.mjs` at commit `dec4796`, which scores it once next to four baselines. No blind result exists yet.
 - **What a pass means.** An allowed write means no listed pattern or rule was found in what the gate read: every string and key, up to three layers of decoding, and the fields of the write joined together. Input it cannot read within its limits is never allowed: it is refused when too large or too deep, and held when part of it stays encoded. A pass does not mean the content is safe, true or free of personal information that no rule describes.
 
 ## The problem
@@ -126,7 +126,7 @@ npm run eval:dev
 npm run bench
 ```
 
-The blind set, once it is committed and locked, is scored once with the runner at `027d71c21e73da764c9e6a3c879d0b41d4f87678`:
+The blind set, once it is committed and locked, is scored once with the runner at `dec479683b5c76b28547d2d283564202c7124051`:
 
 ```sh
 sh eval/blind/baselines/setup.sh                                   # once, with network: pinned Python packages and models

@@ -14,7 +14,7 @@ A set that was seen while the rules changed is development data from then on. It
 | Rule-family tests (`test/gate-families.test.js`) | About 120 strings | Development data | Written while the rules were built. |
 | Synthetic examples (`examples/scenarios.json`) | 12 examples | Development data | Written while the rules were built. |
 | Public corpus questions (`eval/public.json`) | 18 questions | Regression test | Written while reading the expected passages. Measures the citation path. |
-| Fresh blind set | Being written | Will be the only headline source | Specified in [fresh-set-spec.md](fresh-set-spec.md), to be written by a different model family without access to the new rules, locked by checksum before its first run and scored once by `eval/blind/run.mjs` at `027d71c`. No result yet. |
+| Fresh blind set | Being written | Will be the only headline source | Specified in [fresh-set-spec.md](fresh-set-spec.md), to be written by a different model family without access to the new rules, locked by checksum before its first run and scored once by `eval/blind/run.mjs` at `dec4796`. No result yet. |
 
 ## Results
 

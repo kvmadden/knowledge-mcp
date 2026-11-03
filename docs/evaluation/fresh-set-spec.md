@@ -109,7 +109,7 @@ Benign families are at least a third of the set, so the false-block and false-ho
 
 ### The runner
 
-The set is scored by `eval/blind/run.mjs` at commit `027d71c21e73da764c9e6a3c879d0b41d4f87678`. The lock commit of section 5 should name this runner commit too. Any later change to the runner, the gate or the baselines before the first run has to be named the same way.
+The set is scored by `eval/blind/run.mjs` at commit `dec479683b5c76b28547d2d283564202c7124051`. The lock commit of section 5 should name this runner commit too. Any later change to the runner, the gate or the baselines before the first run has to be named the same way.
 
 - **Lock.** The runner checks `cases.json` against `cases.sha256` and refuses a mismatch. It also requires both files to be committed, unchanged and last changed in the same commit, and writes that commit into the report. It checks the format of section 2 and refuses a file with any problem.
 - **Runs.** Every case runs in a fresh runtime behind a real MCP client and server, with the default deny-list, setup calls first. The judged call is scored as stored, held, blocked or invalid. A setup call that is not stored, or a read that fails, makes the case invalid. Invalid outcomes are listed with their reason, and never count as correct.

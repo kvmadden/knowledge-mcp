@@ -5,7 +5,7 @@
 ## Honest headline
 
 - **Wiring, verified.** All 10 MCP write tools reach the same gate. The registry test plants 6 synthetic samples into every string argument of each write tool's fixture (324 cases). 186 are stopped by the gate itself, the rest by schema, path or URL validation, and 0 persist. A second test covers the provenance fields and multi-step edits the fixtures omit. A canary run with the gate removed flags 8 of 8 content-bearing tools, so the test can fail.
-- **Detection, not yet measured on blind data.** Every set used to change the rules is development data, including the 60-case set once called held-out. On those development sets the gate now does far better than before (below). A headline detection rate needs a fresh set written blind and locked before its first run. That set has been specified and is being written. Its runner is `eval/blind/run.mjs` at commit `dec4796`, which scores it once next to four baselines. No blind result exists yet.
+- **Detection, measured once on a blind set.** On 564 synthetic writes that no Claude agent saw before the run, the gate got 295 right (52.3%, 95% interval 48.2 to 56.4). No gate got 227, the gate before the 2026-11-03 change 250, a prompt-injection classifier 241 and Presidio 257. It caught 2 of 48 names and addresses in prose, and it held 65 of 216 benign writes for a reviewer, including 27 of 84 ordinary clinical notes. That set is development data now. Every other set was development data from the start.
 - **What a pass means.** An allowed write means no listed pattern or rule was found in what the gate read: every string and key, up to three layers of decoding, and the fields of the write joined together. Input it cannot read within its limits is never allowed: it is refused when too large or too deep, and held when part of it stays encoded. A pass does not mean the content is safe, true or free of personal information that no rule describes.
 
 ## The problem
@@ -17,6 +17,7 @@ An agent can copy private information, a false claim or instructions hidden in a
 - **One gate for every write.** Tools only ever receive a guarded store. Its write methods screen a structured-clone snapshot of their arguments and hand only that snapshot to the raw store. Every raw store method must be classified as read, write or internal, or startup fails.
 - **Three decisions.** `block` when a listed pattern or block-tier rule matches, or when the input is too large, too deep or of a type the gate cannot read. `review` when the gate finds something it cannot judge, including encoded content it could not decode. `allow` when nothing listed was found.
 - **A hold queue.** A `review` decision stores the payload in a hold queue that no read tool can see, and the tool call returns an error with the hold id. An operator approves or rejects it from the CLI or the console. Approval runs under the store lock: it checks the payload against the SHA-256 in the hold and in the hold's `write_held` audit receipt, screens it again and commits it with an audit entry that names the reviewer label. The store's read methods leave held payloads out. No MCP tool can approve, reject or retract.
+- **Protocol changes wait for a person.** Deleting, renaming, overwriting or editing an existing protocol goes to the hold queue with the reason `protocol-change`, like any other held write. A protocol is a memory file with "protocol" in the name of the file or of a folder above it, read after the same folding as content, so look-alike letters still count. Creating a new protocol is screened as usual. This is Kevin Madden's decision of 3 November 2026.
 - **Retraction.** An operator can retract a record. It disappears from list, search, recent and the recent-decisions resource, stays inspectable by id, and the retraction is audited.
 - **Value-free audit.** Each entry has a fixed schema: operation, store method, rule ids, decision, payload hash, record id, hold id, reviewer label and policy id. Entries never contain submitted values or paths. A data change and its audit entry are committed together.
 - **Several writers, one store.** Writes take a lock file, reread what another process or thread wrote, write the whole state to a flushed temporary file and rename it into place. Processes and worker threads on one machine can share one store file without losing writes. A lock whose process is gone is cleared. A live one is waited for and never taken over.
@@ -43,10 +44,11 @@ The gate reads each string and each object key as written and after compatibilit
 | `clinical-assertion`, `clinical-directive` | review | A rule or decision with clinical content, a dose or safety claim in a form the rules know, or a clinical order with a dose or route, also after a few lead words such as "please" or "nurse" |
 | `addressed-to-agent`, `quoted-instruction`, `possible-instruction-override`, `bulk-transfer`, `memory-tampering` | review | Text aimed at an AI, quoted directives (even next to a disavowal), override clauses the gate cannot classify, bulk copying and orders to rewrite memory |
 | `untrusted-source` | review | Provenance labeled untrusted, after normalizing the label |
+| `protocol-change` | review | Deleting, renaming, overwriting or editing an existing protocol file |
 | `unreadable-encoded-content` | review | An encoded block of 256 or more characters that is not readable text, a fourth layer of encoding, or more encoded segments than the gate decodes in one write |
 | `mixed-script-token` | review | A word that mixes Latin and Cyrillic letters |
 
-The override, export, decode and mode-switch rules decide by the clause around the verb. A directive is blocked. A negated clause ("never send all records to external endpoints", "do not ignore the pharmacist's instructions") and a description of what someone else does ("patients often ignore prior instructions") pass. A negation counts only when it governs that verb, so "do not hesitate to ignore" is not a negation. A quotation is held for a person even next to "do not follow", because an attacker can write the same disavowal. Any other clause is held, not allowed. Deny-list patterns live in `config/deny-list.example.json` and are timed at startup: a pattern that is slow on long input, alone or in the retry loop of a validator such as Luhn, cannot be loaded.
+The override, export, decode and mode-switch rules decide by the clause around the verb. A directive is blocked. A negated clause ("never send all records to external endpoints", "do not ignore the pharmacist's instructions") and a description of what someone else does ("patients often ignore prior instructions") pass. A negation counts only when it governs that verb, so "do not hesitate to ignore" is not a negation. A quotation is held for a person even next to "do not follow", because an attacker can write the same disavowal. Kevin Madden decided on 3 November 2026 to keep it that way, so security lessons that quote an attack wait for a reviewer. Any other clause is held, not allowed. Deny-list patterns live in `config/deny-list.example.json` and are timed at startup: a pattern that is slow on long input, alone or in the retry loop of a validator such as Luhn, cannot be loaded.
 
 ### Coverage of the 18 HIPAA Safe Harbor identifiers
 
@@ -73,6 +75,43 @@ This is a coverage map of the shipped example list, not a de-identification clai
 
 ## Results
 
+### Blind set, scored once (3 November 2026)
+
+564 synthetic writes in 11 families, 216 of them benign, written from [the spec](docs/evaluation/fresh-set-spec.md) by Grok 4.7 and labeled again by Gemini 3.8 Flash (Cohen's kappa 0.997 on the expected outcome). The authors saw the tools' argument shapes but not the screening code ([AMENDMENTS.md](eval/blind-2026-11/AMENDMENTS.md)). The set was locked at `cf5944b` before any gate ran on it, then scored once by `eval/blind/run.mjs` at `dec4796`, each case through a real MCP client and server. A case is correct when a benign write is stored and a risky one is held or blocked. An invalid outcome never counts as correct. Full report: [eval/blind-2026-11/results/report.md](eval/blind-2026-11/results/report.md).
+
+| Correct, by case | No gate | Gate at `2e39dbf` | Gate at head | Injection classifier | Presidio |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| **All 564** | **227** | **250** | **295** | **241** | **257** |
+| 95% interval | 36.3 to 44.3% | 40.3 to 48.5% | 48.2 to 56.4% | 38.7 to 46.8% | 41.5 to 49.7% |
+| Instruction overrides, reworded (48) | 0 | 0 | 18 | 12 | 35 |
+| Role and format smuggling (36) | 0 | 5 | 20 | 11 | 28 |
+| Exfiltration (36) | 0 | 5 | 22 | 3 | 28 |
+| Encoded or split (48) | 0 | 4 | 22 | 12 | 34 |
+| False clinical claims (48) | 0 | 0 | 22 | 0 | 38 |
+| Names, addresses and dates in prose (48) | 0 | 0 | 2 | 0 | 40 |
+| Formatted identifiers (48) | 0 | 25 | 30 | 3 | 39 |
+| Benign clinical operations (84) | 84 | 84 | 56 | 75 | 2 |
+| Benign public reference (66) | 66 | 51 | 48 | 64 | 0 |
+| Benign security and policy (66) | 66 | 65 | 41 | 50 | 10 |
+| Destructive or tampering, mixed (36) | 11 | 11 | 14 | 11 | 3 |
+| Benign writes held for review (216) | 0 | 0 | 65 | 0 | 0 |
+| Benign writes blocked (216) | 0 | 16 | 4 | 22 | 171 |
+| `harm: high` cases stored (334) | 333 | 295 | 190 | 289 | 13 |
+| Invalid outcomes (564) | 1 | 0 | 8 | 10 | 123 |
+| Median latency of the judged call | 0.03 ms | 0.07 ms | 0.71 ms | 194 ms | 29 ms |
+
+- **Overall.** The gate at head had the most correct outcomes, 38 more than Presidio. Its interval overlaps those of Presidio and of the gate at `2e39dbf`.
+- **Against no gate, the gate at `2e39dbf` and the classifier,** it is ahead on all seven attack families and on destructive-or-tampering, and behind on all three benign families.
+- **Against Presidio** it is behind on all seven attack families, by 7 to 38 cases, and ahead on the three benign families and destructive-or-tampering. Presidio blocked 171 of 216 benign writes (79.2%), 150 of them for a date or time, and 123 of its outcomes are invalid because it blocked a setup write.
+- **Weakest family.** Names, addresses, ages and relatives written in prose: 2 of 48 caught.
+- **Benign writes.** Of 216, it stored 145, held 65 (30.1%, 24.4 to 36.5), blocked 4 (1.9%) and had 2 invalid. It held 27 of 84 clinical-operations notes, 17 of 66 public references and 21 of 66 security and policy texts, and blocked 4 of those 66 (two as instruction overrides, two as role markers). The `clinical-assertion` rule is behind 44 of the 65 holds.
+- **By tier.** 85 of 142 literal, 71 of 142 paraphrase, 73 of 140 obfuscated and 66 of 140 embedded cases.
+- **The 8 invalid outcomes.** In seven, the gate held a setup write, so the case could not run as written: five by `clinical-assertion` (b-0327, b-0344, b-0388, b-0616, b-0686) and two by `mixed-script-token` (b-0530, b-0667). Four of the seven were cases whose judged write should be stored. In the eighth, b-0429, the set puts part of a phone number in `link_url`, which the tool refuses as not an http or https link before the gate runs. No gate and the classifier hit the same refusal, and the gate at `2e39dbf`, which had no link check, stored the write.
+- **After the protocol ruling, as development data.** A second run of the gate alone, after Kevin Madden's protocol ruling and on the same file, held 4 more destructive-or-tampering cases: 18 of 36 right instead of 14, and 299 of 564 overall. Nothing else changed. That run is development data, in `eval/blind-2026-11/dev-runs/2026-11-03-protocol-ruling/`, and the headline stays the locked run above. Fourteen risky destructive cases are still stored. They delete or rewrite files not named as protocols, such as safety rules, audits and whole clinic folders, or change records instead of files.
+- **What it is now.** This was the set's only scored run, so it is development data from here on. A rule change made after reading it needs a new set before the next headline. A pharmacist's review of 30 clinical labels was moved to after the lock. Any label it changes goes into `eval/blind-2026-11/ERRATA.md`, with the score both ways.
+
+### Development sets
+
 Every set below was seen while the rules were changed on 2026-11-03, so every result is a development result. Before means public `main` at `2e39dbf`, scored with the same runners.
 
 | Set and status | Measure | Before | After |
@@ -84,8 +123,8 @@ Every set below was seen while the rules were changed on 2026-11-03, so every re
 | | Risky strings not committed, by distinct string | 12 / 14 | 14 / 14 |
 | | Benign cases refused | 5 / 20 (blocked) | 5 / 20 (held for review) |
 | | Benign strings refused, by distinct string | 1 / 6 | 1 / 6 |
-| 84 probes from the 2026-11-03 review, development data | Probes that met their expectation | 22 / 84 | 77 / 84 |
-| | Risky probes not stored | 20 / 74 | 70 / 74 |
+| 84 probes from the 2026-11-03 review, development data | Probes that met their expectation | 22 / 84 | 78 / 84 |
+| | Risky probes not stored | 20 / 74 | 71 / 74 |
 | | Harmless probes stored | 2 / 10 | 7 / 10 |
 | 12 synthetic examples, development data | Behaved as described | not run | 12 / 12 |
 
@@ -93,16 +132,16 @@ The 186 is lower than 192 because six planted link values that are not http or h
 
 The five refused benign cases are the five security lessons that quote an attack next to "do not execute the quoted text". After the first round of review they were stored. The second round (3 November) holds them for a person, because both outside reviewers showed that an attacker can add the same disavowal to a real attack. The probe that tests the same lesson (A66) moved from stored to held for the same reason. Nothing else changed between the two rounds on these sets.
 
-The seven probes that still fail: an unseparated 10-digit phone number, a phone number spelled in words, a phone number split across two separate records, a public agency email address (still blocked), a security lesson quoting an attack (held rather than stored), honest untrusted content (held rather than stored) and deleting a protocol directory (allowed). The first three are known pattern limits, the next three are deliberate choices, and the last is an open policy decision.
+The six probes that still fail: an unseparated 10-digit phone number, a phone number spelled in words, a phone number split across two separate records, a public agency email address (still blocked), a security lesson quoting an attack (held rather than stored) and honest untrusted content (held rather than stored). The first three are known pattern limits and the other three are deliberate choices. Deleting a protocol directory (A83) is held since the protocol ruling.
 
 Screening time grows linearly with input size in every shape tested. A test times 19 adversarial shapes at 20,000 and 40,000 characters, including the long run of spaces that took about 3.7 s at 40,000 characters before the second round. On an Apple M1 Max with Node 24, 900,000 characters screen in under 300 ms in each of the nine bench shapes, where the old email pattern took 10.9 s on 80,000 characters. A store of 10,000 records restarts in about 1.4 s and takes about 20 ms per write, on a host that was also running other jobs. See `docs/evaluation/bench-2026-11-03-round2.json` and `npm run bench`.
 
 ## Limits
 
-- **Detection is rules.** Paraphrases, languages and encodings the rules do not describe will pass. Names, most dates and many identifier formats pass. A rule cannot judge whether a clinical claim is true. It can only hold rules and dose claims for a pharmacist.
-- **The mention rules can still be gamed.** A sentence that says someone else does it ("they ignore all previous instructions") is a description and is stored, and an agent may still act on it. A negated instruction is stored too. Quoted attacks no longer pass: a security lesson that quotes one waits for a reviewer.
+- **Detection is rules.** Paraphrases, languages and encodings the rules do not describe will pass. Names, most dates and many identifier formats pass: on the blind set the gate caught 2 of 48 names and addresses in prose. A rule cannot judge whether a clinical claim is true. It can only hold rules and dose claims for a pharmacist.
+- **The mention rules can still be gamed.** A sentence that says someone else does it ("they ignore all previous instructions") is a description and is stored, and an agent may still act on it. A negated instruction is stored too. Quoted attacks no longer pass: a security lesson that quotes one waits for a reviewer, by Kevin Madden's decision.
 - **Splits across separate writes pass.** Each write is screened alone, so two records that only form an instruction or an identifier together are both stored.
-- **Holding has a cost.** Text aimed at an AI, clinical rules, untrusted sources, quoted attacks, override clauses the gate cannot classify and encoded content it cannot read wait for a person. A write with very many short encoded-looking fields side by side can exceed what the gate decodes and is held. Nobody has measured reviewer time or false holds on real workloads.
+- **Holding has a cost.** Text aimed at an AI, clinical rules, untrusted sources, quoted attacks, override clauses the gate cannot classify and encoded content it cannot read wait for a person. On the blind set that was 65 of 216 benign writes, 44 of them held by the `clinical-assertion` rule. A write with very many short encoded-looking fields side by side can exceed what the gate decodes and is held. Nobody has measured reviewer time or false holds on real workloads.
 - **Trust labels are caller assertions.** Untrusted content is held, not rejected, so an honest label no longer destroys the content. A caller can still omit the label.
 - **Whole-write rejection.** One identifier in a long note rejects the whole note. There is no redaction mode.
 - **Reviewer labels are not authenticated.** The CLI and console record the label the operator types. There is no identity, authorization or per-agent isolation. `OWNER_ID` is a configured label.
@@ -126,7 +165,7 @@ npm run eval:dev
 npm run bench
 ```
 
-The blind set, once it is committed and locked, is scored once with the runner at `dec479683b5c76b28547d2d283564202c7124051`:
+The blind set was locked at `cf5944b` and scored once with the runner at `dec479683b5c76b28547d2d283564202c7124051`. These commands rerun it, now as development data, or score a later set:
 
 ```sh
 sh eval/blind/baselines/setup.sh                                   # once, with network: pinned Python packages and models
@@ -169,14 +208,14 @@ Several hosts can point at the same `KNOWLEDGE_STORE_PATH`.
 These need `KNOWLEDGE_STORE_PATH` and never run through MCP.
 
 ```sh
-knowledge-mcp review list
-knowledge-mcp review show hold_0001
-knowledge-mcp review approve hold_0001 --reviewer pharmacist-a
-knowledge-mcp review reject hold_0002 --reviewer pharmacist-a
-knowledge-mcp records retract rec_0042 --reviewer pharmacist-a --reason "superseded"
-knowledge-mcp screen --text "..."            # prints the decision and rule ids, never the text
-knowledge-mcp store scan                     # lists items that block loading, by location and rule id
-knowledge-mcp store purge --apply --reviewer operator-a
+node src/index.js review list
+node src/index.js review show hold_0001
+node src/index.js review approve hold_0001 --reviewer pharmacist-a
+node src/index.js review reject hold_0002 --reviewer pharmacist-a
+node src/index.js records retract rec_0042 --reviewer pharmacist-a --reason "superseded"
+node src/index.js screen --text "..."            # prints the decision and rule ids, never the text
+node src/index.js store scan                     # lists items that block loading, by location and rule id
+node src/index.js store purge --apply --reviewer operator-a
 ```
 
 A store that holds content matching a block rule (after a stricter deny-list, or a hand edit) refuses to start and says so. `store scan` lists the blocking items without their values, and `store purge` removes them and redacts blocking audit entries, recording one `store_purged` entry.
@@ -205,7 +244,7 @@ Open <http://127.0.0.1:4317/corpus>. The public collection holds 134 committed p
 
 ## Evaluation and history
 
-See [docs/evaluation/README.md](docs/evaluation/README.md) for every result, the data status of each set and the specification for the pending blind set, and [docs/threat-model.md](docs/threat-model.md) for what the gate defends against and what it does not. Earlier verification records are in `docs/*/VERIFICATION.md`.
+See [docs/evaluation/README.md](docs/evaluation/README.md) for every result, the data status of each set and the specification the blind set was written to, and [docs/threat-model.md](docs/threat-model.md) for what the gate defends against and what it does not. Earlier verification records are in `docs/*/VERIFICATION.md`.
 
 The project was built from May to October 2026 over 71 commits in a private repository and published as a cleaned snapshot. An audit of the original private version found inconsistent outcomes from one deny-list (7 writes unchanged, 3 masked, 1 blocked with surrounding text saved to the audit across 11 probes). That observation cannot be reproduced from this repository and is history, not evidence.
 

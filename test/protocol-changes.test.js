@@ -21,6 +21,8 @@ const lastOps = (runtime, n) => runtime.snapshot().audit.slice(-n).map((e) => e.
 
 test('what counts as a protocol path', () => {
   for (const p of ['/protocols/a.md', '/clinic/protocols/a.md', '/anticoagulation-protocol.md', '/Protocols/A.md', '/protocol/a.md']) assert.equal(isProtocolPath(p), true, p)
+  // Full-width and Cyrillic look-alike letters still spell the word.
+  for (const p of ['/flush-\uff50\uff52\uff4f\uff54\uff4f\uff43\uff4f\uff4c.md', '/pr\u043et\u043ec\u043el/a.md']) assert.equal(isProtocolPath(p), true, p)
   for (const p of ['/notes/a.md', '/prototypes/a.md', '/clinic/pro-tocol.md', '']) assert.equal(isProtocolPath(p), false, p)
 })
 

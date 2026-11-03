@@ -25,7 +25,7 @@
 
 import { createHash } from 'node:crypto'
 
-import { DeferredWriteError, ReviewRequiredError, ScreeningError } from '../screening/screen.js'
+import { DeferredWriteError, ReviewRequiredError, ScreeningError, foldText } from '../screening/screen.js'
 
 export const AUDIT_OPS = Object.freeze([
   'screen_blocked',
@@ -62,10 +62,12 @@ const REF_RE = /^[a-z]{2,8}_\d{1,9}$/
 // editing an existing protocol waits for a person, like any other held
 // write. A protocol is a memory file with "protocol" in the name of the file
 // or of a folder above it, such as /memories/protocols/insulin.md or
-// /memories/anticoagulation-protocol.md. Creating a new protocol is screened
-// like any other content and is not held for this reason.
+// /memories/anticoagulation-protocol.md. The name is folded the way the gate
+// folds text, so look-alike or full-width letters still spell "protocol".
+// Creating a new protocol is screened like any other content and is not
+// held for this reason.
 export const PROTOCOL_PATH_RE = /(?:^|\/)[^/]*protocol[^/]*(?=\/|$)/i
-export const isProtocolPath = (p) => typeof p === 'string' && PROTOCOL_PATH_RE.test(p)
+export const isProtocolPath = (p) => typeof p === 'string' && PROTOCOL_PATH_RE.test(foldText(p))
 export const PROTOCOL_CHANGE = 'protocol-change'
 
 function ownMethodNames(obj) {

@@ -28,6 +28,7 @@
     "eval:heldout": "node eval/run.mjs",
     "eval:dev": "node eval/dev-probes.mjs",
     "eval:public": "node eval/public.mjs",
+    "eval:blind": "node eval/blind/run.mjs",
     "bench": "node scripts/bench.mjs",
     "console": "node web/console/server.js",
     "corpus:check": "python3 corpus/public/fetch.py --check"

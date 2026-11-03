@@ -2,7 +2,7 @@ node:internal/modules/esm/resolve:275
     throw new ERR_MODULE_NOT_FOUND(
           ^
 
-Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/tmp/knowledge-console-control-g_u7ipr4/web/console/session.js' imported from /private/tmp/knowledge-console-control-g_u7ipr4/test/console.test.js
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '<control>/web/console/session.js' imported from <control>/test/console.test.js
     at finalizeResolution (node:internal/modules/esm/resolve:275:11)
     at moduleResolve (node:internal/modules/esm/resolve:865:10)
     at defaultResolve (node:internal/modules/esm/resolve:991:11)
@@ -14,7 +14,7 @@ Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/tmp/knowledge-console
     at ModuleJob.syncLink (node:internal/modules/esm/module_job:160:33)
     at ModuleJob.link (node:internal/modules/esm/module_job:245:17) {
   code: 'ERR_MODULE_NOT_FOUND',
-  url: 'file:///private/tmp/knowledge-console-control-g_u7ipr4/web/console/session.js'
+  url: 'file://<control>/web/console/session.js'
 }
 
 Node.js v24.14.1

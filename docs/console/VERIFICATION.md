@@ -20,7 +20,7 @@ The console test copied to untouched main fails to import the absent console mod
 
 ## Control and fresh-clone parity
 
-Exact toolchain versions, commands and exit codes are in `evidence/commands.json`. Both arms were fresh independent clones under `/tmp`, outside the estate. `MFW_UMBRELLA_ROOT` and `OPERATOR_ECOSYSTEM_ROOT` were unset. Candidate files were copied onto the dependency commit in the fresh candidate clone. Both used the same Node, npm and lockfile dependencies. No installation hooks were bypassed in the final comparison. Temporary clones were removed in `TemporaryDirectory` cleanup.
+Exact toolchain versions, commands and exit codes are in `evidence/commands.json`. Both arms were fresh independent clones in the system temporary folder, with the workspace root variables unset. The control clone is written `<control>` in the evidence logs. Candidate files were copied onto the dependency commit in the fresh candidate clone. Both used the same Node, npm and lockfile dependencies. No installation hooks were bypassed in the final comparison. Temporary clones were removed in `TemporaryDirectory` cleanup.
 
 | Arm | Command | Exit | Result |
 | --- | --- | --- | --- |

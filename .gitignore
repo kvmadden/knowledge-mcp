@@ -6,3 +6,5 @@ node_modules/
 *.log
 coverage/
 data/*.local.json
+eval/blind/baselines/.venv/
+eval/blind/baselines/.models/

@@ -29,7 +29,7 @@
 // it is in the gate's.
 import { execFileSync, spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
-import { homedir, tmpdir } from 'node:os'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
@@ -41,7 +41,8 @@ import { isCorrect, itemKey, metricsFor, renderMarkdown, scoreCall, sha256, veri
 export const REPO = fileURLToPath(new URL('../..', import.meta.url))
 export const BEFORE_COMMIT = '2e39dbf'
 export const DEFAULT_CASES = path.join(REPO, 'eval/blind-2026-11/cases.json')
-export const DEFAULT_PYTHON = path.join(homedir(), 'dev/toolchains/blind-baselines/bin/python')
+// The virtual environment eval/blind/baselines/setup.sh makes by default.
+export const DEFAULT_PYTHON = path.join(REPO, 'eval/blind/baselines/.venv/bin/python')
 export const ALL_SUBJECTS = ['no-gate', 'gate-2e39dbf', 'gate-head', 'injection-classifier', 'presidio']
 
 const git = (cwd, ...args) => execFileSync('git', ['-C', cwd, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()

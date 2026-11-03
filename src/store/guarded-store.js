@@ -58,6 +58,16 @@ const AUDIT_KEYS = Object.freeze({
 
 const REF_RE = /^[a-z]{2,8}_\d{1,9}$/
 
+// Kevin Madden's ruling, 3 November 2026: deleting, renaming, overwriting or
+// editing an existing protocol waits for a person, like any other held
+// write. A protocol is a memory file with "protocol" in the name of the file
+// or of a folder above it, such as /memories/protocols/insulin.md or
+// /memories/anticoagulation-protocol.md. Creating a new protocol is screened
+// like any other content and is not held for this reason.
+export const PROTOCOL_PATH_RE = /(?:^|\/)[^/]*protocol[^/]*(?=\/|$)/i
+export const isProtocolPath = (p) => typeof p === 'string' && PROTOCOL_PATH_RE.test(p)
+export const PROTOCOL_CHANGE = 'protocol-change'
+
 function ownMethodNames(obj) {
   const names = new Set()
   for (let proto = Object.getPrototypeOf(obj); proto && proto !== Object.prototype; proto = Object.getPrototypeOf(proto)) {
@@ -133,7 +143,7 @@ export function createWriteGuard(rawStore, gate, { reads, writes, internal = [],
     if (!internalSet.has(name)) throw new Error(`store must provide the internal method "${name}"`)
   }
 
-  const knownIds = new Set([...(gate.patternIds ?? []), ...(gate.policyIds ?? []), 'too-deep', 'too-large', 'circular', 'unsupported-type', 'non-finite-number', 'screen-error'])
+  const knownIds = new Set([...(gate.patternIds ?? []), ...(gate.policyIds ?? []), PROTOCOL_CHANGE, 'too-deep', 'too-large', 'circular', 'unsupported-type', 'non-finite-number', 'screen-error'])
   const policy = typeof gate.policyId === 'string' ? gate.policyId : 'unversioned'
 
   // Every audit entry passes through here: fixed keys and types, rule ids
@@ -214,6 +224,20 @@ export function createWriteGuard(rawStore, gate, { reads, writes, internal = [],
     })
   }
 
+  // Whether a write deletes, renames, overwrites or edits an existing
+  // protocol. Called under the store lock, so it sees the state the write
+  // would change.
+  function changesProtocol(name, args) {
+    if (name === 'deleteFiles') return Array.isArray(args[1]) && args[1].some(isProtocolPath)
+    if (name === 'moveFiles') return Array.isArray(args[1]) && args[1].some((m) => Array.isArray(m) && (isProtocolPath(m[0]) || isProtocolPath(m[1])))
+    if (name === 'putFile') return isProtocolPath(args[1]) && rawStore.getFile(args[0], args[1]) !== null
+    return false
+  }
+
+  const withPolicy = (name, args, verdict) => (changesProtocol(name, args)
+    ? { ...verdict, ok: false, decision: 'review', reviews: [...(verdict.reviews ?? []), { field: '[1]', reasonId: PROTOCOL_CHANGE }] }
+    : verdict)
+
   const guarded = {}
   for (const name of readSet) {
     guarded[name] = (...args) => rawStore[name](...args)
@@ -221,28 +245,31 @@ export function createWriteGuard(rawStore, gate, { reads, writes, internal = [],
   for (const name of writeSet) {
     guarded[name] = (...args) => {
       const snap = snapshotOf(args)
-      const verdict = snap.ok
+      const screened = snap.ok
         ? gate.screen(screenedView(name, snap.value))
         : { ok: false, decision: 'block', violations: [{ field: '(value)', patternId: 'unsupported-type', kind: 'unreadable' }], reviews: [] }
-      if (verdict.decision === 'block' || (verdict.ok !== true && verdict.decision !== 'review')) {
-        audit(blockedEntry(name, verdict))
-        throw new ScreeningError(readable(verdict), name)
+      if (screened.decision === 'block' || (screened.ok !== true && screened.decision !== 'review')) {
+        audit(blockedEntry(name, screened))
+        throw new ScreeningError(readable(screened), name)
       }
       const payload = payloadHash(snap.value)
       if (writeMode === 'dry-run') {
+        const verdict = withPolicy(name, snap.value, screened)
         audit({ op: 'write_deferred', target: name, decision: verdict.decision, review_ids: (verdict.reviews ?? []).map((r) => r.reasonId), payload_sha256: payload, policy })
         throw new DeferredWriteError(name, verdict)
       }
-      if (verdict.decision === 'review') {
+      // Hold or commit under one lock, so the protocol check and the write
+      // see the same files.
+      const outcome = rawStore.transaction(() => {
+        const verdict = withPolicy(name, snap.value, screened)
+        if (verdict.decision !== 'review') return { result: commitWrite(name, snap.value) }
         const reviewIds = verdict.reviews.map((r) => r.reasonId)
-        const hold = rawStore.transaction(() => {
-          const entry = rawStore.addPending({ target: name, args: snap.value, payload_sha256: payload, review_ids: [...new Set(reviewIds)], policy })
-          audit({ op: 'write_held', target: name, hold_id: entry.id, review_ids: reviewIds, payload_sha256: payload, policy })
-          return entry
-        })
-        throw new ReviewRequiredError(readable(verdict), name, hold.id)
-      }
-      return commitWrite(name, snap.value)
+        const entry = rawStore.addPending({ target: name, args: snap.value, payload_sha256: payload, review_ids: [...new Set(reviewIds)], policy })
+        audit({ op: 'write_held', target: name, hold_id: entry.id, review_ids: reviewIds, payload_sha256: payload, policy })
+        return { held: entry, verdict }
+      })
+      if (outcome.held) throw new ReviewRequiredError(readable(outcome.verdict), name, outcome.held.id)
+      return outcome.result
     }
   }
   // Lets tests and startup checks confirm what they were handed.

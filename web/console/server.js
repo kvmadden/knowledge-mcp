@@ -9,6 +9,21 @@ import { createSession } from './session.js'
 // neither read the session nor drive it.
 const LOOPBACK_HOST = /^(?:127\.0\.0\.1|localhost|\[::1\])(?::\d{1,5})?$/i
 
+// Every file the pages load, fonts included, is served from this folder, so
+// the browser never asks another host for anything.
+export const FILES = Object.freeze({
+  '/': ['index.html', 'text/html'],
+  '/app.js': ['app.js', 'text/javascript'],
+  '/style.css': ['style.css', 'text/css'],
+  '/theme.js': ['theme.js', 'text/javascript'],
+  '/corpus': ['corpus.html', 'text/html'],
+  '/corpus.js': ['corpus.js', 'text/javascript'],
+  '/corpus.css': ['corpus.css', 'text/css'],
+  '/fonts/ibm-plex-mono-400.woff2': ['fonts/ibm-plex-mono-400.woff2', 'font/woff2'],
+  '/fonts/ibm-plex-mono-500.woff2': ['fonts/ibm-plex-mono-500.woff2', 'font/woff2'],
+  '/fonts/ibm-plex-mono-600.woff2': ['fonts/ibm-plex-mono-600.woff2', 'font/woff2'],
+})
+
 export function createConsoleServer() {
   let session = createSession()
   return createServer(async (req, res) => {
@@ -50,13 +65,12 @@ export function createConsoleServer() {
         res.setHeader('Content-Type', 'application/json')
         return res.end(JSON.stringify(session.view()))
       }
-      const files = { '/corpus': ['corpus.html', 'text/html'], '/corpus.js': ['corpus.js', 'text/javascript'], '/corpus.css': ['corpus.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'] }
-      const file = files[req.url]
+      const file = Object.hasOwn(FILES, req.url) ? FILES[req.url] : null
       if (req.method !== 'GET' || !file) {
         res.writeHead(404)
         return res.end()
       }
-      res.setHeader('Content-Type', `${file[1]}; charset=utf-8`)
+      res.setHeader('Content-Type', file[1].startsWith('font/') ? file[1] : `${file[1]}; charset=utf-8`)
       res.end(await readFile(new URL(file[0], import.meta.url)))
     } catch (error) {
       res.writeHead(400, { 'Content-Type': 'application/json' })

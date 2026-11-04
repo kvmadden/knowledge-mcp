@@ -31,6 +31,12 @@ test('HTTP console isolates local actions and reports stale approval errors', as
   const url = `http://127.0.0.1:${server.address().port}`
   try {
     assert.equal((await fetch(url)).status, 200)
+    for (const [path, type] of [["/theme.js", "text/javascript"], ["/fonts/ibm-plex-mono-400.woff2", "font/woff2"], ["/fonts/ibm-plex-mono-500.woff2", "font/woff2"], ["/fonts/ibm-plex-mono-600.woff2", "font/woff2"]]) {
+      const response = await fetch(`${url}${path}`)
+      assert.equal(response.status, 200, `${path} is served`)
+      assert.equal(response.headers.get("content-type").split(";")[0], type, `${path} has its correct MIME type`)
+      assert.ok((await response.arrayBuffer()).byteLength > 0, `${path} has content`)
+    }
     assert.equal((await fetch(`${url}/api/next`, { method: 'POST', headers: { origin: 'https://example.test' } })).status, 403)
     const rebound = await new Promise((resolve, reject) => {
       const req = request({ host: '127.0.0.1', port: server.address().port, path: '/api/next', method: 'POST', headers: { host: `attacker.example:${server.address().port}`, origin: `http://attacker.example:${server.address().port}` } }, (res) => { res.resume(); resolve(res.statusCode) })

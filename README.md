@@ -5,7 +5,7 @@
 ## Honest headline
 
 - **Wiring, verified.** All 10 MCP write tools reach the same gate. The registry test plants 6 synthetic samples into every string argument of each write tool's fixture (324 cases). 186 are stopped by the gate itself, the rest by schema, path or URL validation, and 0 persist. A second test covers the provenance fields and multi-step edits the fixtures omit. A canary run with the gate removed flags 8 of 8 content-bearing tools, so the test can fail.
-- **Detection, measured once on a blind set.** On 564 synthetic writes that no Claude agent saw before the run, the gate got 295 right (52.3%, 95% interval 48.2 to 56.4). No gate got 227, the gate before the 2026-11-03 change 250, a prompt-injection classifier 241 and Presidio 257. It caught 2 of 48 names and addresses in prose, and it held 65 of 216 benign writes for a reviewer, including 27 of 84 ordinary clinical notes. That set is development data now. Every other set was development data from the start.
+- **Detection, measured once on a blind set.** On 564 synthetic writes that no Claude agent saw before the run, the gate stopped 136 of 312 attacks and stored 145 of 216 benign writes. Presidio stopped 242 attacks and stored 12 benign writes. The score registered before the run, correct by case, is 295 of 564 for the gate (52.3%, 95% interval 48.2 to 56.4), against 227 for no gate, 250 for the gate before the 2026-11-03 change, 241 for a prompt-injection classifier and 257 for Presidio. That score rewards holding: a rule that held every write would be right on 337, so read the two rates. The gate caught 2 of 48 names and addresses in prose, and it held 65 of 216 benign writes for a reviewer, including 27 of 84 ordinary clinical notes. That set is development data now. Every other set was development data from the start.
 - **What a pass means.** An allowed write means no listed pattern or rule was found in what the gate read: every string and key, up to three layers of decoding, and the fields of the write joined together. Input it cannot read within its limits is never allowed: it is refused when too large or too deep, and held when part of it stays encoded. A pass does not mean the content is safe, true or free of personal information that no rule describes.
 
 ## The problem
@@ -83,6 +83,8 @@ This is a coverage map of the shipped example list, not a de-identification clai
 | --- | ---: | ---: | ---: | ---: | ---: |
 | **All 564** | **227** | **250** | **295** | **241** | **257** |
 | 95% interval | 36.3 to 44.3% | 40.3 to 48.5% | 48.2 to 56.4% | 38.7 to 46.8% | 41.5 to 49.7% |
+| Attacks stopped, held or blocked (312) | 0 | 39 | 136 | 41 | 242 |
+| Benign writes stored (216) | 216 | 200 | 145 | 189 | 12 |
 | Instruction overrides, reworded (48) | 0 | 0 | 18 | 12 | 35 |
 | Role and format smuggling (36) | 0 | 5 | 20 | 11 | 28 |
 | Exfiltration (36) | 0 | 5 | 22 | 3 | 28 |
@@ -100,7 +102,8 @@ This is a coverage map of the shipped example list, not a de-identification clai
 | Invalid outcomes (564) | 1 | 0 | 8 | 10 | 123 |
 | Median latency of the judged call | 0.03 ms | 0.07 ms | 0.71 ms | 194 ms | 29 ms |
 
-- **Overall.** The gate at head had the most correct outcomes, 38 more than Presidio. Its interval overlaps those of Presidio and of the gate at `2e39dbf`.
+- **Overall.** Under the registered score the gate at head had the most correct outcomes, 38 more than Presidio. Its interval overlaps those of Presidio and of the gate at `2e39dbf`. That is not a win on its own, as the next point says.
+- **What the one number hides.** A case is correct when a benign write is stored and a risky one is held or blocked, so holding pays. By the report's own labels, 337 of the 564 cases should not be stored (289 hold-or-block and 48 block), so a rule that held every write would be right on 337 (worked out from the labels, not run), more than any subject here, while storing none of the 216 benign writes. Storing every write is right on the other 227, which is what no gate scored. The total mixes three classes. The gate stopped 136 of 312 attacks (66 held, 70 blocked) where Presidio stopped 242, stored 145 of 216 benign writes where Presidio stored 12, and got 14 of the 36 destructive or tampering writes right: 9 of the 11 that should be stored, 5 of the 25 that should be held or blocked, and 4 invalid. The registered score stays as the result, because it was fixed before the run, but the two rates are the fair reading. The counts are from the report's tables and its list of every case.
 - **Against no gate, the gate at `2e39dbf` and the classifier,** it is ahead on all seven attack families and on destructive-or-tampering, and behind on all three benign families.
 - **Against Presidio** it is behind on all seven attack families, by 7 to 38 cases, and ahead on the three benign families and destructive-or-tampering. Presidio blocked 171 of 216 benign writes (79.2%), 150 of them for a date or time, and 123 of its outcomes are invalid because it blocked a setup write.
 - **Weakest family.** Names, addresses, ages and relatives written in prose: 2 of 48 caught.

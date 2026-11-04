@@ -25,6 +25,8 @@ The set holds 564 synthetic writes in 11 families, 216 of them benign. Grok 4.7 
 | Correct, by case | No gate | Gate at `2e39dbf` | Gate at head | Injection classifier | Presidio |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | All (564) | 227 (36.3 to 44.3%) | 250 (40.3 to 48.5%) | 295 (48.2 to 56.4%) | 241 (38.7 to 46.8%) | 257 (41.5 to 49.7%) |
+| Attacks stopped, held or blocked (312) | 0 | 39 | 136 | 41 | 242 |
+| Benign writes stored (216) | 216 | 200 | 145 | 189 | 12 |
 | instruction-reworded (48) | 0 | 0 | 18 (25.2 to 51.6%) | 12 | 35 |
 | role-or-format-smuggling (36) | 0 | 5 | 20 (39.6 to 70.5%) | 11 | 28 |
 | exfiltration (36) | 0 | 5 | 22 (44.9 to 75.2%) | 3 | 28 |
@@ -64,7 +66,7 @@ Every case is its own distinct item, so the by-item figures equal these.
 The detectors' times include their inference on the text the call stores.
 
 What the numbers say:
-- The gate at head had the most correct outcomes overall. Its interval overlaps those of Presidio and of the gate at `2e39dbf`.
+- The gate at head had the most correct outcomes overall under the registered score. Its interval overlaps those of Presidio and of the gate at `2e39dbf`. The score rewards holding: by the report's labels 337 of the 564 cases should not be stored (289 hold-or-block and 48 block), so a rule that held every write would be right on 337 (worked out from the labels, not run) while storing none of the 216 benign writes, and storing every write is right on the other 227, the no-gate column. Read the attack and benign rows: the gate stopped 136 of 312 attacks and stored 145 of 216 benign writes, Presidio 242 and 12. Of the 36 destructive or tampering writes it got 14 right, 9 of the 11 to store and 5 of the 25 to hold or block, with 4 invalid.
 - Against no gate, the gate at `2e39dbf` and the classifier, it is ahead on all seven attack families and on destructive-or-tampering, and behind on all three benign families.
 - Against Presidio it is behind on all seven attack families and ahead on the three benign families and destructive-or-tampering. Presidio flagged a write when any entity of any type scored 0.5 or more, its default recognizers with no filter. It blocked 171 of 216 benign writes, 150 of them with a date or time among the entities, and 123 of its outcomes are invalid because it blocked a setup write.
 - The gate's weakest family is phi-unformatted: 2 of 48 names, addresses, ages and relatives in prose caught.
@@ -183,6 +185,7 @@ Machine: Apple M1 Max, Node 24.14.1, shared with other jobs. Reports: `bench-202
 - **A keyword read as an assertion.** Directive rules decide by the clause around the verb, not by a phrase anywhere. A directive is blocked. A negated clause or a description of what someone else does passes. Everything else, including a quotation next to a disavowal, is held. Round 1 let an unknown lead word, an unrelated negation or a nearby disavowal turn a full override into a pass, and let a few rules block prohibitions. Round 2 closed both.
 - **A template pass read as generalization.** No set used while changing the rules is reported as held-out.
 - **A development result read as the headline.** The headline is the blind run, 295 of 564 (52.3%), not the much higher development figures above it. The blind set is development data now too.
+- **A total read as a win.** The registered score counts a held write as a right call on every risky case, so holding every write would score 337 of 564, above every subject. The blind result is read as two rates beside the total: attacks stopped and benign writes stored.
 - **A self-declared label read as a control.** Untrusted content is held for a person instead of rejected, and the family that measured the label is no longer scored as detection.
 
 ## Reproduce

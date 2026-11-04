@@ -1,15 +1,63 @@
 <!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Write gate console · knowledge-mcp</title><link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script></head>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Write gate console · knowledge-mcp</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M1 4.5C7 4.5 8 12 13 12M1 9C7 9 8 12 13 12M1 15C7 15 8 12 13 12M1 19.5C7 19.5 8 12 13 12' fill='none' stroke='%237A879B' stroke-width='1.6'/%3E%3Crect x='13' y='6' width='4' height='12' fill='%233B5BDB'/%3E%3Cpath d='M17 12H23' stroke='%233B5BDB' stroke-width='2.4'/%3E%3C/svg%3E">
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+<script src="/theme.js"></script>
+<script type="module" src="/app.js"></script>
+</head>
 <body>
-<header><a class="brand" href="/" aria-label="Knowledge MCP home"><span class="mark">k<span>↗</span></span>knowledge<span class="muted">/ mcp</span></a><div class="header-right"><span class="local"><i></i> Local session</span><button id="theme" aria-label="Switch color theme">◐ <span>Theme</span></button></div></header>
-<main>
-<div class="eyebrow">CARE OPERATIONS / SHARED MEMORY</div>
-<section class="intro"><div><h1>Review, before reuse.</h1><p>A care coordinator checks what an assistant saves before outreach.<br>A pharmacist reviews proposed protocol changes.</p></div><div class="session-label"><span class="pulse"></span><div><b>CARE TEAM / SYNTHETIC SESSION</b><small>Synthetic only · No PHI · Real gate code</small></div></div></section>
-<section class="stats" aria-label="Session totals"><div><span>ATTEMPTED WRITES</span><strong id="attempted">00</strong></div><div><span><i class="dot allowed"></i> ALLOWED</span><strong id="allowed">00</strong></div><div><span><i class="dot blocked"></i> BLOCKED</span><strong id="blocked">00</strong></div><div><span><i class="dot held"></i> AWAITING REVIEW</span><strong id="held">00</strong></div></section>
-<div class="workspace"><section class="panel feed-panel"><div class="panel-head"><div><span class="eyebrow">01 / LIVE REPLAY</span><h2>Attempted writes</h2></div><span id="progress" class="chip">0 / 6</span></div><div class="toolbar"><button class="primary" id="replay">▶ Run session</button><button id="next">Next write ↗</button><button id="reset" class="reset">Reset</button></div><div id="error" role="alert" hidden></div><div id="loading" role="status" hidden>Running the gate…</div><div id="feed" aria-live="polite"></div></section>
-<aside><section class="panel approval"><div class="panel-head"><div><span class="eyebrow">02 / HUMAN CHECKPOINT</span><h2>Pharmacist review</h2></div><span class="queue-icon">⌁</span></div><p class="explain">The gate holds protocol drafts with clinical content. Compare the draft with its source and date. Approve to apply the held payload after it is screened again, or reject to keep it out. The reviewer label goes into the audit log. This local prototype does not authenticate the reviewer.</p><div id="queue" aria-live="polite"></div></section><section class="engine-note"><span class="eyebrow">ONE GATE. EVERY WRITE.</span><p>Administrative prototype. Rules screen content and caller trust labels. Passing the gate means no listed pattern was found, not that a note is safe or true. Rules cannot verify clinical facts or authorize treatment, dosing or coverage decisions.</p><div><i></i> In memory · No model · No network</div></section></aside></div>
+<header class="bar"><div class="wrap bar-inner">
+<a class="brand" href="/"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="mark-paths" d="M1 4.5C7 4.5 8 12 13 12M1 9C7 9 8 12 13 12M1 15C7 15 8 12 13 12M1 19.5C7 19.5 8 12 13 12"/><rect class="mark-gate" x="13" y="6" width="4" height="12"/><path class="mark-out" d="M17 12H23"/></svg><span class="name">knowledge-mcp</span><span class="sub">write gate console</span></a>
+<div class="bar-right"><span class="local">Local session</span><button id="theme" type="button"><span class="sr-only">Switch color theme. </span>Theme: <span class="when-dark">Dark</span><span class="when-light">Light</span></button></div>
+</div></header>
+<main class="wrap">
+<section class="top">
+<div class="intro">
+<p class="eyebrow">CARE OPERATIONS / SHARED MEMORY</p>
+<h1>Review, before reuse.</h1>
+<p class="lede">A care coordinator checks what an assistant saves before outreach. A pharmacist reviews proposed protocol changes.</p>
+<div class="session-label"><span class="led" aria-hidden="true"></span><div><b>CARE TEAM / SYNTHETIC SESSION</b><small>Synthetic only · No PHI · Real gate code</small></div></div>
+</div>
+<section class="board" aria-label="Write paths and session totals">
+<p class="label paths-label">WRITE PATHS · 10 TOOLS</p>
+<ol class="tools" aria-label="Write tools in the registry, all screened by one gate">
+<li class="live" data-tool="records.create">records.create</li>
+<li data-tool="records.pin">records.pin</li>
+<li data-tool="decisions.log">decisions.log</li>
+<li data-tool="inbox.capture">inbox.capture</li>
+<li data-tool="inbox.capture_quick">inbox.capture_quick</li>
+<li data-tool="memory.create">memory.create</li>
+<li data-tool="memory.str_replace">memory.str_replace</li>
+<li data-tool="memory.insert">memory.insert</li>
+<li data-tool="memory.delete">memory.delete</li>
+<li data-tool="memory.rename">memory.rename</li>
+</ol>
+<svg class="fan fan-in wide" viewBox="0 0 100 200" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="live" d="M0 10C55 10 45 100 100 100"/><path d="M0 30C55 30 45 100 100 100"/><path d="M0 50C55 50 45 100 100 100"/><path d="M0 70C55 70 45 100 100 100"/><path d="M0 90C55 90 45 100 100 100"/><path d="M0 110C55 110 45 100 100 100"/><path d="M0 130C55 130 45 100 100 100"/><path d="M0 150C55 150 45 100 100 100"/><path d="M0 170C55 170 45 100 100 100"/><path d="M0 190C55 190 45 100 100 100"/></svg>
+<svg class="fan fan-in narrow" viewBox="0 0 100 48" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="live" d="M5 0C5 26 50 22 50 48"/><path d="M15 0C15 26 50 22 50 48"/><path d="M25 0C25 26 50 22 50 48"/><path d="M35 0C35 26 50 22 50 48"/><path d="M45 0C45 26 50 22 50 48"/><path d="M55 0C55 26 50 22 50 48"/><path d="M65 0C65 26 50 22 50 48"/><path d="M75 0C75 26 50 22 50 48"/><path d="M85 0C85 26 50 22 50 48"/><path d="M95 0C95 26 50 22 50 48"/></svg>
+<div class="gate"><span class="gate-label">GATE</span><strong id="attempted">00</strong><span class="gate-unit">attempted writes</span></div>
+<svg class="fan fan-out wide" viewBox="0 0 100 200" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="live" d="M0 100C50 100 50 25 100 25"/><path d="M0 100C50 100 50 75 100 75"/><path d="M0 100C50 100 50 125 100 125"/><path d="M0 100C50 100 50 175 100 175"/></svg>
+<svg class="fan fan-out narrow" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="live" d="M50 0C50 12 12.5 12 12.5 24"/><path d="M50 0C50 12 37.5 12 37.5 24"/><path d="M50 0C50 12 62.5 12 62.5 24"/><path d="M50 0C50 12 87.5 12 87.5 24"/></svg>
+<p class="label totals-label">SESSION TOTALS</p>
+<dl class="outcomes">
+<div class="allowed"><dt>ALLOWED</dt><dd class="count" id="allowed">00</dd><dd class="note">in the store</dd></div>
+<div class="held"><dt>HELD</dt><dd class="count" id="held">00</dd><dd class="note">awaiting review</dd></div>
+<div class="blocked"><dt>BLOCKED</dt><dd class="count" id="blocked">00</dd><dd class="note">not stored</dd></div>
+<div class="rejected"><dt>REJECTED</dt><dd class="count" id="rejected">00</dd><dd class="note">by a reviewer</dd></div>
+</dl>
+<p class="board-note">This session writes through records.create. The other nine write tools go through the same gate.</p>
+</section>
+</section>
+<div class="workspace">
+<section class="panel feed-panel"><div class="panel-head"><div><span class="eyebrow"><b>01</b> / LIVE REPLAY</span><h2>Attempted writes</h2></div><span id="progress" class="progress">0 / 6</span></div><div class="toolbar"><button class="primary" id="replay">Run session</button><button id="next">Next write</button><button id="reset" class="reset">Reset</button></div><div id="error" role="alert" hidden></div><div id="loading" role="status" hidden>Running the gate…</div><div id="feed" aria-live="polite"></div></section>
+<aside><section class="panel approval"><div class="panel-head"><div><span class="eyebrow"><b>02</b> / HUMAN CHECKPOINT</span><h2>Pharmacist review</h2></div></div><p class="explain">The gate holds protocol drafts with clinical content. Compare the draft with its source and date. Approve to apply the held payload after it is screened again, or reject to keep it out. The reviewer label goes into the audit log. This local prototype does not authenticate the reviewer.</p><div id="queue" aria-live="polite"></div></section><section class="engine-note"><span class="eyebrow">ONE GATE. EVERY WRITE.</span><p>Administrative prototype. Rules screen content and caller trust labels. Passing the gate means no listed pattern was found, not that a note is safe or true. Rules cannot verify clinical facts or authorize treatment, dosing or coverage decisions.</p><div class="engine-meta">In memory · No model · No network</div></section></aside>
+</div>
 <details class="boundary"><summary>Data boundary, evaluation and limits</summary><p>Manually authored synthetic text represents notes, intake and fax content. No OCR, EMR or EDI ingestion is implemented. No model or external vendor receives data. Browser requests stay on loopback. Records and audit receipts live in server memory until Reset or restart. Receipts omit raw content, but this console shows synthetic attempts.</p><p>One shared local session, no user isolation or reviewer authentication. Do not enter patient data. Source labels and dates are caller assertions, not authenticated evidence. A held write waits in the hold queue of the same store. Approval screens the held payload again and commits it with its audit entry. In this console the queue lives in memory and disappears on restart.</p><p>Six curated attempts demonstrate behavior, not accuracy. The <a href="https://github.com/kvmadden/knowledge-mcp/blob/main/docs/evaluation/README.md">repeatable evaluation</a> reports development results only. Every set it uses was seen while the rules were written, so it shows what changed, not a detection rate. Workflow time, rework, adoption and patient outcomes have not been measured.</p><p>Reusable records and memory services share the deterministic gate. Rules are the baseline, no model is needed to demonstrate this boundary. English synthetic strings only. This does not establish clinical safety across documents, populations or languages.</p></details>
 <section class="panel lower"><div class="tabs" role="tablist" aria-label="Evidence view"><button id="audit-tab" role="tab" aria-selected="true" aria-controls="audit">Audit log</button><button id="red-tab" role="tab" aria-selected="false" aria-controls="red">Red-team lab</button><span>TRACEABLE BY DESIGN</span></div><div id="audit" role="tabpanel" aria-labelledby="audit-tab"></div><div id="red" role="tabpanel" aria-labelledby="red-tab" hidden></div></section>
-<footer><a href="/corpus">Search public documents ↗</a><span>knowledge-mcp <b>/</b> write gate console</span><span>Synthetic data only, no PHI or employer data · Reset clears session memory</span></footer>
+<footer><a href="/corpus">Search public documents</a><span>knowledge-mcp <b>/</b> write gate console</span><span>Synthetic data only, no PHI or employer data · Reset clears session memory</span></footer>
 </main></body></html>

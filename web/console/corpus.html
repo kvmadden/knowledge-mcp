@@ -1,16 +1,36 @@
 <!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Public document search · knowledge-mcp</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/corpus.css"><script type="module" src="/corpus.js"></script></head>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Public document search · knowledge-mcp</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M1 4.5C7 4.5 8 12 13 12M1 9C7 9 8 12 13 12M1 15C7 15 8 12 13 12M1 19.5C7 19.5 8 12 13 12' fill='none' stroke='%237A879B' stroke-width='1.6'/%3E%3Crect x='13' y='6' width='4' height='12' fill='%233B5BDB'/%3E%3Cpath d='M17 12H23' stroke='%233B5BDB' stroke-width='2.4'/%3E%3C/svg%3E">
+<link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/corpus.css">
+<script src="/theme.js"></script>
+<script type="module" src="/corpus.js"></script>
+</head>
 <body>
-<header><a class="brand" href="/">knowledge<span class="muted">/ mcp</span></a><button id="theme" aria-label="Switch color theme">◐ Theme</button></header>
-<main>
-<div class="eyebrow">PUBLIC DOCUMENTS / LOCAL RETRIEVAL</div>
-<section class="intro"><div><h1>Real documents. Traceable answers.</h1><p>Ask a question. Inspect the exact source passage.</p></div></section>
-<section class="panel search-panel">
-<form id="search-form"><label for="collection">Collection</label><select id="collection"><option value="public">Public health documents</option><option value="fictional">Fictional demo corpus</option></select><label for="question">Your question</label><input id="question" maxlength="2000" required value="Which test is preferred when blood gas and oximetry results conflict?"><button class="primary" type="submit">Find source passage ↗</button></form>
+<header class="bar"><div class="wrap bar-inner">
+<a class="brand" href="/"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="mark-paths" d="M1 4.5C7 4.5 8 12 13 12M1 9C7 9 8 12 13 12M1 15C7 15 8 12 13 12M1 19.5C7 19.5 8 12 13 12"/><rect class="mark-gate" x="13" y="6" width="4" height="12"/><path class="mark-out" d="M17 12H23"/></svg><span class="name">knowledge-mcp</span><span class="sub">public document search</span></a>
+<div class="bar-right"><span class="local">Local session</span><button id="theme" type="button"><span class="sr-only">Switch color theme. </span>Theme: <span class="when-dark">Dark</span><span class="when-light">Light</span></button></div>
+</div></header>
+<main class="wrap">
+<section class="corpus-intro">
+<p class="eyebrow">PUBLIC DOCUMENTS / LOCAL RETRIEVAL</p>
+<h1>Real documents. Traceable answers.</h1>
+<p class="lede">Ask a question. Inspect the exact source passage.</p>
+</section>
+<div class="corpus-grid">
+<section class="panel search-panel" aria-label="Search the committed passages">
+<span class="eyebrow"><b>01</b> / QUERY</span>
+<form id="search-form"><label for="collection">Collection</label><select id="collection"><option value="public">Public health documents</option><option value="fictional">Fictional demo corpus</option></select><label for="question">Your question</label><textarea id="question" rows="3" maxlength="2000" required aria-describedby="question-hint">Which test is preferred when blood gas and oximetry results conflict?</textarea><span class="hint" id="question-hint">Enter searches. Shift and Enter start a new line.</span><button class="primary" type="submit">Find source passage</button></form>
 <p class="explain">CMS NCD coverage text · openFDA drug label · CDC ACIP guidance</p>
 </section>
-<section class="results" aria-live="polite" aria-busy="false"><div class="eyebrow">EXTRACTIVE ANSWER / COMMITTED SNAPSHOT</div><h2 id="result-title">Ready to search</h2><p id="status" role="status">No model or network required for answers.</p><div id="citations"></div></section>
+<section class="results" aria-live="polite" aria-busy="false"><span class="eyebrow"><b>02</b> / EXTRACTIVE ANSWER / COMMITTED SNAPSHOT</span><h2 id="result-title">Ready to search</h2><p id="status" role="status">No model or network required for answers.</p><div id="citations"></div></section>
+</div>
 <p class="source-notice">Source: CDC. CDC materials are available free at the original source. Use of source materials does not imply endorsement by CDC, HHS or the United States Government.</p>
-<footer><span>Offline document retrieval demo · Not clinical advice</span><a href="/">Open write gate console ↗</a></footer>
+<footer><span>Offline document retrieval demo · Not clinical advice</span><a href="/">Open write gate console</a></footer>
 </main></body></html>

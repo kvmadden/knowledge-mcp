@@ -1,11 +1,18 @@
 const $ = id => document.getElementById(id)
-$('theme').onclick = () => { document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark' }
 const element = (tag, text) => {
   const node = document.createElement(tag)
   node.textContent = text
   return node
 }
 let latestSearch = 0
+// Enter searches, as it did when the question was a one-line field. Shift and
+// Enter add a line break.
+$('question').onkeydown = event => {
+  if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+    event.preventDefault()
+    $('search-form').requestSubmit()
+  }
+}
 $('search-form').onsubmit = async event => {
   const search = ++latestSearch
   event.preventDefault()
@@ -23,7 +30,8 @@ $('search-form').onsubmit = async event => {
     for (const citation of result.citations) {
       const card = element('article', '')
       card.className = 'panel citation'
-      const link = element('a', 'Read original source ↗')
+      const link = element('a', 'Read original source')
+      link.setAttribute('aria-label', 'Read original source (opens in a new tab)')
       link.href = citation.url
       link.target = '_blank'
       link.rel = 'noopener noreferrer'

@@ -236,6 +236,43 @@ export function createWriteGuard(rawStore, gate, { reads, writes, internal = [],
     return false
   }
 
+  // Bind a held file mutation to the versions observed in the same locked
+  // transaction that creates its hold. Null means the path was absent.
+  function sourceState(name, args) {
+    let paths = []
+    if (name === 'putFile' && typeof args[1] === 'string') paths = [args[1]]
+    if (name === 'deleteFiles' && Array.isArray(args[1])) paths = args[1]
+    if (name === 'moveFiles' && Array.isArray(args[1])) paths = args[1].flatMap((move) => Array.isArray(move) ? move : [])
+    if (!paths.length) return undefined
+    const unique = [...new Set(paths)].sort()
+    return unique.map((filePath) => {
+      const file = rawStore.getFile(args[0], filePath)
+      return { path: filePath, version: file?.version ?? null }
+    })
+  }
+
+  function sourceStateHash(state) {
+    return state === undefined ? undefined : payloadHash({ source_state: state })
+  }
+
+  function heldIntegrityHash(args, state) {
+    return state === undefined ? payloadHash(args) : payloadHash({ args, source_state: state })
+  }
+
+  function assertSourceState(held) {
+    if (!['putFile', 'deleteFiles', 'moveFiles'].includes(held.target)) return
+    if (!Array.isArray(held.source_state) || heldIntegrityHash(held.args, held.source_state) !== held.payload_sha256) {
+      throw new Error('the held file state binding is missing or invalid; request a fresh hold')
+    }
+    const current = held.source_state.map(({ path: filePath }) => {
+      const file = rawStore.getFile(held.args[0], filePath)
+      return { path: filePath, version: file?.version ?? null }
+    })
+    if (sourceStateHash(current) !== sourceStateHash(held.source_state)) {
+      throw new Error('the file changed since it was read; request a fresh hold')
+    }
+  }
+
   const withPolicy = (name, args, verdict) => (changesProtocol(name, args)
     ? { ...verdict, ok: false, decision: 'review', reviews: [...(verdict.reviews ?? []), { field: '[1]', reasonId: PROTOCOL_CHANGE }] }
     : verdict)
@@ -266,8 +303,10 @@ export function createWriteGuard(rawStore, gate, { reads, writes, internal = [],
         const verdict = withPolicy(name, snap.value, screened)
         if (verdict.decision !== 'review') return { result: commitWrite(name, snap.value) }
         const reviewIds = verdict.reviews.map((r) => r.reasonId)
-        const entry = rawStore.addPending({ target: name, args: snap.value, payload_sha256: payload, review_ids: [...new Set(reviewIds)], policy })
-        audit({ op: 'write_held', target: name, hold_id: entry.id, review_ids: reviewIds, payload_sha256: payload, policy })
+        const source_state = sourceState(name, snap.value)
+        const heldHash = heldIntegrityHash(snap.value, source_state)
+        const entry = rawStore.addPending({ target: name, args: snap.value, payload_sha256: heldHash, source_state, review_ids: [...new Set(reviewIds)], policy })
+        audit({ op: 'write_held', target: name, hold_id: entry.id, review_ids: reviewIds, payload_sha256: heldHash, policy })
         return { held: entry, verdict }
       })
       if (outcome.held) throw new ReviewRequiredError(readable(outcome.verdict), name, outcome.held.id)
@@ -306,8 +345,9 @@ export function createWriteGuard(rawStore, gate, { reads, writes, internal = [],
         const held = rawStore.getPending(id)
         if (!held) throw new Error('hold not found or already resolved')
         if (!writeSet.has(held.target)) throw new Error('held write targets an unknown method')
-        const hash = payloadHash(held.args)
+        const hash = heldIntegrityHash(held.args, held.source_state)
         if (hash !== held.payload_sha256 || !heldReceipt(held, hash)) throw new Error('the held payload does not match the payload recorded when it was held')
+        assertSourceState(held)
         const verdict = gate.screen(screenedView(held.target, held.args))
         if (verdict.decision === 'block') return { blocked: verdict, target: held.target }
         rawStore.removePending(id)

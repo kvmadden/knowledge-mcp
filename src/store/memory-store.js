@@ -445,10 +445,10 @@ export class MemoryStore {
     })
   }
 
-  addPending({ target, args, payload_sha256, review_ids, policy }) {
+  addPending({ target, args, payload_sha256, source_state, review_ids, policy }) {
     return this.transaction(() => {
       const id = `hold_${String(this.#state.nextHold).padStart(4, '0')}`
-      const entry = { id, target, args: clone(args), payload_sha256, review_ids: [...review_ids], policy, at: this.#now() }
+      const entry = { id, target, args: clone(args), payload_sha256, ...(source_state === undefined ? {} : { source_state: clone(source_state) }), review_ids: [...review_ids], policy, at: this.#now() }
       this.#state = { ...this.#state, nextHold: this.#state.nextHold + 1, pending: [...this.#state.pending, entry] }
       return clone(entry)
     })

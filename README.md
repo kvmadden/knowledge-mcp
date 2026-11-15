@@ -2,6 +2,22 @@
 
 **A write gate for AI agents that share long-term memory.** Every write from every tool passes one screening gate. The gate blocks what matches a listed rule, holds what it cannot judge for a person, and audits each decision without copying submitted values. For engineers and product teams evaluating agent memory controls, including clinical AI platforms. This is a local prototype with inspectable tests. It is not a clinical system, a de-identification service or a compliance certification.
 
+## Start here (local demo)
+
+This is a **local research prototype**, not a deployed clinical service. To see the write gate handling synthetic examples, use Node.js 20 or later:
+
+```sh
+npm ci
+npm test
+npm run console
+```
+
+Open the loopback address printed by the console. The demo uses one in-memory session, has no login, and must not be used with real patient data. To connect an MCP client instead, follow [server and host setup](#run-it). See [limits](#limits) before using the results to make a safety claim.
+
+![Actual local write gate console, captured with synthetic data on 31 October 2026](docs/media/write-gate-light-1440x900.png)
+
+*This real screenshot predates the 3 November protocol-hold change; the current gate holds those writes in the store queue rather than relying on the old dry-run behavior. See the [recording notes](docs/media/README.md).*
+
 ## Honest headline
 
 - **Wiring, verified.** All 10 MCP write tools reach the same gate. The registry test plants 6 synthetic samples into every string argument of each write tool's fixture (324 cases). 186 are stopped by the gate itself, the rest by schema, path or URL validation, and 0 persist. A second test covers the provenance fields and multi-step edits the fixtures omit. A canary run with the gate removed flags 8 of 8 content-bearing tools, so the test can fail.

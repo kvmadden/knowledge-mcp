@@ -243,7 +243,7 @@ For the browser helper, import `createWebClient` from `knowledge-mcp/web` and su
 npm ci && npm run console
 ```
 
-Open the local address that `npm run console` prints. Six synthetic attempts run through the real gate: a care-coordination note is allowed, a phone number and MRN are blocked, two protocol drafts are held because they are clinical rules, and two injected instructions are blocked. Approve and reject act on the real hold queue and write audit entries with the label `console reviewer (unauthenticated demo)`. One in-memory session is shared by all tabs and disappears on restart. Screenshots and the short flow GIF in [docs/media](docs/media/README.md) were recorded before the 2026-11-03 change, when holds came from a dry-run runtime.
+Open the local address that `npm run console` prints. Six synthetic attempts run through the real gate. It allows one care-coordination note, blocks one intake note containing a phone number and a medical record number, holds two clinical protocol drafts for review, and blocks two notes containing injected instructions. Approve and reject act on the real hold queue and write audit entries with the label `console reviewer (unauthenticated demo)`. One in-memory session is shared by all tabs and disappears on restart. Screenshots and the short flow GIF in [docs/media](docs/media/README.md) were recorded before the 2026-11-03 change, when holds came from a dry-run runtime.
 
 ## Search public documents
 

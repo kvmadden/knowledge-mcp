@@ -4,7 +4,7 @@
 
 ![Actual synthetic write-gate console, captured in light mode](docs/media/write-gate-light-1440x900.png)
 
-*Real console capture from October 31, 2026, before the November 3 change to how protocol drafts are held. The current gate uses a store-backed hold queue; [view the other screen captures and reproduction notes](docs/media/README.md).* 
+*Real console capture from October 31, 2026, before the November 3 change to how protocol drafts are held. The current gate now uses a store-backed hold queue. [View the other screen captures and reproduction notes](docs/media/README.md).*
 
 ## Honest headline
 

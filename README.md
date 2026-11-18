@@ -1,6 +1,17 @@
 # knowledge-mcp
 
-**A write gate for AI agents that share long-term memory.** Every write from every tool passes one screening gate. The gate blocks what matches a listed rule, holds what it cannot judge for a person, and audits each decision without copying submitted values. For engineers and product teams evaluating agent memory controls, including clinical AI platforms. This is a local prototype with inspectable tests. It is not a clinical system, a de-identification service or a compliance certification.
+Knowledge MCP is a shared memory server for engineers and product teams that want to check what their AI agents save.
+
+[Try the recorded write-path checks in the portfolio case study](https://kvmadden.com/projects/knowledge-mcp/#try).
+
+To run the console locally, use Node.js 20 or later and run these commands from this repository. Open the local address the console prints.
+
+```sh
+npm ci
+npm run console
+```
+
+Every write from every tool passes one screening gate. The gate blocks what matches a listed rule, holds what it cannot judge for a person, and audits each decision without copying submitted values. This is a local prototype with inspectable tests. It is not a clinical system, a de-identification service or a compliance certification.
 
 ![Actual synthetic write-gate console, captured in light mode](docs/media/write-gate-light-1440x900.png)
 

@@ -31,7 +31,7 @@
 // text, and an object key that is not a plain identifier is reported by its
 // position, never by its text.
 
-export const POLICY_VERSION = '2'
+export const POLICY_VERSION = '3'
 
 const ID_RE = /^[a-z0-9][a-z0-9-]{0,63}$/
 const ALLOWED_FLAGS = new Set(['i', 'm', 's', 'u'])
@@ -807,6 +807,281 @@ function roleFindings(folded) {
   return false
 }
 
+// ── prose identifiers ───────────────────────────────────────────────────
+//
+// Identifiers written as sentences rather than in a fixed format: a full
+// name next to a relative or a pronoun, a street named without a house
+// number, a date or birth date in words, an age above 89, a phone number
+// spelled out or written with a country code, and a number after a member,
+// claim or account label. These are heuristics, not name recognition, so
+// every one of them holds the write for a person and none blocks it.
+//
+// They read a copy of the folded text in which markup comments and tags are
+// removed, middle dots inside words are dropped and small capitals become
+// ordinary letters, so "Sol<br>berg", "Wil·la" and small-capital names read
+// as written words. Every expression is bounded, so the scan stays linear.
+
+const SMALL_CAPS = new Map(Object.entries({
+  ᴀ: 'a', ʙ: 'b', ᴄ: 'c', ᴅ: 'd', ᴇ: 'e', ꜰ: 'f', ɢ: 'g', ʜ: 'h', ɪ: 'i', ᴊ: 'j', ᴋ: 'k', ʟ: 'l', ᴍ: 'm', ɴ: 'n', ᴏ: 'o',
+  ᴘ: 'p', ǫ: 'q', ʀ: 'r', ꜱ: 's', ᴛ: 't', ᴜ: 'u', ᴠ: 'v', ᴡ: 'w', ʏ: 'y', ᴢ: 'z',
+}))
+const SMALL_CAP_WORD_RE = new RegExp(`[${[...SMALL_CAPS.keys()].join('')}][${[...SMALL_CAPS.keys()].join('')}a-z]*`, 'gu')
+
+/** The copy of folded text the prose rules read. */
+export function proseCopy(folded) {
+  let out = folded
+    .replace(/<!--[\s\S]{0,200}?-->/g, '')
+    .replace(/<\/?[a-z][a-z0-9]{0,15}(?:\s[^<>\n]{0,80})?\/?>/gi, (tag, at, text) => (/[\p{L}\p{N}]/u.test(text[at - 1] ?? '') && /[\p{L}\p{N}]/u.test(text[at + tag.length] ?? '') && /^<br\b/i.test(tag) ? '' : ' '))
+    .replace(/(?<=\p{L})[·‧・•∙](?=\p{L})/gu, '')
+  if (/[ᴀ-ᴫɢʜɪɴʀʏʙʟꜰꜱǫ]/u.test(out)) {
+    out = out.replace(SMALL_CAP_WORD_RE, (word) => {
+      const plain = [...word].map((ch) => SMALL_CAPS.get(ch) ?? ch).join('')
+      return plain[0].toUpperCase() + plain.slice(1)
+    })
+  }
+  return out
+}
+
+// Capitalized words that are not given names or surnames: function words that
+// start sentences, calendar words, titles and the words organizations, places
+// and documents are named with. A run of capitalized words that holds one of
+// them is read as something other than a person.
+const NOT_NAME = new Set(`
+a an the this that these those there here he she it we they i you his her its our their my your who what when where why how which
+if then and or but so as at by for from in into of on to with without after before during per via about above below over under
+please no not do does did don't is are was were be been has have had will would should could can may might must shall
+all any each every some most more less other another such same only also just still even yes ok okay
+see use call keep add ask give take hold send leave mark put note notes plan plans start stop check review file route
+day days night nights morning evening afternoon week weeks month year today tonight tomorrow yesterday weekday weekend
+monday tuesday wednesday thursday friday saturday sunday january february march april may june july august september october november december
+dr doctor nurse rn md do np pa pharmacist pharmd attending fellow resident chief chair director manager lead coordinator clerk tech technician
+mr mrs ms miss mx sir madam
+clinic clinics hospital hospitals center centers centre health healthcare community school schools pharmacy pharmacies department dept unit units
+ward wards office offices desk team teams service services program programs medicare medicaid national federal state states county city
+university college institute association society foundation board committee council agency agencies administration food drug drugs disease
+diseases control prevention poison help line lines task force preventive coverage determination publication database information statement
+statements vaccine vaccines facts label labels guide guides guideline guidelines act law rule rules part section chapter table figure appendix
+form forms card cards sheet sheets packet log list lists policy policies protocol protocols schedule schedules manual handbook standard standards
+street st lane ln road rd avenue ave drive court ct alley way place pl boulevard blvd terrace crescent close circle parkway highway spur row
+mews square grove hill hills park parks bridge river lake falls valley heights north south east west upper lower old new great little
+bakery bakehouse workshop ceramics glassworks cooperative creamery atelier shop shops store stores market bank church library house hall
+group inc llc ltd co company corp corporation labs lab laboratory laboratories pharmaceuticals biologics systems network partners
+united american british canadian us usa uk eu who cdc fda cms nih hhs samhsa usp nccn acip uspstf ema nhs va
+emergency urgent care primary intensive critical surgical surgery medicine medical clinical internal family pediatric pediatrics oncology
+cardiology nephrology neurology radiology dermatology psychiatry geriatrics endocrinology pulmonary transplant infusion dialysis hospice
+home visit visits shift handoff huddle minutes meeting report summary update decision decisions record records chart charts order orders
+prior authorization path step steps phase level levels version edition revision draft final key keys role roles system systems
+prescription prescriptions refill refills dose doses tablet tablets capsule capsules injection injections patch inhaler pump
+patient patients member members client clients caregiver family friend friends sister brother son daughter mother father wife husband
+aunt uncle niece nephew cousin neighbor neighbour partner spouse guardian child children baby infant parent parents
+oral iv im sc po prn bid tid qid qd hs ac pc
+`.trim().split(/\s+/))
+
+const NAME_WORD = "[A-Z][a-z]{1,20}(?:[A-Z][a-z]{1,20})?(?:[-'][A-Z][a-z]{1,20})?"
+const NAME_RUN_RE = new RegExp(`(?<![\\p{L}\\p{N}.'-])${NAME_WORD}(?:\\s(?:[A-Z]\\.\\s)?${NAME_WORD}){1,2}(?:'s)?(?![\\p{L}\\p{N}'-])`, 'gu')
+// Words in the same sentence that place a person in view.
+const PERSON_CUE_RE = /\b(?:he|she|him|his|her|hers|himself|herself|sister|brother|son|daughter|wife|husband|spouse|partner|mother|father|mom|mum|dad|aunt|uncle|niece|nephew|cousin|grandson|granddaughter|grandmother|grandfather|grandchild|grandma|grandpa|neighbou?r|caregiver|carer|friend|widow|widower|child|toddler|baby|infant|kid|patient|pt|member|resident|client|born|birthday|lives|lived|living|aged|years? old|year-old|named|called|family|relative|guardian|parent|household|tenant|enfant|s'appelle|hija|hijo|familia|madre|padre|nichte|neffe|tochter|sohn|jahre|wohnt)\b/i
+
+// A full stop ends a sentence when a space follows it. A line break ends one
+// unless the next line starts in lower case, which reads as a wrapped line.
+function endsSentence(text, i) {
+  const ch = text[i]
+  if (ch === '.') return /\s/.test(text[i + 1] ?? ' ')
+  if (ch === '\n') return !/[a-z]/.test(text[i + 1] ?? '')
+  return true
+}
+
+// Sentence ends and person cues are found once per string, so each candidate
+// is placed in its sentence by binary search instead of rescanning the text.
+const PERSON_CUE_G = new RegExp(PERSON_CUE_RE.source, 'gi')
+function proseIndex(text) {
+  const ends = []
+  for (const m of text.matchAll(/[.!?\n|]/g)) if (endsSentence(text, m.index)) ends.push(m.index)
+  const cues = []
+  for (const m of text.matchAll(PERSON_CUE_G)) cues.push([m.index, m.index + m[0].length])
+  return { ends, cues }
+}
+
+// First index in a sorted list whose value is at least `at`.
+function lowerBound(list, at, key = (v) => v) {
+  let lo = 0
+  let hi = list.length
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1
+    if (key(list[mid]) < at) lo = mid + 1
+    else hi = mid
+  }
+  return lo
+}
+
+// True when a person cue sits in the sentence around [start, end) or in the
+// sentence after it, outside the match itself. A name is often given first
+// and the pronoun that places a person comes in the next sentence. Each
+// sentence is capped at 240 characters on either side.
+function cueNear(index, start, end, nextSentence) {
+  const { ends, cues } = index
+  const i = lowerBound(ends, start)
+  const from = Math.max(i > 0 ? ends[i - 1] + 1 : 0, start - 240)
+  const j = lowerBound(ends, end)
+  let to = Math.min(j < ends.length ? ends[j] : Infinity, end + 240)
+  if (nextSentence) {
+    const k = lowerBound(ends, to + 1)
+    to = Math.min(k < ends.length ? ends[k] : Infinity, to + 240)
+  }
+  for (let c = lowerBound(cues, from, (v) => v[0]); c < cues.length && cues[c][0] < to; c += 1) {
+    if (cues[c][1] <= start || cues[c][0] >= end) return true
+  }
+  return false
+}
+
+const STAFF_ROLE = '(?:nurse|pharmacist|coordinator|technician|tech|technologist|physician|doctor|dr\\.?|clerk|scribe|chaplain|therapist|dietitian|aide|lead|manager|director|attending|fellow|educator|navigator|officer|steward|counsel+or|social worker|resident physician|intern|midwife|sonographer|optician|dispatcher|courier|driver)'
+const STAFF_BEFORE_RE = new RegExp(`\\b${STAFF_ROLE},?\\s+$`, 'i')
+const STAFF_AFTER_RE = new RegExp(`^,\\s*(?:(?:RN|LPN|LVN|MD|DO|NP|PA-C|PA|PharmD|RPh|CPhT|RD|MSW|LCSW)\\b|(?:the\\s+|our\\s+|a\\s+)?(?:[a-z-]+\\s+){0,2}${STAFF_ROLE}\\b)`, 'i')
+const TITLE_CHAIN_BEFORE_RE = /[A-Z][\p{L}'-]*\s+(?:of|and|for|&|on|in|to|the)\s+$/u
+
+function personNameFound(text) {
+  let lowerWords = null
+  let index = null
+  for (const m of text.matchAll(NAME_RUN_RE)) {
+    const words = m[0].replace(/'s$/, '').split(/\s+/).filter((w) => !/^[A-Z]\.$/.test(w))
+    if (words.length < 2) continue
+    // A run that holds a word organizations and places are named with is not a person.
+    if (words.some((w) => w.split(/[-']/).some((part) => NOT_NAME.has(part.toLowerCase())))) continue
+    // Part of a longer title ("Management of Atrial Fibrillation", "Suicide
+    // and Crisis Lifeline") is not a person.
+    if (TITLE_CHAIN_BEFORE_RE.test(text.slice(Math.max(0, m.index - 40), m.index))) continue
+    // A staff member named by role ("the charge nurse, Adele Frost," or
+    // "Adele Frost, RN") is not a patient or a relative.
+    if (STAFF_BEFORE_RE.test(text.slice(Math.max(0, m.index - 40), m.index)) || STAFF_AFTER_RE.test(text.slice(m.index + m[0].length, m.index + m[0].length + 40))) continue
+    // Ordinary words that this text also writes in lower case are not names.
+    lowerWords ??= new Set(text.match(/(?<![\p{L}])[a-z][a-z'-]{1,20}(?![\p{L}])/gu) ?? [])
+    if (words.every((w) => lowerWords.has(w.toLowerCase()))) continue
+    index ??= proseIndex(text)
+    if (cueNear(index, m.index, m.index + m[0].length, true)) return true
+  }
+  return false
+}
+
+const STREET_SUFFIX = '(?:Street|Lane|Road|Avenue|Alley|Court|Drive|Way|Place|Boulevard|Terrace|Crescent|Close|Spur|Mews|Parkway|Highway|Row|Square|Grove)'
+const NUMBER_WORD = '(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)'
+const STREET_RE = new RegExp(`(?<![\\p{L}])((?:[A-Z][a-z]{2,20}\\s){1,3})${STREET_SUFFIX}(?![\\p{L}])`, 'gu')
+const SPELLED_HOUSE_RE = new RegExp(`\\b${NUMBER_WORD}(?:[\\s-]${NUMBER_WORD}){0,3}\\s(?:[A-Z][a-z]{2,20}\\s){1,3}${STREET_SUFFIX}\\b`, 'u')
+// A street followed by an organization word names a business or a school.
+const STREET_ORG_AFTER_RE = /^\s*(?:Cooperative|School|Clinic|Hospital|Pharmacy|Health|Center|Centre|Medical|Market|Station|Library|Church|Office|Branch|Campus|Journal)\b/
+const PUBLIC_STREET = new Set(['main', 'high', 'market', 'wall', 'broad', 'church', 'park', 'center', 'centre', 'front', 'water'])
+
+function streetFound(text) {
+  if (SPELLED_HOUSE_RE.test(text)) return true
+  let index = null
+  for (const m of text.matchAll(STREET_RE)) {
+    const words = m[1].trim().split(/\s+/)
+    if (words.length === 1 && PUBLIC_STREET.has(words[0].toLowerCase())) continue
+    if (STREET_ORG_AFTER_RE.test(text.slice(m.index + m[0].length, m.index + m[0].length + 24))) continue
+    index ??= proseIndex(text)
+    if (cueNear(index, m.index, m.index + m[0].length, false)) return true
+  }
+  return false
+}
+
+const MONTH = '(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)'
+const ORDINAL_WORD = '(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|thirteenth|fourteenth|fifteenth|sixteenth|seventeenth|eighteenth|nineteenth|twentieth|thirtieth|twenty[\\s-](?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth)|thirty[\\s-]first)'
+const DAY_OF_MONTH = `(?:${ORDINAL_WORD}|\\d{1,2}(?:st|nd|rd|th)?)`
+const SPELLED_YEAR = '(?:(?:eighteen|nineteen)[\\s-](?:hundred|oh[\\s-]\\w{3,5}|(?:ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen)|(?:twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)(?:[\\s-]\\w{3,5})?)|two thousand(?:[\\s-](?:and[\\s-])?\\w{3,6}(?:[\\s-]\\w{3,5})?)?|twenty[\\s-](?:ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty(?:[\\s-]\\w{3,5})?|thirty))'
+// A birth cue, then a day and month or a month and day within a few words.
+const BIRTH_DATE_RE = new RegExp(`\\b(?:born|birthday|birth ?date|date of birth|d\\.?o\\.?b\\.?|dob|geboren|nacid[oa]|n[ée]e?)\\b[^.!?\\n]{0,60}?(?:\\b${DAY_OF_MONTH}\\s+(?:day\\s+)?of\\s+${MONTH}\\b|\\b${MONTH}\\.?\\s+(?:the\\s+)?${DAY_OF_MONTH}\\b|\\b\\d{1,2}\\s+${MONTH}\\b)`, 'i')
+// A month with a year written out in words close after it.
+const SPELLED_DATE_RE = new RegExp(`\\b${MONTH}\\b[^.!?\\n]{0,40}?\\b${SPELLED_YEAR}\\b`, 'i')
+
+function dateFound(text) {
+  return BIRTH_DATE_RE.test(text) || SPELLED_DATE_RE.test(text)
+}
+
+const NINETY_WORD = '(?:ninety(?:[\\s-](?:one|two|three|four|five|six|seven|eight|nine))?|one hundred(?:[\\s-](?:and[\\s-])?(?:one|two|three|four|five|six|seven|eight|nine|ten))?)'
+const AGE_NUMBER = '(?:9\\d|1[01]\\d)'
+const NOT_AGE_AFTER = '(?![\\s-]*(?:day|days|minutes?|seconds?|hours?|weeks?|months?|percent|per\\s?cent|%|mg|mcg|ml|units?|tablets?|capsules?|doses?|pills?|degrees?|beats?|mm|kg|lbs?|pounds?|times|over|and\\s+(?:a\\s+)?half|count|supply|fill|refills?)\\b)'
+const AGE_RE = new RegExp([
+  `\\b${NINETY_WORD}[\\s-]*(?:years?|yrs?)[\\s-]*(?:old|of\\s+age)\\b`,
+  `\\b${AGE_NUMBER}[\\s-]*(?:years?|yrs?)[\\s-]*(?:old|of\\s+age)\\b`,
+  `\\b${AGE_NUMBER}\\s*(?:yo|y/o|y\\.o\\.?)(?![\\p{L}])`,
+  `\\b(?:aged?|age:)\\s*${AGE_NUMBER}\\b`,
+  `\\b(?:aged?|is|was|turned|turns|now|,)\\s+${NINETY_WORD}\\b${NOT_AGE_AFTER}`,
+  '\\b(?:\\w{0,8}und)?neunzig\\s+jahre\\b',
+  '\\bnoventa(?:\\s+y\\s+\\w{3,6})?\\s+años\\b',
+  '\\bquatre-vingt-(?:dix|onze|douze|treize|quatorze|quinze|seize)(?:-\\w{3,5})?\\s+ans\\b',
+].join('|'), 'iu')
+
+const DIGIT_WORD = '(?:zero|oh|one|two|three|four|five|six|seven|eight|nine)'
+const DIGIT_ITEM = `(?:${DIGIT_WORD}|\\d)`
+const DIGIT_RUN_RE = new RegExp(`(?<![\\p{L}\\p{N}])${DIGIT_ITEM}(?:[\\s,.-]{1,3}${DIGIT_ITEM}){6,}(?![\\p{L}\\p{N}])`, 'giu')
+
+function spelledDigitsFound(text) {
+  for (const m of text.matchAll(DIGIT_RUN_RE)) {
+    const items = m[0].toLowerCase().split(/[\s,.-]+/).filter(Boolean)
+    const spelled = items.filter((t) => !/^\d$/.test(t)).length
+    // Counts read out in order ("six, then five, four") are not a number:
+    // a run counts when at least half of it is spelled and some digit repeats.
+    if (spelled * 2 >= items.length && new Set(items.map((t) => t.replace(/^oh$/, 'zero'))).size < items.length) return true
+  }
+  return false
+}
+
+const PHONE_CUE = '(?:call(?:back)?|phone|mobile|cell|tel|telephone|text|sms|reach|contact|number|ring|whatsapp)'
+const UNSEPARATED_PHONE_RE = new RegExp(`\\b${PHONE_CUE}\\b[^.!?\\n\\d]{0,24}(?<!\\d)(?:\\+?1)?\\d{10}(?!\\d)`, 'i')
+const INTERNATIONAL_PHONE_RE = /(?<![\p{L}\p{N}+])\+(?!1\s?8(?:00|33|44|55|66|77|88)\b)(?:[1-9]\d{0,2})(?:[\s.-]?\(?\d{1,4}\)?)(?:[\s.-]?\d{2,4}){2,4}(?![\p{N}])/u
+
+function internationalPhoneFound(text) {
+  for (const m of text.matchAll(new RegExp(INTERNATIONAL_PHONE_RE.source, 'gu'))) {
+    const digits = m[0].replace(/\D/g, '').length
+    if (digits >= 9 && digits <= 15) return true
+  }
+  return false
+}
+
+const ACCOUNT_LABEL_RE = /\b(?:member|subscriber|beneficiary|enrollee|policy|account|acct|claim|insurance|insurer|plan|health[\s-]card|nhs|chart|wristband|locator|folio|n[uú]mero\s+de\s+cuenta|cuenta)\b/gi
+// What follows the label, read with case: an optional word such as "number",
+// then a token that starts with at most four capital letters and a digit.
+const ACCOUNT_TOKEN_RE = /^(?:\s+(?:[Nn]umber|[Nn]o\.?|[Nn]um|ID|[Ii]d|[Ii]dentifier|[Rr]eference|[Rr]ef|[Ii]ndex|[Ll]ocator|[Cc]ode))?\s*(?:is\s+|reads\s+|of\s+)?[:#]?\s*["'(]?([A-Z]{0,4}[-\s]?\d(?:[A-Z0-9]|[ ./_-](?=[A-Z0-9])){3,24})/
+
+function accountNumberFound(text) {
+  for (const m of text.matchAll(ACCOUNT_LABEL_RE)) {
+    const token = ACCOUNT_TOKEN_RE.exec(text.slice(m.index + m[0].length, m.index + m[0].length + 80))?.[1]
+    if (!token) continue
+    const digits = token.replace(/\D/g, '').length
+    if (digits < 5) continue
+    // A plain year or a dotted regulation number is not an account.
+    if (/^(?:19|20)\d{2}$/.test(token) || /^\d{1,4}\.\d{1,3}$/.test(token)) continue
+    return true
+  }
+  return false
+}
+
+/** Review ids for identifiers written as prose in one folded string. */
+export function proseFindings(folded) {
+  const out = new Set()
+  const text = proseCopy(folded)
+  if (personNameFound(text)) out.add('prose-person-name')
+  if (streetFound(text)) out.add('prose-street-name')
+  if (dateFound(text)) out.add('prose-date')
+  if (AGE_RE.test(text)) out.add('prose-age-over-89')
+  if (spelledDigitsFound(text)) out.add('spelled-digits')
+  if (UNSEPARATED_PHONE_RE.test(text)) out.add('unseparated-phone')
+  if (internationalPhoneFound(text)) out.add('international-phone')
+  if (accountNumberFound(text)) out.add('labeled-account-number')
+  return out
+}
+
+// Separators broken by markup or stray spaces: markup comments and line-break
+// tags removed, a separator with spaces or one line break around it between
+// two digits closed up, middle dots between digits read as hyphens. The listed
+// patterns are read again on this copy, so "000- 55-0144", a number wrapped
+// after its hyphen, or "555<!--x-->-010-0199" matches.
+export function unbrokenCopy(folded) {
+  return folded
+    .replace(/<!--[\s\S]{0,200}?-->/g, '')
+    .replace(/<br\s*\/?>/gi, '')
+    .replace(/(?<=\d)[ \t]{0,3}([-./·‧])[ \t]{0,3}\n?[ \t]{0,3}(?=\d)/g, (m, sep) => (sep === '·' || sep === '‧' ? '-' : sep))
+}
+
 // ── structural rules (whole write) ──────────────────────────────────────
 
 const CLINICAL_RE = new RegExp(
@@ -818,7 +1093,10 @@ const CLINICAL_RE = new RegExp(
     'aspirin|potassium chloride|epinephrine|vancomycin|gentamicin|amoxicillin|penicillin|' +
     '\\w+(?:pril|sartan|olol|statin|azole|mycin|cillin|floxacin|prazole|tidine|gliptin|gliflozin|glutide|parin|xaban|mab|nib|dronate|azepam|oxetine|triptyline))\\b',
 )
-const ASSERTION_RE = /\b(?:verified (?:fact|rule)s?|approved|official|authoritative|standing orders?|protocol\s*:|policy\s*:|rule\s*:|guideline\s*:|(?:is|are) (?:always )?safe\b|safe (?:at|for|with|without|in)\b|without (?:review|verification|approval|a prescription|monitoring|a pharmacist)|no (?:longer )?(?:needs?|requires?)\b|never requires?\b|(?:max(?:imum)?|min(?:imum)?|starting|usual|recommended|safe|lethal|toxic)\s+(?:[a-z-]+\s+){0,3}dos(?:e|es|ing|age)\b|\bdos(?:e|es|ing|age)\b[^.!?\n]{0,40}\b(?:is|are|of)\s+(?:up to\s+|at most\s+|no more than\s+)?\d|save (?:it |this )?as (?:a |the )?(?:verified|approved|official) (?:rule|fact|protocol))/
+// "official" counts when it names a rule, dose or other authority, or is
+// claimed ("is official"), not when it dates a document. A standing order
+// that the text says it is not does not count either.
+const ASSERTION_RE = /\b(?:verified (?:fact|rule)s?|approved|official\s+(?:[a-z-]+\s+){0,2}(?:rules?|protocols?|polic(?:y|ies)|guidance|guidelines?|dos(?:e|es|ing|age)|recommendations?|positions?|instructions?|orders?|standards?|schedules?|regimens?)\b|(?:is|are|now|as|made|becomes?|became)\s+official\b|authoritative|(?<!\bnot (?:an? |the )?)standing orders?|protocol\s*:|policy\s*:|rule\s*:|guideline\s*:|(?:is|are) (?:always )?safe\b|safe (?:at|for|with|without|in)\b|without (?:review|verification|approval|a prescription|monitoring|a pharmacist)|no (?:longer )?(?:needs?|requires?)\b|never requires?\b|(?:max(?:imum)?|min(?:imum)?|starting|usual|recommended|safe|lethal|toxic)\s+(?:[a-z-]+\s+){0,3}dos(?:e|es|ing|age)\b|\bdos(?:e|es|ing|age)\b[^.!?\n]{0,40}\b(?:is|are|of)\s+(?:up to\s+|at most\s+|no more than\s+)?\d|save (?:it |this )?as (?:a |the )?(?:verified|approved|official) (?:rule|fact|protocol))/
 const DIRECTIVE_RE = /(?:^|[.!?;:\n,] ?)(?:(?:please|kindly|now|then|also|immediately|stat|you|we|should|must|need|needs|to|will|always|nurse|nurses|staff|team|pharmacy|pharmacist|the|patient)\s+){0,4}(?:administer|give|inject|infuse|prescribe|dispense|titrate|increase|decrease|double|halve|stop|discontinue|hold|start|switch)\b[^.!?\n]{0,80}\b(?:\d+(?:\.\d+)?\s*(?:mg|mcg|g|units?|ml|meq|mmol)\b|iv\b|intravenous|intramuscular|subcutaneous|by mouth)/
 const AUTHORITY_TYPES = new Set(['rule', 'decision'])
 const STRUCTURAL_FIELD_RE = /(?:^|\.)(?:owner_id|source_app|status|bucket|id|seq|created_at|updated_at|recordedAt|lastWrittenAt|observedAt|trust|type|path)$/
@@ -931,6 +1209,8 @@ export const BLOCK_POLICY_IDS = Object.freeze(['instruction-override', 'role-spo
 export const REVIEW_POLICY_IDS = Object.freeze([
   'untrusted-source', 'clinical-assertion', 'clinical-directive', 'addressed-to-agent', 'possible-instruction-override',
   'quoted-instruction', 'bulk-transfer', 'memory-tampering', 'unreadable-encoded-content', 'mixed-script-token',
+  'prose-person-name', 'prose-street-name', 'prose-date', 'prose-age-over-89', 'spelled-digits', 'unseparated-phone',
+  'international-phone', 'labeled-account-number',
 ])
 export const UNREADABLE_CODES = Object.freeze(['too-deep', 'too-large', 'circular', 'unsupported-type', 'non-finite-number', 'screen-error'])
 
@@ -982,6 +1262,9 @@ export function createGate(list) {
       for (const id of phraseHits.block) found.violations.push({ field: '', patternId: id })
       for (const id of phraseHits.review) found.reviews.push({ field: '', reasonId: id })
       if (hasMixedScript(text)) found.reviews.push({ field: '', reasonId: 'mixed-script-token' })
+      for (const id of proseFindings(folded)) found.reviews.push({ field: '', reasonId: id })
+      const unbroken = unbrokenCopy(folded)
+      if (unbroken !== folded) identifierFindings(unbroken, '', 'unbroken-separators', found)
       const { readings, unreadable } = decodedReadings(folded)
       if (unreadable) found.reviews.push({ field: '', reasonId: 'unreadable-encoded-content' })
       for (const reading of readings) {
@@ -989,6 +1272,7 @@ export function createGate(list) {
         const innerPhrase = phraseOf(inner)
         decodedPhrases.push(innerPhrase.text)
         identifierFindings(inner, '', reading.via, found)
+        for (const id of proseFindings(inner)) found.reviews.push({ field: '', reasonId: id, encoding: reading.via })
         const hits = phraseFindings(innerPhrase, inner)
         if (roleFindings(inner)) hits.block.add('role-spoof')
         for (const id of hits.block) found.violations.push({ field: '', patternId: id, encoding: reading.via })

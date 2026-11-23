@@ -1,0 +1,30 @@
+✖ unbroken reading: a number wrapped onto the next line after its separator is blocked (157.28225ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 412.167417
+
+✖ failing tests:
+
+test at test/prose-identifiers.test.js:244:1
+✖ unbroken reading: a number wrapped onto the next line after its separator is blocked (157.28225ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'allow' !== 'block'
+  
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:246:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'block',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

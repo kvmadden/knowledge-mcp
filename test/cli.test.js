@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url'
 
 import { buildRuntime } from '../src/server.js'
 import { SAMPLES } from './_helpers.js'
+import { POLICY_VERSION } from '../src/screening/screen.js'
 
 const ENTRY = fileURLToPath(new URL('../src/index.js', import.meta.url))
 const cli = (args, env = {}) => spawnSync(process.execPath, [ENTRY, ...args], { env: { PATH: process.env.PATH, KNOWLEDGE_SEED: 'none', ...env }, encoding: 'utf8' })
@@ -85,7 +86,7 @@ test('--check reports holds, the policy id and the real seeding outcome', () => 
     assert.equal(cfg.seeded, false, 'a store that already has data is not seeded')
     assert.equal(cfg.records, 1)
     assert.equal(cfg.heldForReview, 0)
-    assert.match(cfg.policy.id, /^2-/)
+    assert.match(cfg.policy.id, new RegExp(`^${POLICY_VERSION}-`))
     assert.equal(cfg.tools.length, 18)
     assert.equal(cfg.tools.filter((t) => t.access === 'read').length, 8)
   } finally {

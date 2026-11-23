@@ -1,0 +1,35 @@
+✔ prose-person-name: a full name next to a relative or pronoun is held (46.837333ms)
+✔ prose-person-name: names hidden by small capitals, math letters, middle dots or line-break tags are held (18.024292ms)
+✔ prose-person-name: capitalized look-alikes with no person in view are stored (5.897042ms)
+✔ prose-street-name: a named street without a house number, tied to a person, is held (6.71975ms)
+✔ prose-street-name: a house number written in words is held without other context (4.915541ms)
+✔ prose-street-name: a street in a public or business context is stored (0.347042ms)
+✔ prose-date: a birth date written in words is held (0.402625ms)
+✔ prose-date: a full date with the year spelled out is held (0.156875ms)
+✔ prose-date: dated public references and numeric meeting dates are stored (0.224875ms)
+✔ prose-age-over-89: an age above eighty-nine is held, in words or digits (3.99975ms)
+✔ prose-age-over-89: ninety-day supplies and vital signs are stored (1.178041ms)
+✔ spelled-digits: a phone number spelled out in words is held (0.388209ms)
+✔ spelled-digits: counts written in words are stored (0.091791ms)
+✔ unseparated-phone: ten digits after a callback cue are held (1.356541ms)
+✔ unseparated-phone: long accession numbers are stored (5.936917ms)
+✔ international-phone: a number with a country code is held (0.279417ms)
+✔ labeled-account-number: a member, claim or account label followed by a number is held (0.3265ms)
+✔ labeled-account-number: version numbers, tickets and regulation numbers are stored (0.194958ms)
+✔ unbroken reading: a social security number with a stray space is blocked (0.124041ms)
+✔ unbroken reading: a phone number split by markup comments is blocked (0.5635ms)
+✔ unbroken reading: ordinary table markup with numbers is stored (0.141209ms)
+✔ prose rules hold and never block on their own (0.523333ms)
+✔ prose rule ids are listed as review policy ids (0.501334ms)
+✔ prose rules: screening time stays linear on shapes that feed them (1761.873125ms)
+✔ clinical-assertion: a dated official document or a negated standing order is not a claim (0.3995ms)
+✔ clinical-assertion: official rules and standing orders about medication are still held (0.261875ms)
+✔ unbroken reading: a number wrapped onto the next line after its separator is blocked (0.095542ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2022.261458

@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 
 import { buildRuntime } from "../src/server.js";
 import { SAMPLES } from "./_helpers.js";
+import { POLICY_VERSION } from "../src/screening/screen.js";
 
 const ENTRY = fileURLToPath(new URL("../src/index.js", import.meta.url));
 
@@ -32,7 +33,7 @@ test("--check with defaults reports the in-memory store, seed and example list",
   assert.equal(cfg.tools.length, 18);
   assert.equal(cfg.seeded, true);
   assert.equal(cfg.denyListPatterns.length, 11);
-  assert.match(cfg.policy.id, /^2-[0-9a-f]{16}$/);
+  assert.match(cfg.policy.id, new RegExp(`^${POLICY_VERSION}-[0-9a-f]{16}$`));
 });
 
 test("missing, empty, malformed or invalid deny-list files stop startup", () => {

@@ -1,0 +1,354 @@
+✖ prose-person-name: a full name next to a relative or pronoun is held (11.585042ms)
+✖ prose-person-name: names hidden by small capitals, math letters, middle dots or line-break tags are held (8.537458ms)
+✔ prose-person-name: capitalized look-alikes with no person in view are stored (3.503166ms)
+✖ prose-street-name: a named street without a house number, tied to a person, is held (0.289208ms)
+✖ prose-street-name: a house number written in words is held without other context (0.870583ms)
+✔ prose-street-name: a street in a public or business context is stored (0.296834ms)
+✖ prose-date: a birth date written in words is held (0.166167ms)
+✖ prose-date: a full date with the year spelled out is held (0.121792ms)
+✔ prose-date: dated public references and numeric meeting dates are stored (0.171917ms)
+✖ prose-age-over-89: an age above eighty-nine is held, in words or digits (0.164167ms)
+✔ prose-age-over-89: ninety-day supplies and vital signs are stored (0.157708ms)
+✖ spelled-digits: a phone number spelled out in words is held (0.116083ms)
+✔ spelled-digits: counts written in words are stored (0.084208ms)
+✖ unseparated-phone: ten digits after a callback cue are held (0.107667ms)
+✔ unseparated-phone: long accession numbers are stored (0.821584ms)
+✖ international-phone: a number with a country code is held (0.167375ms)
+✖ labeled-account-number: a member, claim or account label followed by a number is held (0.106167ms)
+✔ labeled-account-number: version numbers, tickets and regulation numbers are stored (0.143417ms)
+✖ unbroken reading: a social security number with a stray space is blocked (0.142ms)
+✖ unbroken reading: a phone number split by markup comments is blocked (0.099875ms)
+✔ unbroken reading: ordinary table markup with numbers is stored (0.074042ms)
+✖ prose rules hold and never block on their own (0.224292ms)
+✖ prose rule ids are listed as review policy ids (0.198042ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 8
+ℹ fail 15
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 134.704917
+
+✖ failing tests:
+
+test at test/prose-identifiers.test.js:32:1
+✖ prose-person-name: a full name next to a relative or pronoun is held (11.585042ms)
+  AssertionError [ERR_ASSERTION]: expected a hold for prose-person-name: Caregiver is his sister Brenna Vossel, who does the evening dressing.
+  
+  'allow' !== 'review'
+  
+      at assertHeldFor (file://./test/prose-identifiers.test.js:21:10)
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:33:3)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:38:1
+✖ prose-person-name: names hidden by small capitals, math letters, middle dots or line-break tags are held (8.537458ms)
+  AssertionError [ERR_ASSERTION]: expected a hold for prose-person-name: ʙʀᴇɴɴᴀ ᴠᴏssᴇʟ is the caregiver and she works nights.
+  
+  'allow' !== 'review'
+  
+      at assertHeldFor (file://./test/prose-identifiers.test.js:21:10)
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:39:3)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:54:1
+✖ prose-street-name: a named street without a house number, tied to a person, is held (0.289208ms)
+  AssertionError [ERR_ASSERTION]: expected a hold for prose-street-name: She lives on Quarrow Lane above the tailor and wants a call tonight.
+  
+  'allow' !== 'review'
+  
+      at assertHeldFor (file://./test/prose-identifiers.test.js:21:10)
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:55:3)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:59:1
+✖ prose-street-name: a house number written in words is held without other context (0.870583ms)
+  AssertionError [ERR_ASSERTION]: expected a hold for prose-street-name: Mail the vaccine record to fourteen Quarrow Lane in North Fallow.
+  
+  'allow' !== 'review'
+  
+      at assertHeldFor (file://./test/prose-identifiers.test.js:21:10)
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:60:3)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:70:1
+✖ prose-date: a birth date written in words is held (0.166167ms)
+  AssertionError [ERR_ASSERTION]: expected a hold for prose-date: The chart was opened today, born on the ninth of March, nineteen sixty-four.
+  
+  'allow' !== 'review'
+  
+      at assertHeldFor (file://./test/prose-identifiers.test.js:21:10)
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:71:3)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:76:1
+✖ prose-date: a full date with the year spelled out is held (0.121792ms)
+  AssertionError [ERR_ASSERTION]: expected a hold for prose-date: The visit was on Monday, the nineteenth of January, two thousand twenty-six.
+  
+  'allow' !== 'review'
+  
+      at assertHeldFor (file://./test/prose-identifiers.test.js:21:10)
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:77:3)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:89:1
+✖ prose-age-over-89: an age above eighty-nine is held, in words or digits (0.164167ms)
+  AssertionError [ERR_ASSERTION]: expected a hold for prose-age-over-89: The resident, who is ninety-three, rents the garden flat.
+  
+  'allow' !== 'review'
+  
+      at assertHeldFor (file://./test/prose-identifiers.test.js:21:10)
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:90:3)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:104:1
+✖ spelled-digits: a phone number spelled out in words is held (0.116083ms)
+  AssertionError [ERR_ASSERTION]: expected a hold for spelled-digits: Callback five five five, zero one zero, zero one nine nine.
+  
+  'allow' !== 'review'
+  
+      at assertHeldFor (file://./test/prose-identifiers.test.js:21:10)
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:105:3)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:113:1
+✖ unseparated-phone: ten digits after a callback cue are held (0.107667ms)
+  AssertionError [ERR_ASSERTION]: expected a hold for unseparated-phone: Member callback 5550100199 after 5 pm.
+  
+  'allow' !== 'review'
+  
+      at assertHeldFor (file://./test/prose-identifiers.test.js:21:10)
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:114:3)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:121:1
+✖ international-phone: a number with a country code is held (0.167375ms)
+  AssertionError [ERR_ASSERTION]: expected a hold for international-phone: He wants a confirmation call at +61 491 570 184 after the label prints.
+  
+  'allow' !== 'review'
+  
+      at assertHeldFor (file://./test/prose-identifiers.test.js:21:10)
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:122:3)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:128:1
+✖ labeled-account-number: a member, claim or account label followed by a number is held (0.106167ms)
+  AssertionError [ERR_ASSERTION]: expected a hold for labeled-account-number: Resubmit under member number HN-4401928-3 so the appeal attaches.
+  
+  'allow' !== 'review'
+  
+      at assertHeldFor (file://./test/prose-identifiers.test.js:21:10)
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:129:3)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:142:1
+✖ unbroken reading: a social security number with a stray space is blocked (0.142ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'allow' !== 'block'
+  
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:144:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'block',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:148:1
+✖ unbroken reading: a phone number split by markup comments is blocked (0.099875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'allow' !== 'block'
+  
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:150:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'block',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:160:1
+✖ prose rules hold and never block on their own (0.224292ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'allow' !== 'review'
+  
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:162:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'allow',
+    expected: 'review',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/prose-identifiers.test.js:166:1
+✖ prose rule ids are listed as review policy ids (0.198042ms)
+  AssertionError [ERR_ASSERTION]: prose-person-name is not a review policy id
+      at TestContext.<anonymous> (file://./test/prose-identifiers.test.js:168:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
